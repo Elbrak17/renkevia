@@ -1,0 +1,19 @@
+{
+    "name": "RENKEVIA — Institutional Change Compiler",
+    "short_name": "RENKEVIA",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#142020",
+    "theme_color": "#142020",
+    "description": "Compile institutional evidence into synchronized, tested, provenance-linked hospital change packages.",
+    "orientation": "landscape-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/renkevia-mark.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }
+    ]
+}

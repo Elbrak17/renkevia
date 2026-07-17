@@ -1,0 +1,22 @@
+name: renkevia
+description: RENKEVIA institutional change compiler — Flutter Web demo surface.
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Flutter's web icon tree shaker currently retains a Cupertino fallback from
+  # the framework even though RENKEVIA itself uses Material symbols.
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
