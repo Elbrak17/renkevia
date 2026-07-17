@@ -1,0 +1,20 @@
+{
+  "reviewedAt": "2026-07-17",
+  "api": "responses",
+  "models": [
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna"
+  ],
+  "capabilities": [
+    { "id": "models", "script": "probe:models", "status": "scaffolded" },
+    { "id": "structured_outputs", "script": "probe:structured", "status": "scaffolded" },
+    { "id": "programmatic_tool_calling", "script": "probe:programmatic", "status": "scaffolded" },
+    { "id": "multi_agent", "script": "probe:multi-agent", "status": "scaffolded", "maturity": "beta" },
+    { "id": "computer_use_handshake", "script": "probe:computer", "status": "scaffolded" },
+    { "id": "explicit_prompt_cache", "script": "probe:cache", "status": "scaffolded" },
+    { "id": "long_context", "status": "planned" },
+    { "id": "vision", "status": "planned" },
+    { "id": "streaming", "status": "planned" }
+  ]
+}

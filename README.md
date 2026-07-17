@@ -2,7 +2,7 @@
 
 RENKEVIA is a hospital change compiler for medication shortages. It turns a messy institutional evidence set into one synchronized, provenance-linked patch, tests that patch against synthetic patient pathways, and holds the result for human approval.
 
-This repository is being built for the OpenAI Build Week hackathon. It is currently in phase 0: the product, demonstration, architecture, safety, design, and evaluation contracts are frozen before implementation begins.
+This repository is being built for the OpenAI Build Week hackathon. It is currently in phases 0–1: the product and demonstration contracts are frozen, and the GPT-5.6 capability probes are being established. The Flutter experience and working orchestration will follow those gates.
 
 ## The transformation
 
@@ -33,13 +33,17 @@ The primary demo proves a hidden pediatric dependency is detected before a propo
 
 ```bash
 npm run verify:phase0
+npm run probe:preflight
 ```
+
+Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into source, a fixture, an issue, or chat.
 
 ## Core documents
 
 - [Product contract](docs/PRODUCT_CONTRACT.md)
 - [Demo contract](docs/DEMO_CONTRACT.md)
 - [Architecture](docs/ARCHITECTURE.md)
+- [GPT-5.6 capability matrix](docs/CAPABILITY_MATRIX.md)
 - [Hackathon criteria matrix](docs/HACKATHON_MATRIX.md)
 - [Evaluation plan](docs/EVALS.md)
 - [Safety and security](docs/SAFETY.md)
@@ -48,4 +52,4 @@ npm run verify:phase0
 
 ## Status language
 
-Repository documents distinguish planned and implemented behavior. A capability is not described as working until a reproducible check exists.
+Repository documents distinguish **planned**, **scaffolded**, **probe-verified**, and **demo-verified** behavior. A capability is not described as working until a reproducible check exists.

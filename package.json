@@ -5,7 +5,18 @@
   "description": "RENKEVIA hospital change compiler — hackathon prototype",
   "type": "module",
   "scripts": {
-    "verify:phase0": "node scripts/verify-phase0.mjs"
+    "check": "npm run verify:phase0 && npm run test:probes && npm run probe:preflight",
+    "verify:phase0": "node scripts/verify-phase0.mjs",
+    "test:probes": "node --test probes/test/*.test.mjs",
+    "probe:preflight": "node probes/src/preflight.mjs",
+    "probe:models": "node probes/src/model-access.mjs",
+    "probe:structured": "node probes/src/structured-output.mjs",
+    "probe:programmatic": "node probes/src/programmatic-tool-calling.mjs",
+    "probe:multi-agent": "node probes/src/multi-agent.mjs",
+    "probe:computer": "node probes/src/computer-use.mjs",
+    "probe:cache": "node probes/src/prompt-cache.mjs",
+    "probe:live": "npm run probe:models && npm run probe:structured && npm run probe:programmatic && npm run probe:multi-agent && npm run probe:computer && npm run probe:cache",
+    "probe:all": "npm run check && npm run probe:live"
   },
   "engines": {
     "node": ">=20"

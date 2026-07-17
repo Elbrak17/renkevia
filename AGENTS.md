@@ -57,6 +57,7 @@ Use the commands that exist for the current phase; never report a check as passe
 
 ```bash
 npm run verify:phase0
+npm run probe:preflight
 ```
 
 When Flutter and the backend are added, extend this section with the canonical format, lint, test, golden-test, and build commands.
