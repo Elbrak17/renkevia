@@ -2,7 +2,7 @@
 
 RENKEVIA is a hospital change compiler for medication shortages. It turns a messy institutional evidence set into one synchronized, provenance-linked patch, tests that patch against synthetic patient pathways, and holds the result for human approval.
 
-This repository is being built for the OpenAI Build Week hackathon. It is currently in phases 0–1: the product and demonstration contracts are frozen, and the GPT-5.6 capability probes are being established. The Flutter experience and working orchestration will follow those gates.
+This repository is being built for the OpenAI Build Week hackathon. Phases 0–1 froze the product, safety, evaluation, and demonstration contracts. The first Flutter Web vertical slice now implements the Response Room as an explicitly synthetic fixture replay while GPT-5.6 capability probes remain independently verifiable.
 
 ## The transformation
 
@@ -34,6 +34,10 @@ The primary demo proves a hidden pediatric dependency is detected before a propo
 ```bash
 npm run verify:phase0
 npm run probe:preflight
+cd app
+flutter analyze
+flutter test
+flutter build web
 ```
 
 Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into source, a fixture, an issue, or chat.
@@ -49,6 +53,7 @@ Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into 
 - [Safety and security](docs/SAFETY.md)
 - [Design system](docs/DESIGN_SYSTEM.md)
 - [Risk register](docs/RISK_REGISTER.md)
+- [API budget and truthfulness contract](docs/API_BUDGET.md)
 
 ## Status language
 
