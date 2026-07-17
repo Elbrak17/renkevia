@@ -1,0 +1,13 @@
+{
+  "name": "renkevia",
+  "version": "0.0.0",
+  "private": true,
+  "description": "RENKEVIA hospital change compiler — hackathon prototype",
+  "type": "module",
+  "scripts": {
+    "verify:phase0": "node scripts/verify-phase0.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

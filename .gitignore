@@ -1,0 +1,28 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+coverage/
+
+# IDE and operating system
+.idea/
+.vscode/
+.DS_Store
+
+# Probe output may contain account metadata or generated content
+probes/results/*.json
+!probes/results/.gitkeep
+
