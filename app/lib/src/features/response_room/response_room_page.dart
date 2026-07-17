@@ -431,9 +431,9 @@ class _GraphPanel extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 13, 12, 11),
-            child: const _GraphHeader(),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(15, 13, 12, 11),
+            child: _GraphHeader(),
           ),
           const Divider(height: 1),
           Expanded(

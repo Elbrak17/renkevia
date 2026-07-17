@@ -1,8 +1,12 @@
 # RENKEVIA Flutter Web
 
-This directory contains the web-only institutional workspace. The first vertical
-slice is the Response Room: a deterministic synthetic replay exposes a hidden
-pediatric dependency and locks the human approval gate.
+This directory contains the web-only institutional workspace. Its deterministic
+synthetic replay currently spans two connected surfaces:
+
+- **Response Room** exposes a hidden pediatric dependency and locks approval.
+- **Patch Studio** recompiles the pediatric exception through one typed Patch IR,
+  synchronizes six inspectable projections, retains specialist dissent, and
+  routes the revised candidate to patient-pathway simulation.
 
 ## Run
 

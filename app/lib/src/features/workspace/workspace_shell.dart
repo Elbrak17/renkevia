@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
+import 'package:renkevia/src/features/patch_studio/patch_studio_page.dart';
 import 'package:renkevia/src/features/response_room/response_room_page.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
@@ -401,13 +402,7 @@ class _SectionBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (controller.section) {
       WorkspaceSection.responseRoom => ResponseRoomPage(controller: controller),
-      WorkspaceSection.patchStudio => const _ComingSection(
-        eyebrow: 'PATCH STUDIO / 02',
-        title: 'One Patch IR. Six synchronized artifacts.',
-        detail:
-            'This surface unlocks after the dependency graph reaches a reviewable candidate.',
-        icon: Icons.difference_outlined,
-      ),
+      WorkspaceSection.patchStudio => PatchStudioPage(controller: controller),
       WorkspaceSection.simulationLab => const _ComingSection(
         eyebrow: 'SIMULATION LAB / 03',
         title: 'Patient pathways become executable assertions.',

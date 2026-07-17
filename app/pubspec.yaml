@@ -9,9 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # Flutter's web icon tree shaker currently retains a Cupertino fallback from
-  # the framework even though RENKEVIA itself uses Material symbols.
-  cupertino_icons: ^1.0.8
+  # Flutter's web icon tree shaker retains a framework-level Cupertino
+  # fallback even though RENKEVIA itself uses Material symbols.
+  cupertino_icons: ^1.0.9
 
 dev_dependencies:
   flutter_test:
