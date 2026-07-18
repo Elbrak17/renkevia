@@ -1271,7 +1271,7 @@ class _DiffLineRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: accent,
-                fontFamily: 'monospace',
+                fontFamily: 'RenkeviaMono',
                 fontSize: 9,
                 height: 1.25,
               ),

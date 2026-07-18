@@ -25,6 +25,25 @@ void main() {
     await tester.pump(const Duration(milliseconds: 1050));
   }
 
+  Future<void> stageLegacyAndReturnProof(WidgetTester tester) async {
+    await tester.tap(find.byKey(const Key('evidence-vault-primary-button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('legacy-search-button')));
+    await tester.pump(const Duration(milliseconds: 360));
+    await tester.tap(find.byKey(const Key('legacy-open-order-set-button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('legacy-compare-button')));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.byKey(const Key('legacy-prepare-button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('legacy-stage-button')));
+    await tester.pump(const Duration(milliseconds: 470));
+    final returnButton = find.byKey(const Key('legacy-return-proof-button'));
+    await tester.ensureVisible(returnButton);
+    await tester.tap(returnButton);
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('renders an explicitly synthetic institutional workspace', (
     tester,
   ) async {
@@ -281,6 +300,30 @@ void main() {
     );
     expect(find.byKey(const Key('legacy-staging-blocker')), findsOneWidget);
   });
+
+  testWidgets(
+    'visual legacy proof resolves the machine gate but not human approval',
+    (tester) async {
+      await setDesktopCanvas(tester);
+      await tester.pumpWidget(const RenkeviaApp());
+      await tester.pumpAndSettle();
+      await sealEvidenceVault(tester);
+      await stageLegacyAndReturnProof(tester);
+
+      expect(find.text('STAGED • AWAITING HUMAN APPROVAL'), findsOneWidget);
+      expect(find.byKey(const Key('legacy-staging-proof')), findsOneWidget);
+      expect(find.byKey(const Key('legacy-staging-blocker')), findsNothing);
+      expect(
+        find.text('No machine blocker remains. The demo stops here.'),
+        findsOneWidget,
+      );
+
+      final approvalButton = tester.widget<FilledButton>(
+        find.byKey(const Key('request-approval-button')),
+      );
+      expect(approvalButton.onPressed, isNull);
+    },
+  );
 
   testWidgets('blocked response room matches the reviewed visual baseline', (
     tester,

@@ -2,7 +2,7 @@
 
 RENKEVIA is a hospital change compiler for medication shortages. It turns a messy institutional evidence set into one synchronized, provenance-linked patch, tests that patch against synthetic patient pathways, and holds the result for human approval.
 
-This repository is being built for the OpenAI Build Week hackathon. Phases 0–1 froze the product, safety, evaluation, and demonstration contracts. The Flutter Web demo now implements four connected vertical slices: the Response Room exposes a hidden pediatric dependency; the Patch Studio recompiles one typed Patch IR into six synchronized institutional artifacts; the Simulation Lab replays a sealed 24-pathway fixture until the candidate moves from one reproducible failure to 24/24 verified outcomes; and the Evidence Vault seals four independent reviews, complete provenance, and exact rollback without erasing dissent. The human approval gate remains explicit and locked. GPT-5.6 capability probes remain independently verifiable.
+This repository is being built for the OpenAI Build Week hackathon. Phases 0–1 froze the product, safety, evaluation, and demonstration contracts. The Flutter Web demo now implements the complete connected journey: the Response Room exposes a hidden pediatric dependency; the Patch Studio recompiles one typed Patch IR into six synchronized institutional artifacts; the Simulation Lab replays a sealed 24-pathway fixture until the candidate moves from one reproducible failure to 24/24 verified outcomes; the Evidence Vault seals four independent reviews, complete provenance, and exact rollback without erasing dissent; and a separate fictional no-API EHR sandbox stages the visual change, rechecks screen state, returns proof, and stops before final commit. The human approval gate remains explicit and locked. GPT-5.6 capability probes remain independently verifiable.
 
 ## The transformation
 
@@ -27,7 +27,7 @@ The primary demo proves a hidden pediatric dependency is detected before a propo
 - **Patch Studio** — Patch IR, synchronized diffs, and cross-artifact conflicts.
 - **Simulation Lab** — synthetic patient pathways, red-to-green regression matrix, and counterexamples.
 - **Evidence Vault** — independent specialist reviews, preserved dissent, provenance, approvals, rollback, and audit export.
-- **Legacy EHR sandbox** — a separate fictional no-API website used only for staged Computer Use.
+- **Legacy EHR sandbox** — a separate Flutter Web surface at `?surface=legacy-ehr`, used only for staged Computer Use, screen-state rechecks, and visual proof.
 
 ## Current verification
 
@@ -37,7 +37,7 @@ npm run probe:preflight
 cd app
 flutter analyze
 flutter test
-flutter build web
+flutter build web --release --no-web-resources-cdn
 ```
 
 Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into source, a fixture, an issue, or chat.

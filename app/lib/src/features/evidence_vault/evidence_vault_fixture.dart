@@ -280,6 +280,7 @@ SpecialistReview specialistReviewById(String id) =>
 List<String> evidenceVaultBlockers({
   required bool simulationVerified,
   required EvidenceVaultRunState state,
+  bool legacyStagingVerified = false,
 }) {
   if (!simulationVerified) {
     return const ['Deterministic regression suite is not verified'];
@@ -296,7 +297,10 @@ List<String> evidenceVaultBlockers({
       'Rollback verification is still running',
     ];
   }
-  return const [
-    'LEGACY-01 requires visual staging proof from the fictional EHR',
-  ];
+  if (!legacyStagingVerified) {
+    return const [
+      'LEGACY-01 requires visual staging proof from the fictional EHR',
+    ];
+  }
+  return const [];
 }

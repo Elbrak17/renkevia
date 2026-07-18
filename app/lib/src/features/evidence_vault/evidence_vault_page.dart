@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/features/evidence_vault/evidence_vault_fixture.dart';
+import 'package:renkevia/src/features/legacy_ehr/legacy_ehr_fixture.dart';
+import 'package:renkevia/src/features/legacy_ehr/legacy_ehr_sandbox_page.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
@@ -37,34 +39,51 @@ class _VaultHeader extends StatelessWidget {
 
   final DemoRunController controller;
 
+  Future<void> _openLegacySandbox(BuildContext context) async {
+    final proof = await Navigator.of(context).push<LegacyStagingProof>(
+      MaterialPageRoute<LegacyStagingProof>(
+        builder: (_) => const LegacyEhrSandboxPage(),
+        settings: const RouteSettings(name: '/legacy-ehr'),
+      ),
+    );
+    if (proof != null) controller.acceptLegacyStagingProof(proof);
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = controller.evidenceVaultRunState;
     final verified = controller.simulationVerified;
     final reviewing = state == EvidenceVaultRunState.reviewing;
     final sealed = state == EvidenceVaultRunState.sealed;
-    final status = switch ((verified, state)) {
-      (false, _) => (
-        'UPSTREAM GATE • LOCKED',
-        RenkeviaColors.danger,
-        RenkeviaColors.dangerWash,
-      ),
-      (true, EvidenceVaultRunState.ready) => (
-        '4 REVIEWS REQUIRED',
-        const Color(0xFF9A6918),
-        RenkeviaColors.amberWash,
-      ),
-      (true, EvidenceVaultRunState.reviewing) => (
-        'INDEPENDENT REVIEW REPLAY',
-        const Color(0xFF9A6918),
-        RenkeviaColors.amberWash,
-      ),
-      (true, EvidenceVaultRunState.sealed) => (
-        'VAULT SEALED • 1 DISSENT',
-        RenkeviaColors.success,
-        RenkeviaColors.successWash,
-      ),
-    };
+    final legacyVerified = controller.legacyStagingVerified;
+    final status = legacyVerified
+        ? (
+            'STAGED • AWAITING HUMAN APPROVAL',
+            RenkeviaColors.violet,
+            const Color(0xFFEDEBF6),
+          )
+        : switch ((verified, state)) {
+            (false, _) => (
+              'UPSTREAM GATE • LOCKED',
+              RenkeviaColors.danger,
+              RenkeviaColors.dangerWash,
+            ),
+            (true, EvidenceVaultRunState.ready) => (
+              '4 REVIEWS REQUIRED',
+              const Color(0xFF9A6918),
+              RenkeviaColors.amberWash,
+            ),
+            (true, EvidenceVaultRunState.reviewing) => (
+              'INDEPENDENT REVIEW REPLAY',
+              const Color(0xFF9A6918),
+              RenkeviaColors.amberWash,
+            ),
+            (true, EvidenceVaultRunState.sealed) => (
+              'VAULT SEALED • 1 DISSENT',
+              RenkeviaColors.success,
+              RenkeviaColors.successWash,
+            ),
+          };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -105,7 +124,9 @@ class _VaultHeader extends StatelessWidget {
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 800),
                     child: Text(
-                      sealed
+                      legacyVerified
+                          ? 'The fictional legacy screen was rechecked, staged, and captured as proof. LEGACY-01 remains inspectable; only a named human can approve the final write.'
+                          : sealed
                           ? 'Four independent reviews, six provenance-linked projections, and an exact rollback are sealed together. LEGACY-01 remains visible and blocking.'
                           : 'Challenge candidate v0.8 from four independent specialist contexts, preserve disagreement, then prove every material claim and reversal hash.',
                       style: Theme.of(context).textTheme.bodyLarge,
@@ -120,7 +141,9 @@ class _VaultHeader extends StatelessWidget {
               label: !verified
                   ? 'Open Simulation Lab and verify candidate version 0.8'
                   : (sealed
-                        ? 'Evidence Vault sealed; legacy staging is required next'
+                        ? (legacyVerified
+                              ? 'Legacy proof accepted; named human approval is required'
+                              : 'Open the fictional legacy EHR staging sandbox')
                         : 'Run four independent specialist review fixtures'),
               child: FilledButton.icon(
                 key: const Key('evidence-vault-primary-button'),
@@ -130,7 +153,9 @@ class _VaultHeader extends StatelessWidget {
                       )
                     : (state == EvidenceVaultRunState.ready
                           ? controller.runSpecialistReviews
-                          : null),
+                          : (sealed && !legacyVerified
+                                ? () => _openLegacySandbox(context)
+                                : null)),
                 icon: reviewing
                     ? const SizedBox.square(
                         dimension: 15,
@@ -141,7 +166,9 @@ class _VaultHeader extends StatelessWidget {
                       )
                     : Icon(
                         sealed
-                            ? Icons.lock_clock_outlined
+                            ? (legacyVerified
+                                  ? Icons.how_to_reg_outlined
+                                  : Icons.open_in_new_rounded)
                             : (verified
                                   ? Icons.groups_outlined
                                   : Icons.arrow_back_rounded),
@@ -156,7 +183,9 @@ class _VaultHeader extends StatelessWidget {
                           EvidenceVaultRunState.reviewing =>
                             'Audits running in parallel…',
                           EvidenceVaultRunState.sealed =>
-                            'Sealed • legacy staging next',
+                            legacyVerified
+                                ? 'Staged • named human next'
+                                : 'Open fictional legacy sandbox',
                         },
                 ),
               ),
@@ -303,6 +332,7 @@ class _VaultTrace extends StatelessWidget {
     final verified = controller.simulationVerified;
     final reviewing = state == EvidenceVaultRunState.reviewing;
     final sealed = state == EvidenceVaultRunState.sealed;
+    final legacyVerified = controller.legacyStagingVerified;
     final steps = <_VaultStepData>[
       _VaultStepData(
         icon: Icons.verified_outlined,
@@ -329,8 +359,12 @@ class _VaultTrace extends StatelessWidget {
       _VaultStepData(
         icon: Icons.desktop_windows_outlined,
         title: 'Legacy staging',
-        detail: sealed ? 'LEGACY-01 blocking' : 'downstream gate',
-        state: sealed ? _VaultStepState.failed : _VaultStepState.waiting,
+        detail: legacyVerified
+            ? 'proof accepted • human next'
+            : (sealed ? 'LEGACY-01 blocking' : 'downstream gate'),
+        state: legacyVerified
+            ? _VaultStepState.done
+            : (sealed ? _VaultStepState.failed : _VaultStepState.waiting),
       ),
     ];
     return Container(
@@ -829,7 +863,7 @@ class _SealedFinding extends StatelessWidget {
               review.inputHash,
               style: const TextStyle(
                 color: RenkeviaColors.violet,
-                fontFamily: 'monospace',
+                fontFamily: 'RenkeviaMono',
                 fontSize: 8,
                 fontWeight: FontWeight.w700,
               ),
@@ -916,9 +950,11 @@ class _ApprovalGate extends StatelessWidget {
   Widget build(BuildContext context) {
     final sealed =
         controller.evidenceVaultRunState == EvidenceVaultRunState.sealed;
+    final legacyVerified = controller.legacyStagingVerified;
     final blockers = evidenceVaultBlockers(
       simulationVerified: controller.simulationVerified,
       state: controller.evidenceVaultRunState,
+      legacyStagingVerified: legacyVerified,
     );
     final checks = <(String, bool)>[
       ('Patch IR v0.8 schema-valid', controller.patchRevised),
@@ -926,17 +962,18 @@ class _ApprovalGate extends StatelessWidget {
       ('6 / 6 projections source-linked', sealed),
       ('4 / 4 specialist reviews returned', sealed),
       ('Rollback exact for complete + partial staging', sealed),
-      ('Legacy screen state visually proven', false),
+      ('Legacy screen state visually proven', legacyVerified),
     ];
     return _Panel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const _PanelHeading(
+          _PanelHeading(
             eyebrow: 'POLICY-OWNED GATE',
             title: 'Human approval',
-            trailing: 'LOCKED',
-            danger: true,
+            trailing: legacyVerified ? 'AWAITING HUMAN' : 'LOCKED',
+            danger: !legacyVerified,
+            warning: legacyVerified,
           ),
           const Divider(height: 1),
           Padding(
@@ -947,17 +984,25 @@ class _ApprovalGate extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(11),
                   decoration: BoxDecoration(
-                    color: RenkeviaColors.dangerWash,
+                    color: legacyVerified
+                        ? RenkeviaColors.amberWash
+                        : RenkeviaColors.dangerWash,
                     border: Border.all(
-                      color: RenkeviaColors.danger.withValues(alpha: 0.3),
+                      color:
+                          (legacyVerified
+                                  ? RenkeviaColors.amber
+                                  : RenkeviaColors.danger)
+                              .withValues(alpha: 0.3),
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.lock_clock_outlined,
-                        color: RenkeviaColors.danger,
+                        color: legacyVerified
+                            ? const Color(0xFF9A6918)
+                            : RenkeviaColors.danger,
                         size: 19,
                       ),
                       const SizedBox(width: 9),
@@ -965,10 +1010,14 @@ class _ApprovalGate extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'APPROVAL REMAINS LOCKED',
+                            Text(
+                              legacyVerified
+                                  ? 'AWAITING NAMED HUMAN APPROVAL'
+                                  : 'APPROVAL REMAINS LOCKED',
                               style: TextStyle(
-                                color: RenkeviaColors.danger,
+                                color: legacyVerified
+                                    ? const Color(0xFF9A6918)
+                                    : RenkeviaColors.danger,
                                 fontSize: 8.5,
                                 letterSpacing: 0.55,
                                 fontWeight: FontWeight.w800,
@@ -976,7 +1025,9 @@ class _ApprovalGate extends StatelessWidget {
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              sealed
+                              legacyVerified
+                                  ? 'No machine blocker remains. The demo stops here.'
+                                  : sealed
                                   ? 'One machine-evaluated blocker remains.'
                                   : '${blockers.length} prerequisite groups remain.',
                               style: Theme.of(context).textTheme.bodyMedium,
@@ -991,7 +1042,7 @@ class _ApprovalGate extends StatelessWidget {
                 for (final check in checks)
                   _GateCheck(label: check.$1, passed: check.$2),
                 const SizedBox(height: 12),
-                if (sealed)
+                if (sealed && !legacyVerified)
                   Container(
                     key: const Key('legacy-staging-blocker'),
                     padding: const EdgeInsets.all(10),
@@ -1016,6 +1067,37 @@ class _ApprovalGate extends StatelessWidget {
                               fontSize: 9,
                               height: 1.4,
                               fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (legacyVerified)
+                  Container(
+                    key: const Key('legacy-staging-proof'),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: RenkeviaColors.successWash,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.verified_outlined,
+                          color: RenkeviaColors.success,
+                          size: 15,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '${controller.legacyStagingProof!.proofId} • screen ${controller.legacyStagingProof!.screenshotHash} • state recheck matched',
+                            style: const TextStyle(
+                              color: RenkeviaColors.success,
+                              fontSize: 9,
+                              height: 1.4,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -1633,7 +1715,7 @@ class _MonoText extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         color: strong ? RenkeviaColors.ink : RenkeviaColors.inkMuted,
-        fontFamily: 'monospace',
+        fontFamily: 'RenkeviaMono',
         fontSize: 8.5,
         height: 1.35,
         fontWeight: strong ? FontWeight.w700 : FontWeight.w500,

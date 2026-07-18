@@ -1006,7 +1006,7 @@ class _PediatricProof extends StatelessWidget {
                   color: verified
                       ? const Color(0xFF77D1AA)
                       : const Color(0xFFFF9D91),
-                  fontFamily: 'monospace',
+                  fontFamily: 'RenkeviaMono',
                   fontSize: 9,
                   height: 1.55,
                 ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:renkevia/src/features/evidence_vault/evidence_vault_fixture.dart';
+import 'package:renkevia/src/features/legacy_ehr/legacy_ehr_fixture.dart';
 import 'package:renkevia/src/features/simulation_lab/simulation_fixture.dart';
 
 enum WorkspaceSection {
@@ -36,6 +37,7 @@ class DemoRunController extends ChangeNotifier {
   EvidenceVaultRunState _evidenceVaultRunState = EvidenceVaultRunState.ready;
   String _selectedSpecialistReviewId = 'clinical-informatics';
   VaultLedgerView _selectedVaultLedgerView = VaultLedgerView.provenance;
+  LegacyStagingProof? _legacyStagingProof;
 
   WorkspaceSection get section => _section;
   CompileState get compileState => _compileState;
@@ -48,10 +50,12 @@ class DemoRunController extends ChangeNotifier {
   EvidenceVaultRunState get evidenceVaultRunState => _evidenceVaultRunState;
   String get selectedSpecialistReviewId => _selectedSpecialistReviewId;
   VaultLedgerView get selectedVaultLedgerView => _selectedVaultLedgerView;
+  LegacyStagingProof? get legacyStagingProof => _legacyStagingProof;
   bool get pediatricBlockerRevealed => _compileState == CompileState.blocked;
   bool get patchRevised => _patchCompileState == PatchCompileState.revised;
   bool get simulationVerified =>
       _simulationRunState == SimulationRunState.verified;
+  bool get legacyStagingVerified => _legacyStagingProof?.isValid ?? false;
 
   void selectSection(WorkspaceSection section) {
     if (_section == section) return;
@@ -147,6 +151,15 @@ class DemoRunController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void acceptLegacyStagingProof(LegacyStagingProof proof) {
+    if (_evidenceVaultRunState != EvidenceVaultRunState.sealed ||
+        !proof.isValid) {
+      return;
+    }
+    _legacyStagingProof = proof;
+    notifyListeners();
+  }
+
   void resetFixture() {
     _compileState = CompileState.ready;
     _patchCompileState = PatchCompileState.blocked;
@@ -158,6 +171,7 @@ class DemoRunController extends ChangeNotifier {
     _evidenceVaultRunState = EvidenceVaultRunState.ready;
     _selectedSpecialistReviewId = 'clinical-informatics';
     _selectedVaultLedgerView = VaultLedgerView.provenance;
+    _legacyStagingProof = null;
     _section = WorkspaceSection.responseRoom;
     notifyListeners();
   }

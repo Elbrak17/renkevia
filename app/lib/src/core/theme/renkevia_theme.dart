@@ -27,6 +27,7 @@ abstract final class RenkeviaTheme {
     final base = ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: 'RenkeviaSans',
       scaffoldBackgroundColor: RenkeviaColors.canvas,
       colorScheme: const ColorScheme.light(
         primary: RenkeviaColors.cyanDark,
@@ -39,64 +40,68 @@ abstract final class RenkeviaTheme {
       ),
     );
 
+    final textTheme = base.textTheme
+        .copyWith(
+          displayLarge: const TextStyle(
+            color: RenkeviaColors.ink,
+            fontSize: 42,
+            height: 1.05,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -1.4,
+          ),
+          headlineLarge: const TextStyle(
+            color: RenkeviaColors.ink,
+            fontSize: 28,
+            height: 1.12,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.8,
+          ),
+          headlineMedium: const TextStyle(
+            color: RenkeviaColors.ink,
+            fontSize: 20,
+            height: 1.2,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.35,
+          ),
+          titleLarge: const TextStyle(
+            color: RenkeviaColors.ink,
+            fontSize: 16,
+            height: 1.25,
+            fontWeight: FontWeight.w700,
+          ),
+          titleMedium: const TextStyle(
+            color: RenkeviaColors.ink,
+            fontSize: 13,
+            height: 1.25,
+            fontWeight: FontWeight.w700,
+          ),
+          bodyLarge: const TextStyle(
+            color: RenkeviaColors.ink,
+            fontSize: 14,
+            height: 1.5,
+            fontWeight: FontWeight.w400,
+          ),
+          bodyMedium: const TextStyle(
+            color: RenkeviaColors.inkMuted,
+            fontSize: 12,
+            height: 1.45,
+            fontWeight: FontWeight.w400,
+          ),
+          labelLarge: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.15,
+          ),
+          labelMedium: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.7,
+          ),
+        )
+        .apply(fontFamily: 'RenkeviaSans');
+
     return base.copyWith(
-      textTheme: base.textTheme.copyWith(
-        displayLarge: const TextStyle(
-          color: RenkeviaColors.ink,
-          fontSize: 42,
-          height: 1.05,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -1.4,
-        ),
-        headlineLarge: const TextStyle(
-          color: RenkeviaColors.ink,
-          fontSize: 28,
-          height: 1.12,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.8,
-        ),
-        headlineMedium: const TextStyle(
-          color: RenkeviaColors.ink,
-          fontSize: 20,
-          height: 1.2,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.35,
-        ),
-        titleLarge: const TextStyle(
-          color: RenkeviaColors.ink,
-          fontSize: 16,
-          height: 1.25,
-          fontWeight: FontWeight.w700,
-        ),
-        titleMedium: const TextStyle(
-          color: RenkeviaColors.ink,
-          fontSize: 13,
-          height: 1.25,
-          fontWeight: FontWeight.w700,
-        ),
-        bodyLarge: const TextStyle(
-          color: RenkeviaColors.ink,
-          fontSize: 14,
-          height: 1.5,
-          fontWeight: FontWeight.w400,
-        ),
-        bodyMedium: const TextStyle(
-          color: RenkeviaColors.inkMuted,
-          fontSize: 12,
-          height: 1.45,
-          fontWeight: FontWeight.w400,
-        ),
-        labelLarge: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.15,
-        ),
-        labelMedium: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.7,
-        ),
-      ),
+      textTheme: textTheme,
       dividerColor: RenkeviaColors.hairline,
       cardTheme: CardThemeData(
         margin: EdgeInsets.zero,
