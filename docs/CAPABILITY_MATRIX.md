@@ -1,6 +1,6 @@
 # GPT-5.6 capability matrix
 
-Last documentation review: 2026-07-17. “Documented” means confirmed in current official OpenAI documentation. It does not mean this project/account has passed the live probe.
+Last documentation review: 2026-07-18. “Documented” means confirmed in current official OpenAI documentation. It does not mean this project/account has passed the live probe.
 
 | Capability | RENKEVIA use | Official status | Local probe | Account status |
 |---|---|---|---|---|
@@ -33,4 +33,3 @@ Last documentation review: 2026-07-17. “Documented” means confirmed in curre
 - Multi-agent: https://developers.openai.com/api/docs/guides/responses-multi-agent
 - Computer Use: https://developers.openai.com/api/docs/guides/tools-computer-use
 - Prompt caching: https://developers.openai.com/api/docs/guides/prompt-caching
-
