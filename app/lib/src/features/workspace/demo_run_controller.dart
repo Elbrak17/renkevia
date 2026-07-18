@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:renkevia/src/features/simulation_lab/simulation_fixture.dart';
 
 enum WorkspaceSection {
   responseRoom,
@@ -29,6 +30,8 @@ class DemoRunController extends ChangeNotifier {
   String _selectedEvidenceId = 'SRC-001';
   String _selectedMutationId = 'MUT-01';
   PatchArtifact _selectedPatchArtifact = PatchArtifact.orderSet;
+  SimulationRunState _simulationRunState = SimulationRunState.baselineFailed;
+  String _selectedSimulationSuiteId = 'PED-07';
 
   WorkspaceSection get section => _section;
   CompileState get compileState => _compileState;
@@ -36,6 +39,8 @@ class DemoRunController extends ChangeNotifier {
   String get selectedEvidenceId => _selectedEvidenceId;
   String get selectedMutationId => _selectedMutationId;
   PatchArtifact get selectedPatchArtifact => _selectedPatchArtifact;
+  SimulationRunState get simulationRunState => _simulationRunState;
+  String get selectedSimulationSuiteId => _selectedSimulationSuiteId;
   bool get pediatricBlockerRevealed => _compileState == CompileState.blocked;
   bool get patchRevised => _patchCompileState == PatchCompileState.revised;
 
@@ -60,6 +65,12 @@ class DemoRunController extends ChangeNotifier {
   void selectPatchArtifact(PatchArtifact artifact) {
     if (_selectedPatchArtifact == artifact) return;
     _selectedPatchArtifact = artifact;
+    notifyListeners();
+  }
+
+  void selectSimulationSuite(String suiteId) {
+    if (_selectedSimulationSuiteId == suiteId) return;
+    _selectedSimulationSuiteId = suiteId;
     notifyListeners();
   }
 
@@ -88,12 +99,27 @@ class DemoRunController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> runRevisedSimulation() async {
+    if (!patchRevised ||
+        _simulationRunState != SimulationRunState.baselineFailed) {
+      return;
+    }
+    _simulationRunState = SimulationRunState.running;
+    notifyListeners();
+    await Future<void>.delayed(const Duration(milliseconds: 920));
+    _simulationRunState = SimulationRunState.verified;
+    _selectedSimulationSuiteId = 'PED-07';
+    notifyListeners();
+  }
+
   void resetFixture() {
     _compileState = CompileState.ready;
     _patchCompileState = PatchCompileState.blocked;
     _selectedEvidenceId = 'SRC-001';
     _selectedMutationId = 'MUT-01';
     _selectedPatchArtifact = PatchArtifact.orderSet;
+    _simulationRunState = SimulationRunState.baselineFailed;
+    _selectedSimulationSuiteId = 'PED-07';
     _section = WorkspaceSection.responseRoom;
     notifyListeners();
   }

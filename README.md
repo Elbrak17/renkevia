@@ -2,7 +2,7 @@
 
 RENKEVIA is a hospital change compiler for medication shortages. It turns a messy institutional evidence set into one synchronized, provenance-linked patch, tests that patch against synthetic patient pathways, and holds the result for human approval.
 
-This repository is being built for the OpenAI Build Week hackathon. Phases 0–1 froze the product, safety, evaluation, and demonstration contracts. The Flutter Web demo now implements two connected vertical slices: the Response Room exposes a hidden pediatric dependency, then the Patch Studio recompiles one typed Patch IR into six synchronized institutional artifacts while retaining specialist dissent and the human approval gate. GPT-5.6 capability probes remain independently verifiable.
+This repository is being built for the OpenAI Build Week hackathon. Phases 0–1 froze the product, safety, evaluation, and demonstration contracts. The Flutter Web demo now implements three connected vertical slices: the Response Room exposes a hidden pediatric dependency; the Patch Studio recompiles one typed Patch IR into six synchronized institutional artifacts; and the Simulation Lab replays a sealed 24-pathway fixture until the candidate moves from one reproducible failure to 24/24 verified outcomes. Specialist dissent and the human approval gate remain explicit. GPT-5.6 capability probes remain independently verifiable.
 
 ## The transformation
 

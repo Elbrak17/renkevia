@@ -116,6 +116,76 @@ void main() {
     expect(find.text('! PED_IV mapping unverified'), findsOneWidget);
   });
 
+  testWidgets(
+    'Simulation Lab prevents the regression gate from being skipped',
+    (tester) async {
+      await setDesktopCanvas(tester);
+      await tester.pumpWidget(const RenkeviaApp());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Simulation Lab'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('SIMULATION LAB / 03'), findsOneWidget);
+      expect(find.text('BASELINE • 1 FAILURE'), findsOneWidget);
+      expect(find.text('PATH-PED-07-04'), findsOneWidget);
+      expect(find.text('Compile Patch v0.8 first'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('simulation-primary-button')));
+      await tester.pumpAndSettle();
+      expect(find.text('PATCH STUDIO / 02'), findsOneWidget);
+    },
+  );
+
+  testWidgets('sealed patient fixture turns red to green after Patch IR v0.8', (
+    tester,
+  ) async {
+    await setDesktopCanvas(tester);
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Patch Studio'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('recompile-patch-button')));
+    await tester.pump(const Duration(milliseconds: 900));
+    await tester.tap(find.text('Simulation Lab'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('v0.8 • READY TO RETEST'), findsOneWidget);
+    expect(find.text('23 / 24'), findsOneWidget);
+    expect(find.text('Run revised candidate'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('simulation-primary-button')));
+    await tester.pump();
+    expect(find.text('Executing 96 assertions…'), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(find.text('24 / 24 VERIFIED'), findsOneWidget);
+    expect(find.text('REGRESSION GATE PASSED'), findsOneWidget);
+    expect(find.text('RESOLVED'), findsOneWidget);
+    expect(
+      find.text('APPROVAL REMAINS LOCKED • 4 specialist audits pending'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Simulation Lab remains usable in the compact desktop shell', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1000, 900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.grid_view_outlined));
+    await tester.pumpAndSettle();
+
+    expect(find.text('SIMULATION LAB / 03'), findsOneWidget);
+    expect(find.byKey(const Key('suite-PED-07')), findsOneWidget);
+  });
+
   testWidgets('blocked response room matches the reviewed visual baseline', (
     tester,
   ) async {
@@ -145,6 +215,27 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/patch_studio_revised.png'),
+    );
+  });
+
+  testWidgets('verified Simulation Lab matches the reviewed visual baseline', (
+    tester,
+  ) async {
+    await setDesktopCanvas(tester);
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Patch Studio'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('recompile-patch-button')));
+    await tester.pump(const Duration(milliseconds: 900));
+    await tester.tap(find.text('Simulation Lab'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('simulation-primary-button')));
+    await tester.pump(const Duration(milliseconds: 1000));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/simulation_lab_verified.png'),
     );
   });
 }

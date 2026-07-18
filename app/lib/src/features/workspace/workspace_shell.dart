@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/features/patch_studio/patch_studio_page.dart';
 import 'package:renkevia/src/features/response_room/response_room_page.dart';
+import 'package:renkevia/src/features/simulation_lab/simulation_lab_page.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
@@ -57,55 +58,68 @@ class _CommandBar extends StatelessWidget {
         color: RenkeviaColors.surface,
         border: Border(bottom: BorderSide(color: RenkeviaColors.hairline)),
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.account_tree_outlined, size: 17),
-          const SizedBox(width: 9),
-          Text('RUN 24-0717-A', style: Theme.of(context).textTheme.labelMedium),
-          const SizedBox(width: 12),
-          const _DividerDot(),
-          const SizedBox(width: 12),
-          Text(
-            'Northstar University Hospital',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: RenkeviaColors.ink,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const Spacer(),
-          const StatusPill(
-            label: 'SYNTHETIC • NO PHI',
-            icon: Icons.shield_outlined,
-            foreground: RenkeviaColors.cyanDark,
-            background: RenkeviaColors.cyanWash,
-          ),
-          const SizedBox(width: 8),
-          const StatusPill(
-            label: 'FIXTURE REPLAY',
-            icon: Icons.replay_outlined,
-            foreground: RenkeviaColors.violet,
-            background: Color(0xFFEDEBF6),
-          ),
-          const SizedBox(width: 12),
-          IconButton(
-            onPressed: controller.resetFixture,
-            tooltip: 'Reset synthetic run',
-            icon: const Icon(Icons.restart_alt_rounded, size: 19),
-          ),
-          const SizedBox(width: 2),
-          const CircleAvatar(
-            radius: 15,
-            backgroundColor: RenkeviaColors.graphite,
-            child: Text(
-              'AM',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 9,
-                fontWeight: FontWeight.w800,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 1000;
+          return Row(
+            children: [
+              const Icon(Icons.account_tree_outlined, size: 17),
+              const SizedBox(width: 9),
+              Text(
+                'RUN 24-0717-A',
+                style: Theme.of(context).textTheme.labelMedium,
               ),
-            ),
-          ),
-        ],
+              const SizedBox(width: 12),
+              if (!compact) ...[const _DividerDot(), const SizedBox(width: 12)],
+              Expanded(
+                child: Text(
+                  compact ? 'Northstar UH' : 'Northstar University Hospital',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: RenkeviaColors.ink,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const StatusPill(
+                label: 'SYNTHETIC • NO PHI',
+                icon: Icons.shield_outlined,
+                foreground: RenkeviaColors.cyanDark,
+                background: RenkeviaColors.cyanWash,
+              ),
+              const SizedBox(width: 8),
+              if (!compact) ...[
+                const StatusPill(
+                  label: 'FIXTURE REPLAY',
+                  icon: Icons.replay_outlined,
+                  foreground: RenkeviaColors.violet,
+                  background: Color(0xFFEDEBF6),
+                ),
+                const SizedBox(width: 12),
+              ],
+              IconButton(
+                onPressed: controller.resetFixture,
+                tooltip: 'Reset synthetic run',
+                icon: const Icon(Icons.restart_alt_rounded, size: 19),
+              ),
+              const SizedBox(width: 2),
+              const CircleAvatar(
+                radius: 15,
+                backgroundColor: RenkeviaColors.graphite,
+                child: Text(
+                  'AM',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -403,12 +417,8 @@ class _SectionBody extends StatelessWidget {
     return switch (controller.section) {
       WorkspaceSection.responseRoom => ResponseRoomPage(controller: controller),
       WorkspaceSection.patchStudio => PatchStudioPage(controller: controller),
-      WorkspaceSection.simulationLab => const _ComingSection(
-        eyebrow: 'SIMULATION LAB / 03',
-        title: 'Patient pathways become executable assertions.',
-        detail:
-            'The red-to-green regression matrix is the next vertical slice.',
-        icon: Icons.grid_view_outlined,
+      WorkspaceSection.simulationLab => SimulationLabPage(
+        controller: controller,
       ),
       WorkspaceSection.evidenceVault => const _ComingSection(
         eyebrow: 'EVIDENCE VAULT / 04',
