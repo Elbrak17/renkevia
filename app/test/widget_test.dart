@@ -10,6 +10,21 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   }
 
+  Future<void> sealEvidenceVault(WidgetTester tester) async {
+    await tester.tap(find.text('Patch Studio'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('recompile-patch-button')));
+    await tester.pump(const Duration(milliseconds: 900));
+    await tester.tap(find.text('Simulation Lab'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('simulation-primary-button')));
+    await tester.pump(const Duration(milliseconds: 1000));
+    await tester.tap(find.text('Evidence Vault'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('evidence-vault-primary-button')));
+    await tester.pump(const Duration(milliseconds: 1050));
+  }
+
   testWidgets('renders an explicitly synthetic institutional workspace', (
     tester,
   ) async {
@@ -186,6 +201,87 @@ void main() {
     expect(find.byKey(const Key('suite-PED-07')), findsOneWidget);
   });
 
+  testWidgets('Evidence Vault prevents specialist review gates being skipped', (
+    tester,
+  ) async {
+    await setDesktopCanvas(tester);
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Evidence Vault'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('EVIDENCE VAULT / 04'), findsOneWidget);
+    expect(find.text('UPSTREAM GATE • LOCKED'), findsOneWidget);
+    expect(find.text('Verify candidate first'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('evidence-vault-primary-button')));
+    await tester.pumpAndSettle();
+    expect(find.text('SIMULATION LAB / 03'), findsOneWidget);
+  });
+
+  testWidgets('Evidence Vault seals audits without erasing dissent', (
+    tester,
+  ) async {
+    await setDesktopCanvas(tester);
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+    await sealEvidenceVault(tester);
+
+    expect(find.text('VAULT SEALED • 1 DISSENT'), findsOneWidget);
+    expect(find.text('DISSENT PRESERVED • LEGACY-01'), findsOneWidget);
+    expect(find.text('100%'), findsOneWidget);
+    expect(find.byKey(const Key('legacy-staging-blocker')), findsOneWidget);
+    expect(find.text('APPROVAL REMAINS LOCKED'), findsOneWidget);
+
+    final approvalButton = tester.widget<FilledButton>(
+      find.byKey(const Key('request-approval-button')),
+    );
+    expect(approvalButton.onPressed, isNull);
+  });
+
+  testWidgets('proof ledger exposes exact rollback and append-only events', (
+    tester,
+  ) async {
+    await setDesktopCanvas(tester);
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+    await sealEvidenceVault(tester);
+
+    final rollbackTab = find.byKey(const Key('vault-tab-rollback'));
+    await tester.ensureVisible(rollbackTab);
+    await tester.tap(rollbackTab);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('ROLLBACK EXACT • 6 / 6'), findsOneWidget);
+    expect(find.text('MATCH'), findsNWidgets(6));
+
+    final auditTab = find.byKey(const Key('vault-tab-auditLog'));
+    await tester.ensureVisible(auditTab);
+    await tester.tap(auditTab);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('EVT-035'), findsOneWidget);
+    expect(find.text('locked pending legacy proof'), findsOneWidget);
+  });
+
+  testWidgets('sealed Evidence Vault remains usable in compact desktop shell', (
+    tester,
+  ) async {
+    await setDesktopCanvas(tester);
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+    await sealEvidenceVault(tester);
+
+    tester.view.physicalSize = const Size(1000, 900);
+    await tester.pumpAndSettle();
+
+    expect(find.text('EVIDENCE VAULT / 04'), findsOneWidget);
+    expect(
+      find.byKey(const Key('review-clinical-informatics')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('legacy-staging-blocker')), findsOneWidget);
+  });
+
   testWidgets('blocked response room matches the reviewed visual baseline', (
     tester,
   ) async {
@@ -236,6 +332,20 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/simulation_lab_verified.png'),
+    );
+  });
+
+  testWidgets('sealed Evidence Vault matches the reviewed visual baseline', (
+    tester,
+  ) async {
+    await setDesktopCanvas(tester);
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+    await sealEvidenceVault(tester);
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/evidence_vault_sealed.png'),
     );
   });
 }

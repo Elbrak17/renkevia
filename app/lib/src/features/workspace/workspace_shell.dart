@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
+import 'package:renkevia/src/features/evidence_vault/evidence_vault_page.dart';
 import 'package:renkevia/src/features/patch_studio/patch_studio_page.dart';
 import 'package:renkevia/src/features/response_room/response_room_page.dart';
 import 'package:renkevia/src/features/simulation_lab/simulation_lab_page.dart';
@@ -420,68 +421,10 @@ class _SectionBody extends StatelessWidget {
       WorkspaceSection.simulationLab => SimulationLabPage(
         controller: controller,
       ),
-      WorkspaceSection.evidenceVault => const _ComingSection(
-        eyebrow: 'EVIDENCE VAULT / 04',
-        title: 'Every mutation carries its proof and rollback.',
-        detail:
-            'Provenance, audit events, approvals, and exact restoration converge here.',
-        icon: Icons.inventory_2_outlined,
+      WorkspaceSection.evidenceVault => EvidenceVaultPage(
+        controller: controller,
       ),
     };
-  }
-}
-
-class _ComingSection extends StatelessWidget {
-  const _ComingSection({
-    required this.eyebrow,
-    required this.title,
-    required this.detail,
-    required this.icon,
-  });
-
-  final String eyebrow;
-  final String title;
-  final String detail;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560),
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  color: RenkeviaColors.cyanWash,
-                  borderRadius: BorderRadius.circular(13),
-                ),
-                child: Icon(icon, color: RenkeviaColors.cyanDark),
-              ),
-              const SizedBox(height: 20),
-              Text(eyebrow, style: Theme.of(context).textTheme.labelMedium),
-              const SizedBox(height: 10),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                detail,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 
