@@ -56,16 +56,17 @@ Append-only event timeline, source-region viewer, approval checklist, and exact 
 ## Responsive targets
 
 - Primary judged viewport: 1440×900.
-- Minimum supported demo viewport: 1280×720.
-- Tablet review mode: 1024×768 with inspectors becoming drawers.
-- Mobile is not a judging priority; it must show a clear “desktop workspace recommended” state rather than a broken miniature.
+- Desktop workspace: 920 px and above, with a persistent lifecycle rail.
+- Tablet workspace: 600–919 px, with persistent bottom navigation and vertically composed inspectors.
+- Mobile workspace: 320–599 px, with the same four reachable lifecycle surfaces, stacked metrics, vertical traces, and scroll-safe data regions.
+- Northstar legacy target: the complete Computer Use operator console requires 900 px; smaller viewports show a readable status-and-safety companion rather than a broken miniature.
 
 ## Codex visual QA loop
 
 For each signature view:
 
 1. Implement from tokens and documented states.
-2. Render at 1440×900, 1280×720, and 1024×768.
+2. Render at 1440×900, 1280×720, 768×1024, and 390×844.
 3. Inspect screenshots for hierarchy, overflow, alignment, contrast, density, and misleading state.
 4. Compare deterministic golden images for regressions.
 5. Run keyboard and semantics checks.
@@ -83,4 +84,3 @@ The final submission should show this loop as evidence of design quality achieve
 - permanently animated graph;
 - unexplained confidence percentages;
 - “all systems operational” before verification completes.
-

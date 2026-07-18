@@ -10,6 +10,16 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   }
 
+  Future<void> setCompactCanvas(
+    WidgetTester tester, {
+    Size size = const Size(390, 844),
+  }) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = size;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+  }
+
   Future<void> sealEvidenceVault(WidgetTester tester) async {
     await tester.tap(find.text('Patch Studio'));
     await tester.pumpAndSettle();
@@ -324,6 +334,56 @@ void main() {
       expect(approvalButton.onPressed, isNull);
     },
   );
+
+  testWidgets('mobile shell keeps all four institutional surfaces reachable', (
+    tester,
+  ) async {
+    await setCompactCanvas(tester);
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text('RENKEVIA'), findsOneWidget);
+    expect(
+      find.byKey(const Key('mobile-workspace-navigation')),
+      findsOneWidget,
+    );
+    expect(find.text('RESPONSE ROOM / 01'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('mobile-nav-patch-studio')));
+    await tester.pumpAndSettle();
+    expect(find.text('PATCH STUDIO / 02'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('mobile-nav-simulation-lab')));
+    await tester.pumpAndSettle();
+    expect(find.text('SIMULATION LAB / 03'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('mobile-nav-evidence-vault')));
+    await tester.pumpAndSettle();
+    expect(find.text('EVIDENCE VAULT / 04'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('mobile-nav-response-room')));
+    await tester.pumpAndSettle();
+    expect(find.text('RESPONSE ROOM / 01'), findsOneWidget);
+  });
+
+  testWidgets('tablet shell uses the same complete responsive workspace', (
+    tester,
+  ) async {
+    await setCompactCanvas(tester, size: const Size(768, 1024));
+    await tester.pumpWidget(const RenkeviaApp());
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('mobile-workspace-navigation')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const Key('mobile-nav-patch-studio')));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('One Patch IR. Six synchronized artifacts.'),
+      findsOneWidget,
+    );
+  });
 
   testWidgets('blocked response room matches the reviewed visual baseline', (
     tester,

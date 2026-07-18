@@ -10,10 +10,16 @@ class PatchStudioPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 600;
     return ColoredBox(
       color: RenkeviaColors.canvas,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(22, 22, 22, 30),
+        padding: EdgeInsets.fromLTRB(
+          compact ? 12 : 22,
+          compact ? 16 : 22,
+          compact ? 12 : 22,
+          30,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -39,128 +45,139 @@ class _PatchHeader extends StatelessWidget {
     final revised = controller.patchRevised;
     final recompiling =
         controller.patchCompileState == PatchCompileState.recompiling;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    final action = Semantics(
+      button: true,
+      label: revised
+          ? 'Patch revised; simulation is required next'
+          : 'Recompile every artifact with the pediatric exception',
+      child: FilledButton.icon(
+        key: const Key('recompile-patch-button'),
+        onPressed: controller.patchCompileState == PatchCompileState.blocked
+            ? controller.recompilePatch
+            : null,
+        icon: recompiling
+            ? const SizedBox.square(
+                dimension: 15,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : Icon(
+                revised ? Icons.check_rounded : Icons.account_tree_outlined,
+                size: 18,
+              ),
+        label: Text(switch (controller.patchCompileState) {
+          PatchCompileState.blocked => 'Compile PED-07 exception',
+          PatchCompileState.recompiling => 'Projecting six artifacts…',
+          PatchCompileState.revised => 'Recompiled • verify next',
+        }),
+      ),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 700;
+        final summary = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 10,
+              runSpacing: 7,
+              children: [
+                Text(
+                  'PATCH STUDIO / 02',
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                StatusPill(
+                  label: revised
+                      ? 'REVISED • RETEST REQUIRED'
+                      : 'CANDIDATE • BLOCKED',
+                  icon: revised
+                      ? Icons.rule_folder_outlined
+                      : Icons.block_outlined,
+                  foreground: revised
+                      ? const Color(0xFF9A6918)
+                      : RenkeviaColors.danger,
+                  background: revised
+                      ? RenkeviaColors.amberWash
+                      : RenkeviaColors.dangerWash,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'One Patch IR. Six synchronized artifacts.',
+              style: compact
+                  ? Theme.of(context).textTheme.headlineMedium
+                  : Theme.of(context).textTheme.headlineLarge,
+            ),
+            const SizedBox(height: 7),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 780),
+              child: Text(
+                revised
+                    ? 'The pediatric exception changed every affected projection together. The candidate must still survive patient-pathway regressions.'
+                    : 'The candidate is internally coherent for adults, but PED-07 proves its scope is incomplete. Fix the source of truth—not six files by hand.',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+          ],
+        );
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (compact) ...[
+              summary,
+              const SizedBox(height: 14),
+              action,
+            ] else
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        'PATCH STUDIO / 02',
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                      const SizedBox(width: 10),
-                      StatusPill(
-                        label: revised
-                            ? 'REVISED • RETEST REQUIRED'
-                            : 'CANDIDATE • BLOCKED',
-                        icon: revised
-                            ? Icons.rule_folder_outlined
-                            : Icons.block_outlined,
-                        foreground: revised
-                            ? const Color(0xFF9A6918)
-                            : RenkeviaColors.danger,
-                        background: revised
-                            ? RenkeviaColors.amberWash
-                            : RenkeviaColors.dangerWash,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'One Patch IR. Six synchronized artifacts.',
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 7),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 780),
-                    child: Text(
-                      revised
-                          ? 'The pediatric exception changed every affected projection together. The candidate must still survive patient-pathway regressions.'
-                          : 'The candidate is internally coherent for adults, but PED-07 proves its scope is incomplete. Fix the source of truth—not six files by hand.',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ),
+                  Expanded(child: summary),
+                  const SizedBox(width: 20),
+                  action,
                 ],
               ),
-            ),
-            const SizedBox(width: 20),
-            Semantics(
-              button: true,
-              label: revised
-                  ? 'Patch revised; simulation is required next'
-                  : 'Recompile every artifact with the pediatric exception',
-              child: FilledButton.icon(
-                key: const Key('recompile-patch-button'),
-                onPressed:
-                    controller.patchCompileState == PatchCompileState.blocked
-                    ? controller.recompilePatch
-                    : null,
-                icon: recompiling
-                    ? const SizedBox.square(
-                        dimension: 15,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Icon(
-                        revised
-                            ? Icons.check_rounded
-                            : Icons.account_tree_outlined,
-                        size: 18,
-                      ),
-                label: Text(switch (controller.patchCompileState) {
-                  PatchCompileState.blocked => 'Compile PED-07 exception',
-                  PatchCompileState.recompiling => 'Projecting six artifacts…',
-                  PatchCompileState.revised => 'Recompiled • verify next',
-                }),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 18),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _PatchMetric(
-              label: 'PATCH IR',
-              value: revised ? 'v0.8' : 'v0.7',
-              detail: revised ? 'revision candidate' : 'blocked candidate',
-              icon: Icons.schema_outlined,
-            ),
-            const _PatchMetric(
-              label: 'PROJECTIONS',
-              value: '6',
-              detail: 'one compiler pass',
-              icon: Icons.copy_all_outlined,
-            ),
-            const _PatchMetric(
-              label: 'SOURCE LINKS',
-              value: '9',
-              detail: 'immutable regions',
-              icon: Icons.link_rounded,
-            ),
-            _PatchMetric(
-              label: revised ? 'NEXT GATE' : 'BLOCKERS',
-              value: revised ? '24' : '1',
-              detail: revised ? 'patient suites' : 'PED-07 exception',
-              icon: revised
-                  ? Icons.fact_check_outlined
-                  : Icons.report_gmailerrorred_outlined,
-              danger: !revised,
-              warning: revised,
+            const SizedBox(height: 18),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _PatchMetric(
+                  label: 'PATCH IR',
+                  value: revised ? 'v0.8' : 'v0.7',
+                  detail: revised ? 'revision candidate' : 'blocked candidate',
+                  icon: Icons.schema_outlined,
+                ),
+                const _PatchMetric(
+                  label: 'PROJECTIONS',
+                  value: '6',
+                  detail: 'one compiler pass',
+                  icon: Icons.copy_all_outlined,
+                ),
+                const _PatchMetric(
+                  label: 'SOURCE LINKS',
+                  value: '9',
+                  detail: 'immutable regions',
+                  icon: Icons.link_rounded,
+                ),
+                _PatchMetric(
+                  label: revised ? 'NEXT GATE' : 'BLOCKERS',
+                  value: revised ? '24' : '1',
+                  detail: revised ? 'patient suites' : 'PED-07 exception',
+                  icon: revised
+                      ? Icons.fact_check_outlined
+                      : Icons.report_gmailerrorred_outlined,
+                  danger: !revised,
+                  warning: revised,
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -284,26 +301,48 @@ class _CompileTrace extends StatelessWidget {
         state: revised ? _TraceState.waiting : _TraceState.blocked,
       ),
     ];
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: RenkeviaColors.graphite,
-        borderRadius: BorderRadius.circular(11),
-      ),
-      child: Row(
-        children: [
-          for (var index = 0; index < steps.length; index++) ...[
-            Expanded(child: steps[index]),
-            if (index < steps.length - 1)
-              Container(
-                width: 34,
-                height: 1,
-                color: _traceColor(
-                  steps[index + 1].state,
-                ).withValues(alpha: 0.7),
+    return LayoutBuilder(
+      builder: (context, constraints) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: RenkeviaColors.graphite,
+          borderRadius: BorderRadius.circular(11),
+        ),
+        child: constraints.maxWidth < 680
+            ? Column(
+                children: [
+                  for (var index = 0; index < steps.length; index++) ...[
+                    steps[index],
+                    if (index < steps.length - 1)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          width: 1,
+                          height: 10,
+                          margin: const EdgeInsets.only(left: 14),
+                          color: _traceColor(
+                            steps[index + 1].state,
+                          ).withValues(alpha: 0.7),
+                        ),
+                      ),
+                  ],
+                ],
+              )
+            : Row(
+                children: [
+                  for (var index = 0; index < steps.length; index++) ...[
+                    Expanded(child: steps[index]),
+                    if (index < steps.length - 1)
+                      Container(
+                        width: 34,
+                        height: 1,
+                        color: _traceColor(
+                          steps[index + 1].state,
+                        ).withValues(alpha: 0.7),
+                      ),
+                  ],
+                ],
               ),
-          ],
-        ],
       ),
     );
   }
@@ -385,6 +424,23 @@ class _PatchWorkspace extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        if (constraints.maxWidth < 720) {
+          return Column(
+            children: [
+              SizedBox(
+                height: 390,
+                child: _PatchIrOutline(controller: controller),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 680,
+                child: _ArtifactDiffPanel(controller: controller),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(height: 430, child: _ReviewRail(controller: controller)),
+            ],
+          );
+        }
         final showReviewBeside = constraints.maxWidth >= 1080;
         final core = SizedBox(
           height: 650,

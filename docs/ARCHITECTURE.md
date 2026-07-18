@@ -4,7 +4,7 @@ Status: target architecture for the first vertical slice. Components are not con
 
 ## System boundary
 
-RENKEVIA is one Flutter Web application backed by an orchestration service and deterministic compiler/simulation core. A separate fictional legacy-EHR sandbox exists solely as an external no-API target for Computer Use.
+RENKEVIA is one Flutter Web application backed by an orchestration service and deterministic compiler/simulation core. A separate fictional legacy-EHR sandbox, **Northstar Clinical System**, exists solely as an external no-API target for Computer Use; Northstar is not a second product or an alternate name for RENKEVIA.
 
 ```text
 Flutter Web
@@ -115,4 +115,3 @@ Every transition has explicit preconditions. A failed or incomplete run is a fir
 - Ephemeral run workspace; encrypted transport; secrets held server-side.
 - Logs contain identifiers and hashes, not full sensitive documents.
 - Zero-data-retention-compatible design may be discussed only as an architectural posture, not as a compliance certification.
-

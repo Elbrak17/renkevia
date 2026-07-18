@@ -11,6 +11,13 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   }
 
+  Future<void> setCompactLegacyCanvas(WidgetTester tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+  }
+
   Future<void> inspectOrderSet(WidgetTester tester) async {
     await tester.tap(find.byKey(const Key('legacy-search-button')));
     await tester.pump(const Duration(milliseconds: 360));
@@ -110,6 +117,22 @@ void main() {
     expect(find.textContaining('STATE-DRIFT'), findsOneWidget);
     expect(find.byKey(const Key('legacy-stage-button')), findsNothing);
   });
+
+  testWidgets(
+    'compact Northstar surface preserves context and safe-stop rules',
+    (tester) async {
+      await setCompactLegacyCanvas(tester);
+      await tester.pumpWidget(const LegacyEhrSandboxApp());
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('legacy-compact-companion')), findsOneWidget);
+      expect(find.text('NORTHSTAR CLINICAL SYSTEM'), findsOneWidget);
+      expect(find.text('Desktop operator surface'), findsOneWidget);
+      expect(find.textContaining('EHR-OS-014'), findsOneWidget);
+      expect(find.textContaining('Final commit disabled'), findsOneWidget);
+      expect(find.byKey(const Key('legacy-search-button')), findsNothing);
+    },
+  );
 
   testWidgets('staged legacy sandbox matches the reviewed golden layout', (
     tester,

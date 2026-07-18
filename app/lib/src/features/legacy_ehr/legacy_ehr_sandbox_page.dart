@@ -56,7 +56,10 @@ class _LegacyEhrSandboxPageState extends State<LegacyEhrSandboxPage> {
           body: LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth < 900) {
-                return const _LegacyDesktopRequired();
+                return _LegacyCompactCompanion(
+                  controller: _controller,
+                  standalone: widget.standalone,
+                );
               }
               return Column(
                 children: [
@@ -1593,22 +1596,248 @@ class _LegacyStateLabel extends StatelessWidget {
   }
 }
 
-class _LegacyDesktopRequired extends StatelessWidget {
-  const _LegacyDesktopRequired();
+class _LegacyCompactCompanion extends StatelessWidget {
+  const _LegacyCompactCompanion({
+    required this.controller,
+    required this.standalone,
+  });
+
+  final LegacyEhrSandboxController controller;
+  final bool standalone;
 
   @override
   Widget build(BuildContext context) {
-    return const ColoredBox(
-      color: _LegacyColors.navyDark,
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.all(30),
-          child: Text(
-            'The fictional legacy configuration console requires a desktop canvas of at least 900px.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: 17, height: 1.4),
+    final stateLabel = controller.isStaged
+        ? 'STAGED • HUMAN APPROVAL REQUIRED'
+        : 'READ-ONLY COMPANION';
+    final stateColor = controller.isStaged
+        ? _LegacyColors.warning
+        : _LegacyColors.blue;
+
+    return SizedBox.expand(
+      child: ColoredBox(
+        key: const Key('legacy-compact-companion'),
+        color: _LegacyColors.navyDark,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 38,
+                          height: 38,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEDF5FA),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'N',
+                            style: TextStyle(
+                              color: _LegacyColors.navy,
+                              fontSize: 19,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 11),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'NORTHSTAR CLINICAL SYSTEM',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  letterSpacing: 0.45,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Fictional legacy target • release 8.4',
+                                style: TextStyle(
+                                  color: Color(0xFFAFC3D1),
+                                  fontSize: 9,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!standalone)
+                          IconButton(
+                            key: const Key('legacy-compact-close-button'),
+                            tooltip: 'Return to RENKEVIA',
+                            onPressed: () => Navigator.of(context).maybePop(),
+                            icon: const Icon(
+                              Icons.close_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: _LegacyColors.line),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Wrap(
+                            spacing: 7,
+                            runSpacing: 7,
+                            children: [
+                              _LegacyStateLabel(
+                                label: 'FICTIONAL • NO PHI',
+                                color: _LegacyColors.success,
+                              ),
+                              _LegacyStateLabel(
+                                label: 'STAGING ONLY',
+                                color: _LegacyColors.warning,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 18),
+                          const Text(
+                            'Desktop operator surface',
+                            style: TextStyle(
+                              color: _LegacyColors.ink,
+                              fontSize: 22,
+                              height: 1.12,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Northstar is the fictional no-API EHR that RENKEVIA inspects through Computer Use. Its dense configuration console runs at 900 px or wider; this compact surface preserves status and safety boundaries on every smaller device.',
+                            style: TextStyle(
+                              color: _LegacyColors.muted,
+                              fontSize: 12,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const _CompactLegacyFact(
+                            icon: Icons.assignment_outlined,
+                            label: 'TARGET ARTIFACT',
+                            value: 'EHR-OS-014 • IV Carrier Protocol',
+                          ),
+                          const SizedBox(height: 9),
+                          _CompactLegacyFact(
+                            icon: Icons.visibility_outlined,
+                            label: 'SESSION STATE',
+                            value: stateLabel,
+                            color: stateColor,
+                          ),
+                          const SizedBox(height: 9),
+                          const _CompactLegacyFact(
+                            icon: Icons.pan_tool_alt_outlined,
+                            label: 'SAFE STOP',
+                            value:
+                                'Final commit disabled • approval remains human',
+                            color: _LegacyColors.danger,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.screen_rotation_alt_outlined,
+                          size: 16,
+                          color: Color(0xFFAFCDE0),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Use a desktop window at 900 px or wider to run the visible Computer Use staging sequence.',
+                            style: TextStyle(
+                              color: Color(0xFFAFCDE0),
+                              fontSize: 10,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _CompactLegacyFact extends StatelessWidget {
+  const _CompactLegacyFact({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.color = _LegacyColors.blue,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(11),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.07),
+        border: Border.all(color: color.withValues(alpha: 0.26)),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 17, color: color),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 8,
+                    letterSpacing: 0.5,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: _LegacyColors.ink,
+                    fontSize: 10.5,
+                    height: 1.35,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

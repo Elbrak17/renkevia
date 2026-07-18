@@ -21,7 +21,10 @@ class WorkspaceShell extends StatelessWidget {
           body: LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth < 920) {
-                return const _DesktopRequired();
+                return _MobileWorkspace(
+                  controller: controller,
+                  showLabels: constraints.maxWidth >= 430,
+                );
               }
               final compact = constraints.maxWidth < 1260;
               return Row(
@@ -41,6 +44,144 @@ class WorkspaceShell extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _MobileWorkspace extends StatelessWidget {
+  const _MobileWorkspace({required this.controller, required this.showLabels});
+
+  final DemoRunController controller;
+  final bool showLabels;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedIndex = WorkspaceSection.values.indexOf(controller.section);
+    return SafeArea(
+      child: Column(
+        children: [
+          _MobileCommandBar(controller: controller),
+          Expanded(child: _SectionBody(controller: controller)),
+          DecoratedBox(
+            decoration: const BoxDecoration(
+              color: RenkeviaColors.surface,
+              border: Border(top: BorderSide(color: RenkeviaColors.hairline)),
+            ),
+            child: NavigationBar(
+              key: const Key('mobile-workspace-navigation'),
+              height: 66,
+              selectedIndex: selectedIndex,
+              labelBehavior: showLabels
+                  ? NavigationDestinationLabelBehavior.alwaysShow
+                  : NavigationDestinationLabelBehavior.onlyShowSelected,
+              onDestinationSelected: (index) =>
+                  controller.selectSection(WorkspaceSection.values[index]),
+              destinations: const [
+                NavigationDestination(
+                  key: Key('mobile-nav-response-room'),
+                  icon: Icon(Icons.hub_outlined),
+                  selectedIcon: Icon(Icons.hub_rounded),
+                  label: 'Response',
+                  tooltip: 'Response Room',
+                ),
+                NavigationDestination(
+                  key: Key('mobile-nav-patch-studio'),
+                  icon: Icon(Icons.difference_outlined),
+                  selectedIcon: Icon(Icons.difference_rounded),
+                  label: 'Patch',
+                  tooltip: 'Patch Studio',
+                ),
+                NavigationDestination(
+                  key: Key('mobile-nav-simulation-lab'),
+                  icon: Icon(Icons.grid_view_outlined),
+                  selectedIcon: Icon(Icons.grid_view_rounded),
+                  label: 'Simulate',
+                  tooltip: 'Simulation Lab',
+                ),
+                NavigationDestination(
+                  key: Key('mobile-nav-evidence-vault'),
+                  icon: Icon(Icons.inventory_2_outlined),
+                  selectedIcon: Icon(Icons.inventory_2_rounded),
+                  label: 'Evidence',
+                  tooltip: 'Evidence Vault',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MobileCommandBar extends StatelessWidget {
+  const _MobileCommandBar({required this.controller});
+
+  final DemoRunController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final sectionLabel = switch (controller.section) {
+      WorkspaceSection.responseRoom => 'Response Room',
+      WorkspaceSection.patchStudio => 'Patch Studio',
+      WorkspaceSection.simulationLab => 'Simulation Lab',
+      WorkspaceSection.evidenceVault => 'Evidence Vault',
+    };
+    return Container(
+      height: 62,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: const BoxDecoration(
+        color: RenkeviaColors.surface,
+        border: Border(bottom: BorderSide(color: RenkeviaColors.hairline)),
+      ),
+      child: Row(
+        children: [
+          const _BrandMark(),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'RENKEVIA',
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: RenkeviaColors.ink,
+                    fontSize: 12,
+                    letterSpacing: 1.1,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '$sectionLabel • RUN 24-0717-A',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: RenkeviaColors.inkMuted,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Tooltip(
+            message: 'Synthetic fixture • no PHI',
+            child: Icon(
+              Icons.shield_outlined,
+              color: RenkeviaColors.cyanDark,
+              size: 20,
+            ),
+          ),
+          IconButton(
+            key: const Key('mobile-reset-fixture'),
+            onPressed: controller.resetFixture,
+            tooltip: 'Reset synthetic run',
+            icon: const Icon(Icons.restart_alt_rounded, size: 20),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -425,49 +566,5 @@ class _SectionBody extends StatelessWidget {
         controller: controller,
       ),
     };
-  }
-}
-
-class _DesktopRequired extends StatelessWidget {
-  const _DesktopRequired();
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: RenkeviaColors.graphite,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 480),
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const _BrandMark(),
-                const SizedBox(height: 22),
-                const Text(
-                  'Institutional workspace requires a larger canvas',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    height: 1.2,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Open RENKEVIA at 1024px or wider to inspect synchronized evidence, graphs, and diffs safely.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFFB8C4C2),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

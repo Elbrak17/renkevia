@@ -13,10 +13,16 @@ class SimulationLabPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = controller.simulationRunState;
     final snapshot = simulationSnapshot(state);
+    final compact = MediaQuery.sizeOf(context).width < 600;
     return ColoredBox(
       color: RenkeviaColors.canvas,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(22, 22, 22, 30),
+        padding: EdgeInsets.fromLTRB(
+          compact ? 12 : 22,
+          compact ? 16 : 22,
+          compact ? 12 : 22,
+          30,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -67,143 +73,153 @@ class _SimulationHeader extends StatelessWidget {
       ),
     };
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    final action = Semantics(
+      button: true,
+      label: !patchReady
+          ? 'Open Patch Studio and compile candidate version 0.8'
+          : (verified
+                ? 'All deterministic patient pathways verified'
+                : 'Run deterministic patient pathways for candidate version 0.8'),
+      child: FilledButton.icon(
+        key: const Key('simulation-primary-button'),
+        onPressed: !patchReady
+            ? () => controller.selectSection(WorkspaceSection.patchStudio)
+            : (state == SimulationRunState.baselineFailed
+                  ? controller.runRevisedSimulation
+                  : null),
+        icon: running
+            ? const SizedBox.square(
+                dimension: 15,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : Icon(
+                verified
+                    ? Icons.verified_rounded
+                    : (patchReady
+                          ? Icons.play_arrow_rounded
+                          : Icons.arrow_back_rounded),
+                size: 18,
+              ),
+        label: Text(
+          !patchReady
+              ? 'Compile Patch v0.8 first'
+              : switch (state) {
+                  SimulationRunState.baselineFailed => 'Run revised candidate',
+                  SimulationRunState.running => 'Executing 96 assertions…',
+                  SimulationRunState.verified => 'Verified • audits next',
+                },
+        ),
+      ),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 700;
+        final summary = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 10,
+              runSpacing: 7,
+              children: [
+                Text(
+                  'SIMULATION LAB / 03',
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                StatusPill(
+                  label: status.$1,
+                  icon: verified
+                      ? Icons.verified_outlined
+                      : (running
+                            ? Icons.sync_rounded
+                            : Icons.warning_amber_rounded),
+                  foreground: status.$2,
+                  background: status.$3,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Patient pathways become executable assertions.',
+              style: compact
+                  ? Theme.of(context).textTheme.headlineMedium
+                  : Theme.of(context).textTheme.headlineLarge,
+            ),
+            const SizedBox(height: 7),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 790),
+              child: Text(
+                verified
+                    ? 'The same sealed fixture that rejected v0.7 now accepts v0.8. The original counterexample remains inspectable; specialist review is still required.'
+                    : 'A reproducible pediatric counterexample rejected v0.7. Retest the synchronized v0.8 candidate against the same 24 pathways and 96 assertions.',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+          ],
+        );
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (compact) ...[
+              summary,
+              const SizedBox(height: 14),
+              action,
+            ] else
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        'SIMULATION LAB / 03',
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                      const SizedBox(width: 10),
-                      StatusPill(
-                        label: status.$1,
-                        icon: verified
-                            ? Icons.verified_outlined
-                            : (running
-                                  ? Icons.sync_rounded
-                                  : Icons.warning_amber_rounded),
-                        foreground: status.$2,
-                        background: status.$3,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Patient pathways become executable assertions.',
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 7),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 790),
-                    child: Text(
-                      verified
-                          ? 'The same sealed fixture that rejected v0.7 now accepts v0.8. The original counterexample remains inspectable; specialist review is still required.'
-                          : 'A reproducible pediatric counterexample rejected v0.7. Retest the synchronized v0.8 candidate against the same 24 pathways and 96 assertions.',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ),
+                  Expanded(child: summary),
+                  const SizedBox(width: 20),
+                  action,
                 ],
               ),
-            ),
-            const SizedBox(width: 20),
-            Semantics(
-              button: true,
-              label: !patchReady
-                  ? 'Open Patch Studio and compile candidate version 0.8'
-                  : (verified
-                        ? 'All deterministic patient pathways verified'
-                        : 'Run deterministic patient pathways for candidate version 0.8'),
-              child: FilledButton.icon(
-                key: const Key('simulation-primary-button'),
-                onPressed: !patchReady
-                    ? () =>
-                          controller.selectSection(WorkspaceSection.patchStudio)
-                    : (state == SimulationRunState.baselineFailed
-                          ? controller.runRevisedSimulation
-                          : null),
-                icon: running
-                    ? const SizedBox.square(
-                        dimension: 15,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Icon(
-                        verified
-                            ? Icons.verified_rounded
-                            : (patchReady
-                                  ? Icons.play_arrow_rounded
-                                  : Icons.arrow_back_rounded),
-                        size: 18,
-                      ),
-                label: Text(
-                  !patchReady
-                      ? 'Compile Patch v0.8 first'
-                      : switch (state) {
-                          SimulationRunState.baselineFailed =>
-                            'Run revised candidate',
-                          SimulationRunState.running =>
-                            'Executing 96 assertions…',
-                          SimulationRunState.verified =>
-                            'Verified • audits next',
-                        },
+            const SizedBox(height: 18),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _Metric(
+                  label: 'PATHWAYS',
+                  value: running ? '— / 24' : '${snapshot.passedPathways} / 24',
+                  detail: verified ? 'all representative' : '1 counterexample',
+                  icon: Icons.route_outlined,
+                  danger: !verified && !running,
+                  success: verified,
                 ),
-              ),
+                _Metric(
+                  label: 'ASSERTIONS',
+                  value: running
+                      ? '0 / 96'
+                      : '${snapshot.passedAssertions} / ${snapshot.totalAssertions}',
+                  detail: running ? 'deterministic queue' : 'schema-bound',
+                  icon: Icons.rule_folder_outlined,
+                  danger: !verified && !running,
+                  success: verified,
+                ),
+                _Metric(
+                  label: 'PROVENANCE',
+                  value: '${snapshot.provenanceCoverage}%',
+                  detail: verified ? 'every assertion linked' : '1 broken edge',
+                  icon: Icons.link_rounded,
+                  danger: !verified && !running,
+                  success: verified,
+                ),
+                _Metric(
+                  label: 'APPROVAL',
+                  value: 'LOCKED',
+                  detail: verified ? '4 audits required' : 'regression blocker',
+                  icon: Icons.lock_clock_outlined,
+                  warning: verified || running,
+                  danger: !verified && !running,
+                ),
+              ],
             ),
           ],
-        ),
-        const SizedBox(height: 18),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _Metric(
-              label: 'PATHWAYS',
-              value: running ? '— / 24' : '${snapshot.passedPathways} / 24',
-              detail: verified ? 'all representative' : '1 counterexample',
-              icon: Icons.route_outlined,
-              danger: !verified && !running,
-              success: verified,
-            ),
-            _Metric(
-              label: 'ASSERTIONS',
-              value: running
-                  ? '0 / 96'
-                  : '${snapshot.passedAssertions} / ${snapshot.totalAssertions}',
-              detail: running ? 'deterministic queue' : 'schema-bound',
-              icon: Icons.rule_folder_outlined,
-              danger: !verified && !running,
-              success: verified,
-            ),
-            _Metric(
-              label: 'PROVENANCE',
-              value: '${snapshot.provenanceCoverage}%',
-              detail: verified ? 'every assertion linked' : '1 broken edge',
-              icon: Icons.link_rounded,
-              danger: !verified && !running,
-              success: verified,
-            ),
-            _Metric(
-              label: 'APPROVAL',
-              value: 'LOCKED',
-              detail: verified ? '4 audits required' : 'regression blocker',
-              icon: Icons.lock_clock_outlined,
-              warning: verified || running,
-              danger: !verified && !running,
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -331,26 +347,48 @@ class _RunTrace extends StatelessWidget {
         state: _RunStepState.waiting,
       ),
     ];
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: RenkeviaColors.graphite,
-        borderRadius: BorderRadius.circular(11),
-      ),
-      child: Row(
-        children: [
-          for (var index = 0; index < steps.length; index++) ...[
-            Expanded(child: _RunStep(data: steps[index])),
-            if (index < steps.length - 1)
-              Container(
-                width: 32,
-                height: 1,
-                color: _runStepColor(
-                  steps[index + 1].state,
-                ).withValues(alpha: 0.7),
+    return LayoutBuilder(
+      builder: (context, constraints) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: RenkeviaColors.graphite,
+          borderRadius: BorderRadius.circular(11),
+        ),
+        child: constraints.maxWidth < 680
+            ? Column(
+                children: [
+                  for (var index = 0; index < steps.length; index++) ...[
+                    _RunStep(data: steps[index]),
+                    if (index < steps.length - 1)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          width: 1,
+                          height: 10,
+                          margin: const EdgeInsets.only(left: 14),
+                          color: _runStepColor(
+                            steps[index + 1].state,
+                          ).withValues(alpha: 0.7),
+                        ),
+                      ),
+                  ],
+                ],
+              )
+            : Row(
+                children: [
+                  for (var index = 0; index < steps.length; index++) ...[
+                    Expanded(child: _RunStep(data: steps[index])),
+                    if (index < steps.length - 1)
+                      Container(
+                        width: 32,
+                        height: 1,
+                        color: _runStepColor(
+                          steps[index + 1].state,
+                        ).withValues(alpha: 0.7),
+                      ),
+                  ],
+                ],
               ),
-          ],
-        ],
       ),
     );
   }
@@ -441,6 +479,17 @@ class _SimulationWorkspace extends StatelessWidget {
         final suiteRail = _SuiteRail(controller: controller);
         final matrix = _RegressionMatrix(controller: controller);
         final inspector = _CounterexampleInspector(controller: controller);
+        if (constraints.maxWidth < 720) {
+          return Column(
+            children: [
+              suiteRail,
+              const SizedBox(height: 12),
+              matrix,
+              const SizedBox(height: 12),
+              inspector,
+            ],
+          );
+        }
         if (constraints.maxWidth >= 1110) {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -655,26 +704,49 @@ class _RegressionMatrix extends StatelessWidget {
           const Divider(height: 1),
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 14, 15, 10),
-            child: Row(
-              children: [
-                const _LegendDot(
-                  color: RenkeviaColors.success,
-                  label: 'assertions pass',
-                ),
-                const SizedBox(width: 13),
-                const _LegendDot(
-                  color: RenkeviaColors.danger,
-                  label: 'counterexample',
-                ),
-                const Spacer(),
-                Text(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final trailing = Text(
                   '4 PATHWAYS / SUITE',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: RenkeviaColors.inkMuted,
                     fontSize: 8,
                   ),
-                ),
-              ],
+                );
+                if (constraints.maxWidth < 520) {
+                  return Wrap(
+                    spacing: 13,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      const _LegendDot(
+                        color: RenkeviaColors.success,
+                        label: 'assertions pass',
+                      ),
+                      const _LegendDot(
+                        color: RenkeviaColors.danger,
+                        label: 'counterexample',
+                      ),
+                      trailing,
+                    ],
+                  );
+                }
+                return Row(
+                  children: [
+                    const _LegendDot(
+                      color: RenkeviaColors.success,
+                      label: 'assertions pass',
+                    ),
+                    const SizedBox(width: 13),
+                    const _LegendDot(
+                      color: RenkeviaColors.danger,
+                      label: 'counterexample',
+                    ),
+                    const Spacer(),
+                    trailing,
+                  ],
+                );
+              },
             ),
           ),
           Padding(

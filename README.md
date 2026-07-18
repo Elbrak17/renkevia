@@ -27,7 +27,9 @@ The primary demo proves a hidden pediatric dependency is detected before a propo
 - **Patch Studio** — Patch IR, synchronized diffs, and cross-artifact conflicts.
 - **Simulation Lab** — synthetic patient pathways, red-to-green regression matrix, and counterexamples.
 - **Evidence Vault** — independent specialist reviews, preserved dissent, provenance, approvals, rollback, and audit export.
-- **Legacy EHR sandbox** — a separate Flutter Web surface at `?surface=legacy-ehr`, used only for staged Computer Use, screen-state rechecks, and visual proof.
+- **Northstar Clinical System** — the fictional legacy EHR sandbox at `?surface=legacy-ehr`, used only for staged Computer Use, screen-state rechecks, and visual proof. Northstar is a target system, not the product name.
+
+RENKEVIA is usable from mobile through wide desktop. Below 920 px, the four workspaces become vertically composed and use persistent bottom navigation. Northstar preserves a readable status-and-safety companion below 900 px, while its deliberately dense Computer Use operator console remains desktop-only.
 
 ## Current verification
 
@@ -37,8 +39,10 @@ npm run probe:preflight
 cd app
 flutter analyze
 flutter test
-flutter build web --release --no-web-resources-cdn
+flutter build web --release
 ```
+
+The custom Flutter bootstrap serves CanvasKit from the build itself, so the demo does not depend on a renderer CDN at judging time.
 
 Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into source, a fixture, an issue, or chat.
 

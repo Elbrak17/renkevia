@@ -13,10 +13,16 @@ class EvidenceVaultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 600;
     return ColoredBox(
       color: RenkeviaColors.canvas,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(22, 22, 22, 30),
+        padding: EdgeInsets.fromLTRB(
+          compact ? 12 : 22,
+          compact ? 16 : 22,
+          compact ? 12 : 22,
+          30,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -84,157 +90,168 @@ class _VaultHeader extends StatelessWidget {
               RenkeviaColors.successWash,
             ),
           };
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    final action = Semantics(
+      button: true,
+      label: !verified
+          ? 'Open Simulation Lab and verify candidate version 0.8'
+          : (sealed
+                ? (legacyVerified
+                      ? 'Legacy proof accepted; named human approval is required'
+                      : 'Open the fictional legacy EHR staging sandbox')
+                : 'Run four independent specialist review fixtures'),
+      child: FilledButton.icon(
+        key: const Key('evidence-vault-primary-button'),
+        onPressed: !verified
+            ? () => controller.selectSection(WorkspaceSection.simulationLab)
+            : (state == EvidenceVaultRunState.ready
+                  ? controller.runSpecialistReviews
+                  : (sealed && !legacyVerified
+                        ? () => _openLegacySandbox(context)
+                        : null)),
+        icon: reviewing
+            ? const SizedBox.square(
+                dimension: 15,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : Icon(
+                sealed
+                    ? (legacyVerified
+                          ? Icons.how_to_reg_outlined
+                          : Icons.open_in_new_rounded)
+                    : (verified
+                          ? Icons.groups_outlined
+                          : Icons.arrow_back_rounded),
+                size: 18,
+              ),
+        label: Text(
+          !verified
+              ? 'Verify candidate first'
+              : switch (state) {
+                  EvidenceVaultRunState.ready => 'Run four specialist audits',
+                  EvidenceVaultRunState.reviewing =>
+                    'Audits running in parallel…',
+                  EvidenceVaultRunState.sealed =>
+                    legacyVerified
+                        ? 'Staged • named human next'
+                        : 'Open fictional legacy sandbox',
+                },
+        ),
+      ),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 720;
+        final summary = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
+            Wrap(
+              spacing: 10,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(
+                  'EVIDENCE VAULT / 04',
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                StatusPill(
+                  label: status.$1,
+                  icon: sealed
+                      ? Icons.inventory_2_outlined
+                      : (reviewing
+                            ? Icons.groups_outlined
+                            : Icons.lock_clock_outlined),
+                  foreground: status.$2,
+                  background: status.$3,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Evidence becomes an accountable change record.',
+              style: compact
+                  ? Theme.of(context).textTheme.headlineMedium
+                  : Theme.of(context).textTheme.headlineLarge,
+            ),
+            const SizedBox(height: 7),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Text(
+                legacyVerified
+                    ? 'The fictional legacy screen was rechecked, staged, and captured as proof. LEGACY-01 remains inspectable; only a named human can approve the final write.'
+                    : sealed
+                    ? 'Four independent reviews, six provenance-linked projections, and an exact rollback are sealed together. LEGACY-01 remains visible and blocking.'
+                    : 'Challenge candidate v0.8 from four independent specialist contexts, preserve disagreement, then prove every material claim and reversal hash.',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+          ],
+        );
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (compact) ...[
+              summary,
+              const SizedBox(height: 14),
+              action,
+            ] else
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 6,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(
-                        'EVIDENCE VAULT / 04',
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                      StatusPill(
-                        label: status.$1,
-                        icon: sealed
-                            ? Icons.inventory_2_outlined
-                            : (reviewing
-                                  ? Icons.groups_outlined
-                                  : Icons.lock_clock_outlined),
-                        foreground: status.$2,
-                        background: status.$3,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Evidence becomes an accountable change record.',
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 7),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 800),
-                    child: Text(
-                      legacyVerified
-                          ? 'The fictional legacy screen was rechecked, staged, and captured as proof. LEGACY-01 remains inspectable; only a named human can approve the final write.'
-                          : sealed
-                          ? 'Four independent reviews, six provenance-linked projections, and an exact rollback are sealed together. LEGACY-01 remains visible and blocking.'
-                          : 'Challenge candidate v0.8 from four independent specialist contexts, preserve disagreement, then prove every material claim and reversal hash.',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ),
+                  Expanded(child: summary),
+                  const SizedBox(width: 20),
+                  action,
                 ],
               ),
-            ),
-            const SizedBox(width: 20),
-            Semantics(
-              button: true,
-              label: !verified
-                  ? 'Open Simulation Lab and verify candidate version 0.8'
-                  : (sealed
-                        ? (legacyVerified
-                              ? 'Legacy proof accepted; named human approval is required'
-                              : 'Open the fictional legacy EHR staging sandbox')
-                        : 'Run four independent specialist review fixtures'),
-              child: FilledButton.icon(
-                key: const Key('evidence-vault-primary-button'),
-                onPressed: !verified
-                    ? () => controller.selectSection(
-                        WorkspaceSection.simulationLab,
-                      )
-                    : (state == EvidenceVaultRunState.ready
-                          ? controller.runSpecialistReviews
-                          : (sealed && !legacyVerified
-                                ? () => _openLegacySandbox(context)
-                                : null)),
-                icon: reviewing
-                    ? const SizedBox.square(
-                        dimension: 15,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Icon(
-                        sealed
-                            ? (legacyVerified
-                                  ? Icons.how_to_reg_outlined
-                                  : Icons.open_in_new_rounded)
-                            : (verified
-                                  ? Icons.groups_outlined
-                                  : Icons.arrow_back_rounded),
-                        size: 18,
-                      ),
-                label: Text(
-                  !verified
-                      ? 'Verify candidate first'
-                      : switch (state) {
-                          EvidenceVaultRunState.ready =>
-                            'Run four specialist audits',
-                          EvidenceVaultRunState.reviewing =>
-                            'Audits running in parallel…',
-                          EvidenceVaultRunState.sealed =>
-                            legacyVerified
-                                ? 'Staged • named human next'
-                                : 'Open fictional legacy sandbox',
-                        },
+            const SizedBox(height: 18),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _VaultMetric(
+                  label: 'REVIEWS',
+                  value: sealed ? '4 / 4' : (reviewing ? '… / 4' : '0 / 4'),
+                  detail: sealed ? 'independent returns' : 'required contexts',
+                  icon: Icons.groups_2_outlined,
+                  success: sealed,
+                  warning: verified && !sealed,
+                  danger: !verified,
                 ),
-              ),
+                _VaultMetric(
+                  label: 'DISSENT',
+                  value: sealed ? '1' : '—',
+                  detail: sealed ? 'LEGACY-01 preserved' : 'not synthesized',
+                  icon: Icons.record_voice_over_outlined,
+                  warning: sealed || verified,
+                  danger: !verified,
+                ),
+                _VaultMetric(
+                  label: 'PROVENANCE',
+                  value: sealed ? '100%' : '—',
+                  detail: sealed ? '6 / 6 projections' : 'seal pending',
+                  icon: Icons.link_rounded,
+                  success: sealed,
+                  warning: verified && !sealed,
+                  danger: !verified,
+                ),
+                _VaultMetric(
+                  label: 'ROLLBACK',
+                  value: sealed ? '6 / 6' : '—',
+                  detail: sealed
+                      ? 'exact hash restore'
+                      : 'verification pending',
+                  icon: Icons.settings_backup_restore_rounded,
+                  success: sealed,
+                  warning: verified && !sealed,
+                  danger: !verified,
+                ),
+              ],
             ),
           ],
-        ),
-        const SizedBox(height: 18),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _VaultMetric(
-              label: 'REVIEWS',
-              value: sealed ? '4 / 4' : (reviewing ? '… / 4' : '0 / 4'),
-              detail: sealed ? 'independent returns' : 'required contexts',
-              icon: Icons.groups_2_outlined,
-              success: sealed,
-              warning: verified && !sealed,
-              danger: !verified,
-            ),
-            _VaultMetric(
-              label: 'DISSENT',
-              value: sealed ? '1' : '—',
-              detail: sealed ? 'LEGACY-01 preserved' : 'not synthesized',
-              icon: Icons.record_voice_over_outlined,
-              warning: sealed || verified,
-              danger: !verified,
-            ),
-            _VaultMetric(
-              label: 'PROVENANCE',
-              value: sealed ? '100%' : '—',
-              detail: sealed ? '6 / 6 projections' : 'seal pending',
-              icon: Icons.link_rounded,
-              success: sealed,
-              warning: verified && !sealed,
-              danger: !verified,
-            ),
-            _VaultMetric(
-              label: 'ROLLBACK',
-              value: sealed ? '6 / 6' : '—',
-              detail: sealed ? 'exact hash restore' : 'verification pending',
-              icon: Icons.settings_backup_restore_rounded,
-              success: sealed,
-              warning: verified && !sealed,
-              danger: !verified,
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -367,26 +384,48 @@ class _VaultTrace extends StatelessWidget {
             : (sealed ? _VaultStepState.failed : _VaultStepState.waiting),
       ),
     ];
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: RenkeviaColors.graphite,
-        borderRadius: BorderRadius.circular(11),
-      ),
-      child: Row(
-        children: [
-          for (var index = 0; index < steps.length; index++) ...[
-            Expanded(child: _VaultStep(data: steps[index])),
-            if (index < steps.length - 1)
-              Container(
-                width: 32,
-                height: 1,
-                color: _vaultStepColor(
-                  steps[index + 1].state,
-                ).withValues(alpha: 0.7),
+    return LayoutBuilder(
+      builder: (context, constraints) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: RenkeviaColors.graphite,
+          borderRadius: BorderRadius.circular(11),
+        ),
+        child: constraints.maxWidth < 680
+            ? Column(
+                children: [
+                  for (var index = 0; index < steps.length; index++) ...[
+                    _VaultStep(data: steps[index]),
+                    if (index < steps.length - 1)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          width: 1,
+                          height: 10,
+                          margin: const EdgeInsets.only(left: 14),
+                          color: _vaultStepColor(
+                            steps[index + 1].state,
+                          ).withValues(alpha: 0.7),
+                        ),
+                      ),
+                  ],
+                ],
+              )
+            : Row(
+                children: [
+                  for (var index = 0; index < steps.length; index++) ...[
+                    Expanded(child: _VaultStep(data: steps[index])),
+                    if (index < steps.length - 1)
+                      Container(
+                        width: 32,
+                        height: 1,
+                        color: _vaultStepColor(
+                          steps[index + 1].state,
+                        ).withValues(alpha: 0.7),
+                      ),
+                  ],
+                ],
               ),
-          ],
-        ],
       ),
     );
   }
@@ -477,6 +516,17 @@ class _ReviewWorkspace extends StatelessWidget {
     final gate = _ApprovalGate(controller: controller);
     return LayoutBuilder(
       builder: (context, constraints) {
+        if (constraints.maxWidth < 720) {
+          return Column(
+            children: [
+              rail,
+              const SizedBox(height: 12),
+              finding,
+              const SizedBox(height: 12),
+              gate,
+            ],
+          );
+        }
         if (constraints.maxWidth >= 1110) {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1191,29 +1241,26 @@ class _ProofLedger extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'APPEND-ONLY PROOF LEDGER',
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(
-                              color: RenkeviaColors.cyanDark,
-                              fontSize: 8,
-                            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final heading = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'APPEND-ONLY PROOF LEDGER',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: RenkeviaColors.cyanDark,
+                        fontSize: 8,
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        'Every summary resolves to raw identifiers and hashes.',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ],
-                  ),
-                ),
-                StatusPill(
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Every summary resolves to raw identifiers and hashes.',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
+                );
+                final status = StatusPill(
                   label: sealed ? 'BUNDLE PRV-0.8 • SEALED' : 'BUNDLE PENDING',
                   icon: sealed
                       ? Icons.verified_user_outlined
@@ -1224,8 +1271,21 @@ class _ProofLedger extends StatelessWidget {
                   background: sealed
                       ? RenkeviaColors.successWash
                       : RenkeviaColors.amberWash,
-                ),
-              ],
+                );
+                if (constraints.maxWidth < 560) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [heading, const SizedBox(height: 9), status],
+                  );
+                }
+                return Row(
+                  children: [
+                    Expanded(child: heading),
+                    const SizedBox(width: 10),
+                    status,
+                  ],
+                );
+              },
             ),
           ),
           const SizedBox(height: 10),
@@ -1347,22 +1407,50 @@ class _LedgerPending extends StatelessWidget {
     return const SizedBox(
       height: 170,
       child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.lock_outline_rounded,
-              color: RenkeviaColors.inkMuted,
-              size: 24,
-            ),
-            SizedBox(height: 9),
-            Text(
-              'Ledger entries appear only after all review contexts return.',
-              style: TextStyle(color: RenkeviaColors.inkMuted, fontSize: 10),
-            ),
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.lock_outline_rounded,
+                color: RenkeviaColors.inkMuted,
+                size: 24,
+              ),
+              SizedBox(height: 9),
+              Text(
+                'Ledger entries appear only after all review contexts return.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: RenkeviaColors.inkMuted, fontSize: 10),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _ResponsiveLedgerTable extends StatelessWidget {
+  const _ResponsiveLedgerTable({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tableWidth = constraints.maxWidth < 788
+            ? 760.0
+            : constraints.maxWidth - 28;
+        return Padding(
+          padding: const EdgeInsets.all(14),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(width: tableWidth, child: child),
+          ),
+        );
+      },
     );
   }
 }
@@ -1372,8 +1460,7 @@ class _ProvenanceTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(14),
+    return _ResponsiveLedgerTable(
       child: Column(
         children: [
           const _LedgerHeader(
@@ -1498,8 +1585,7 @@ class _RollbackTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(14),
+    return _ResponsiveLedgerTable(
       child: Column(
         children: [
           Container(
@@ -1621,6 +1707,48 @@ class _AuditEventRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 600;
+    final action = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          event.action,
+          style: const TextStyle(
+            color: RenkeviaColors.ink,
+            fontSize: 9.5,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          event.actor,
+          style: const TextStyle(color: RenkeviaColors.inkMuted, fontSize: 8.5),
+        ),
+      ],
+    );
+    final content = compact
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _MonoText('${event.time} • ${event.id}'),
+              const SizedBox(height: 5),
+              action,
+              const SizedBox(height: 5),
+              _MonoText('${event.inputHash} → ${event.outputHash}'),
+            ],
+          )
+        : Row(
+            children: [
+              SizedBox(
+                width: 92,
+                child: _MonoText('${event.time}\n${event.id}'),
+              ),
+              Expanded(flex: 2, child: action),
+              Expanded(
+                child: _MonoText('${event.inputHash} → ${event.outputHash}'),
+              ),
+            ],
+          );
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1656,43 +1784,7 @@ class _AuditEventRow extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(bottom: last ? 0 : 12),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 92,
-                    child: _MonoText('${event.time}\n${event.id}'),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          event.action,
-                          style: const TextStyle(
-                            color: RenkeviaColors.ink,
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          event.actor,
-                          style: const TextStyle(
-                            color: RenkeviaColors.inkMuted,
-                            fontSize: 8.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: _MonoText(
-                      '${event.inputHash} → ${event.outputHash}',
-                    ),
-                  ),
-                ],
-              ),
+              child: content,
             ),
           ),
         ],
