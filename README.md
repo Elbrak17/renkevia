@@ -98,6 +98,7 @@ Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into 
 - [API budget and truthfulness contract](docs/API_BUDGET.md)
 - [2:55 demo script](docs/DEMO_SCRIPT.md)
 - [Proof manifest](docs/PROOF_MANIFEST.md)
+- [Devpost submission draft](docs/DEVPOST_SUBMISSION.md)
 - [Submission checklist](docs/SUBMISSION_CHECKLIST.md)
 - [Deterministic core](server/README.md)
 
