@@ -2,9 +2,11 @@ import { readFile } from 'node:fs/promises';
 
 const requiredFiles = [
   'README.md',
-  'docs/DEMO_SCRIPT.md',
+  'docs/ARCHITECTURE.md',
+  'docs/CODEX_BUILD_LOG.md',
+  'docs/EVALS.md',
   'docs/PROOF_MANIFEST.md',
-  'docs/SUBMISSION_CHECKLIST.md',
+  'docs/SAFETY.md',
   'server/src/openai/live-reasoning-pipeline.ts',
   'server/src/openai/programmatic-simulation.ts',
   'server/src/openai/multi-agent-audit.ts',

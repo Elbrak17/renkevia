@@ -9,6 +9,7 @@
 | GPT output cannot bypass software truth | orchestration and live-pipeline tests | Patch IR/proof boundary labels |
 | Programmatic tools are read-only and complete | caller, uniqueness, 24-call tests | Simulation execution trace |
 | Four independent audits preserve dissent | Multi-agent validator tests | Evidence Vault specialist panel |
+| Human approval remains mandatory | approval-integrity tests and guarded state machine | final approval control remains locked until named review |
 | Computer Use never commits | origin/action/final-target tests | Northstar safe-stop proof |
 | Browser never receives the OpenAI key | server-only transport + Flutter gateway | execution-mode badge |
 | UI is Flutter Web and responsive | Flutter analyze/test/build CI | mobile, tablet, desktop captures |

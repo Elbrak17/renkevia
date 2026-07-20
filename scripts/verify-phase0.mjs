@@ -6,23 +6,24 @@ const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const requiredFiles = [
   'AGENTS.md',
   'README.md',
-  'docs/PRODUCT_CONTRACT.md',
-  'docs/DEMO_CONTRACT.md',
   'docs/ARCHITECTURE.md',
-  'docs/HACKATHON_MATRIX.md',
+  'docs/CAPABILITY_MATRIX.md',
   'docs/EVALS.md',
   'docs/SAFETY.md',
   'docs/DESIGN_SYSTEM.md',
-  'docs/RISK_REGISTER.md',
+  'docs/CODEX_BUILD_LOG.md',
+  'docs/IMPACT_MODEL.md',
+  'docs/DIFFERENTIATION.md',
+  'docs/PROOF_MANIFEST.md',
+  'docs/TOOLCHAIN.md',
 ];
 
 const requiredPhrases = new Map([
-  ['docs/PRODUCT_CONTRACT.md', ['Patch IR', 'human approval', 'Non-goals']],
-  ['docs/DEMO_CONTRACT.md', ['below three minutes', 'hidden pediatric', 'stops before final commit']],
   ['docs/ARCHITECTURE.md', ['Programmatic Tool Calling', 'Multi-agent', 'Computer Use']],
-  ['docs/HACKATHON_MATRIX.md', ['Technological Implementation', 'Design', 'Potential Impact', 'Quality of Idea']],
+  ['docs/CAPABILITY_MATRIX.md', ['GPT-5.6', 'Programmatic Tool Calling', 'Computer Use']],
   ['docs/EVALS.md', ['Static checklist', 'Naive model', 'Approval integrity']],
   ['docs/SAFETY.md', ['Synthetic demonstration', 'final legacy commit', 'HIPAA']],
+  ['docs/PROOF_MANIFEST.md', ['24/24', 'human approval', 'Computer Use']],
 ]);
 
 const secretPatterns = [

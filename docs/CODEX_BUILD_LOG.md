@@ -6,7 +6,7 @@ This is an evidence map, not a claim that Codex autonomously invented or approve
 
 | Decision owned by the project owner | Work performed with Codex | Repository proof |
 |---|---|---|
-| Begin with a credible problem, not a model-feature parade | Converted the hospital change problem into product, demo, safety, and architecture contracts | `PRODUCT_CONTRACT.md`, `DEMO_CONTRACT.md`, `ARCHITECTURE.md` |
+| Begin with a credible problem, not a model-feature parade | Converted the hospital change problem into explicit implementation, safety, evaluation, and architecture boundaries | `ARCHITECTURE.md`, `SAFETY.md`, `EVALS.md` |
 | Flutter Web only | Built a four-surface responsive Flutter Web application and GitHub Pages pipeline | `app/`, `pages.yml` |
 | GPT-5.6 must do causal work a chatbot cannot | Implemented strict Patch IR, model routing, programmatic pathway fan-out, independent Multi-agent review, and Computer Use staging boundary | `server/src/openai/`, orchestration tests |
 | A model cannot own clinical or software truth | Implemented deterministic compilation, provenance validation, 96 assertions, rollback, audit chain, and approval policy | `server/src/core/`, deterministic tests |

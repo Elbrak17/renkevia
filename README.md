@@ -86,13 +86,10 @@ The custom Flutter bootstrap serves CanvasKit from the build itself, so the demo
 
 Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into source, a fixture, an issue, or chat.
 
-## Core documents
+## Public verification documents
 
-- [Product contract](docs/PRODUCT_CONTRACT.md)
-- [Demo contract](docs/DEMO_CONTRACT.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [GPT-5.6 capability matrix](docs/CAPABILITY_MATRIX.md)
-- [Hackathon criteria matrix](docs/HACKATHON_MATRIX.md)
 - [Evaluation plan](docs/EVALS.md)
 - [Safety and security](docs/SAFETY.md)
 - [Design system](docs/DESIGN_SYSTEM.md)
@@ -100,13 +97,13 @@ Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into 
 - [Codex build log](docs/CODEX_BUILD_LOG.md)
 - [Impact model](docs/IMPACT_MODEL.md)
 - [Dated differentiation scan](docs/DIFFERENTIATION.md)
-- [Risk register](docs/RISK_REGISTER.md)
-- [API budget and truthfulness contract](docs/API_BUDGET.md)
-- [2:55 demo script](docs/DEMO_SCRIPT.md)
 - [Proof manifest](docs/PROOF_MANIFEST.md)
-- [Devpost submission draft](docs/DEVPOST_SUBMISSION.md)
-- [Submission checklist](docs/SUBMISSION_CHECKLIST.md)
+- [Pinned application toolchain](docs/TOOLCHAIN.md)
 - [Deterministic core](server/README.md)
+
+Internal product contracts, budget planning, risk tracking, demo narration and
+submission working documents are deliberately maintained outside the public
+repository. They are not required to run, inspect or reproduce the prototype.
 
 ## Status language
 
