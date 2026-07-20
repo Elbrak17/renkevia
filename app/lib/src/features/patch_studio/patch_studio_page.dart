@@ -616,6 +616,7 @@ class _ArtifactDiffPanel extends StatelessWidget {
     final artifact = controller.selectedPatchArtifact;
     final revised = controller.patchRevised;
     final spec = _artifactSpec(artifact, revised: revised);
+    final artifacts = PatchArtifact.values;
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -682,18 +683,14 @@ class _ArtifactDiffPanel extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  for (
-                    var index = 0;
-                    index < PatchArtifact.values.length;
-                    index++
-                  ) ...[
+                  for (var index = 0; index < artifacts.length; index++) ...[
                     _ArtifactProjectionTab(
                       controller: controller,
-                      artifact: PatchArtifact.values[index],
-                      selected: PatchArtifact.values[index] == artifact,
+                      artifact: artifacts[index],
+                      selected: artifacts[index] == artifact,
                       revised: revised,
                     ),
-                    if (index < PatchArtifact.values.length - 1)
+                    if (index < artifacts.length - 1)
                       const SizedBox(width: 6),
                   ],
                 ],
