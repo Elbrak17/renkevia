@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/features/response_room/widgets/dependency_graph.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
+import 'package:renkevia/src/shared/responsive_metric_width.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
 class ResponseRoomPage extends StatelessWidget {
@@ -202,8 +203,13 @@ class _Metric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final foreground = danger ? RenkeviaColors.danger : RenkeviaColors.ink;
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final metricWidth = responsiveMetricWidth(
+      viewportWidth,
+      desktopWidth: 198,
+    );
     return Container(
-      width: 198,
+      width: metricWidth,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
       decoration: BoxDecoration(
         color: danger ? RenkeviaColors.dangerWash : RenkeviaColors.surface,

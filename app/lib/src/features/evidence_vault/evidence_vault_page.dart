@@ -4,6 +4,7 @@ import 'package:renkevia/src/features/evidence_vault/evidence_vault_fixture.dart
 import 'package:renkevia/src/features/legacy_ehr/legacy_ehr_fixture.dart';
 import 'package:renkevia/src/features/legacy_ehr/legacy_ehr_sandbox_page.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
+import 'package:renkevia/src/shared/responsive_metric_width.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
 class EvidenceVaultPage extends StatelessWidget {
@@ -287,8 +288,13 @@ class _VaultMetric extends StatelessWidget {
         : (success
               ? RenkeviaColors.successWash
               : (warning ? RenkeviaColors.amberWash : RenkeviaColors.surface));
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final metricWidth = responsiveMetricWidth(
+      viewportWidth,
+      desktopWidth: 212,
+    );
     return Container(
-      width: 212,
+      width: metricWidth,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
       decoration: BoxDecoration(
         color: wash,

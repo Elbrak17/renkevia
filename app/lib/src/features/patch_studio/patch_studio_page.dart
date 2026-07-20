@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
+import 'package:renkevia/src/shared/responsive_metric_width.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
 class PatchStudioPage extends StatelessWidget {
@@ -207,8 +208,13 @@ class _PatchMetric extends StatelessWidget {
     final wash = danger
         ? RenkeviaColors.dangerWash
         : (warning ? RenkeviaColors.amberWash : RenkeviaColors.surface);
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final metricWidth = responsiveMetricWidth(
+      viewportWidth,
+      desktopWidth: 198,
+    );
     return Container(
-      width: 198,
+      width: metricWidth,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
       decoration: BoxDecoration(
         color: wash,
