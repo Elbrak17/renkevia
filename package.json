@@ -12,6 +12,7 @@
     "typecheck:core": "tsc -p server/tsconfig.json",
     "test:core": "node --import tsx --test server/test/*.test.ts",
     "demo:core": "node --import tsx server/src/demo.ts",
+    "serve:api": "node --import tsx server/src/http/demo-api.ts",
     "test:probes": "node --test probes/test/*.test.mjs",
     "probe:preflight": "node probes/src/preflight.mjs",
     "probe:models": "node probes/src/model-access.mjs",
