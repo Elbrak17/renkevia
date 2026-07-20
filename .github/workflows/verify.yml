@@ -46,7 +46,10 @@ jobs:
           flutter-version: '3.44.6'
           channel: stable
           cache: true
-      - run: flutter pub get --enforce-lockfile
+      - name: Regenerate and expose the SDK-exact lockfile
+        run: |
+          flutter pub get
+          git diff --exit-code -- pubspec.lock
       - run: dart format --output=none --set-exit-if-changed lib test
       - run: flutter analyze
       - run: flutter test
