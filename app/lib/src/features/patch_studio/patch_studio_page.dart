@@ -690,8 +690,7 @@ class _ArtifactDiffPanel extends StatelessWidget {
                       selected: artifacts[index] == artifact,
                       revised: revised,
                     ),
-                    if (index < artifacts.length - 1)
-                      const SizedBox(width: 6),
+                    if (index < artifacts.length - 1) const SizedBox(width: 6),
                   ],
                 ],
               ),
@@ -800,9 +799,7 @@ class _ArtifactProjectionTab extends StatelessWidget {
                   Icons.link_rounded,
                   key: Key('affected-${artifact.name}'),
                   size: 9,
-                  color: selected
-                      ? RenkeviaColors.cyan
-                      : RenkeviaColors.violet,
+                  color: selected ? RenkeviaColors.cyan : RenkeviaColors.violet,
                 ),
               ],
             ],
