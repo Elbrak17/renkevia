@@ -2,6 +2,8 @@
 
 Status: preregistered plan. No result exists yet. Targets are go/no-go thresholds for the hackathon prototype, not clinical-performance claims.
 
+The full twelve-scenario comparison has not been run. A narrower deterministic vertical-fixture check is implemented and must not be presented as the complete evaluation: candidate `v0.7` produces one seeded failure at `PATH-PED-07-04/A1` (23/24 pathways and 95/96 assertions); revised `v0.8` produces 24/24 pathways and 96/96 assertions, with exact full and partial-stage rollback. Reproduce it with `npm run test:core` and `npm run demo:core`.
+
 ## Evaluation question
 
 Does RENKEVIA produce a more complete, coherent, traceable, and reversible institutional patch than simpler approaches on synthetic medication-shortage scenarios—without bypassing human approval?
@@ -112,4 +114,3 @@ If time permits, conduct a structured walkthrough with at least three participan
 6. How would it be rolled back?
 
 This is a usability study, not clinical validation.
-

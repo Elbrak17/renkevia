@@ -1,0 +1,92 @@
+name: Verify
+
+on:
+  push:
+    branches:
+      - main
+      - 'agent/**'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: TypeScript safety boundary
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check:offline
+      - run: npm run demo:core
+      - run: npm run verify:submission
+      - run: npm audit --audit-level=high
+
+  flutter-web:
+    name: Flutter Web product surface
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v6
+      - uses: subosito/flutter-action@v2.23.0
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+      - run: flutter pub get --enforce-lockfile
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build web --release
+      - name: Capture responsive release proof
+        run: |
+          mkdir -p build/visual
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory build/web > /tmp/renkevia-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:4173/ > /dev/null
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --enable-unsafe-swiftshader --virtual-time-budget=12000 --window-size=1440,1000 --screenshot=build/visual/desktop.png http://127.0.0.1:4173/
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --enable-unsafe-swiftshader --virtual-time-budget=12000 --window-size=1024,900 --screenshot=build/visual/tablet.png http://127.0.0.1:4173/
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --enable-unsafe-swiftshader --virtual-time-budget=12000 --window-size=390,844 --screenshot=build/visual/mobile.png http://127.0.0.1:4173/
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --enable-unsafe-swiftshader --virtual-time-budget=12000 --window-size=1440,1000 --screenshot=build/visual/patch-desktop.png 'http://127.0.0.1:4173/?surface=patch'
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --enable-unsafe-swiftshader --virtual-time-budget=12000 --window-size=390,844 --screenshot=build/visual/patch-mobile.png 'http://127.0.0.1:4173/?surface=patch'
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --enable-unsafe-swiftshader --virtual-time-budget=12000 --window-size=1440,1000 --screenshot=build/visual/simulation-desktop.png 'http://127.0.0.1:4173/?surface=simulate'
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --enable-unsafe-swiftshader --virtual-time-budget=12000 --window-size=390,844 --screenshot=build/visual/simulation-mobile.png 'http://127.0.0.1:4173/?surface=simulate'
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --enable-unsafe-swiftshader --virtual-time-budget=12000 --window-size=1440,1000 --screenshot=build/visual/evidence-desktop.png 'http://127.0.0.1:4173/?surface=evidence'
+          google-chrome --headless=new --no-sandbox --hide-scrollbars --enable-unsafe-swiftshader --virtual-time-budget=12000 --window-size=390,844 --screenshot=build/visual/evidence-mobile.png 'http://127.0.0.1:4173/?surface=evidence'
+          test -s build/visual/desktop.png
+          test -s build/visual/tablet.png
+          test -s build/visual/mobile.png
+          test -s build/visual/patch-desktop.png
+          test -s build/visual/patch-mobile.png
+          test -s build/visual/simulation-desktop.png
+          test -s build/visual/simulation-mobile.png
+          test -s build/visual/evidence-desktop.png
+          test -s build/visual/evidence-mobile.png
+      - uses: actions/upload-artifact@v4.6.2
+        with:
+          name: renkevia-web-${{ github.sha }}
+          path: |
+            app/build/web
+            app/build/visual
+          if-no-files-found: error
+          retention-days: 7

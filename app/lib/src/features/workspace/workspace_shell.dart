@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
+import 'package:renkevia/src/features/evidence_vault/evidence_vault_page.dart';
+import 'package:renkevia/src/features/patch_studio/patch_studio_page.dart';
 import 'package:renkevia/src/features/response_room/response_room_page.dart';
+import 'package:renkevia/src/features/simulation_lab/simulation_lab_page.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
@@ -18,7 +21,10 @@ class WorkspaceShell extends StatelessWidget {
           body: LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth < 920) {
-                return const _DesktopRequired();
+                return _MobileWorkspace(
+                  controller: controller,
+                  showLabels: constraints.maxWidth >= 430,
+                );
               }
               final compact = constraints.maxWidth < 1260;
               return Row(
@@ -28,6 +34,8 @@ class WorkspaceShell extends StatelessWidget {
                     child: Column(
                       children: [
                         _CommandBar(controller: controller),
+                        if (controller.lastGatewayError case final error?)
+                          _GatewayErrorBanner(message: error),
                         Expanded(child: _SectionBody(controller: controller)),
                       ],
                     ),
@@ -38,6 +46,161 @@ class WorkspaceShell extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _MobileWorkspace extends StatelessWidget {
+  const _MobileWorkspace({required this.controller, required this.showLabels});
+
+  final DemoRunController controller;
+  final bool showLabels;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedIndex = WorkspaceSection.values.indexOf(controller.section);
+    return SafeArea(
+      child: Column(
+        children: [
+          _MobileCommandBar(controller: controller),
+          if (controller.lastGatewayError case final error?)
+            _GatewayErrorBanner(message: error),
+          Expanded(child: _SectionBody(controller: controller)),
+          DecoratedBox(
+            decoration: const BoxDecoration(
+              color: RenkeviaColors.surface,
+              border: Border(top: BorderSide(color: RenkeviaColors.hairline)),
+            ),
+            child: NavigationBar(
+              key: const Key('mobile-workspace-navigation'),
+              height: 66,
+              selectedIndex: selectedIndex,
+              labelBehavior: showLabels
+                  ? NavigationDestinationLabelBehavior.alwaysShow
+                  : NavigationDestinationLabelBehavior.onlyShowSelected,
+              onDestinationSelected: (index) =>
+                  controller.selectSection(WorkspaceSection.values[index]),
+              destinations: const [
+                NavigationDestination(
+                  key: Key('mobile-nav-response-room'),
+                  icon: Icon(Icons.hub_outlined),
+                  selectedIcon: Icon(Icons.hub_rounded),
+                  label: 'Response',
+                  tooltip: 'Response Room',
+                ),
+                NavigationDestination(
+                  key: Key('mobile-nav-patch-studio'),
+                  icon: Icon(Icons.difference_outlined),
+                  selectedIcon: Icon(Icons.difference_rounded),
+                  label: 'Patch',
+                  tooltip: 'Patch Studio',
+                ),
+                NavigationDestination(
+                  key: Key('mobile-nav-simulation-lab'),
+                  icon: Icon(Icons.grid_view_outlined),
+                  selectedIcon: Icon(Icons.grid_view_rounded),
+                  label: 'Simulate',
+                  tooltip: 'Simulation Lab',
+                ),
+                NavigationDestination(
+                  key: Key('mobile-nav-evidence-vault'),
+                  icon: Icon(Icons.inventory_2_outlined),
+                  selectedIcon: Icon(Icons.inventory_2_rounded),
+                  label: 'Evidence',
+                  tooltip: 'Evidence Vault',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MobileCommandBar extends StatelessWidget {
+  const _MobileCommandBar({required this.controller});
+
+  final DemoRunController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final sectionLabel = switch (controller.section) {
+      WorkspaceSection.responseRoom => 'Response Room',
+      WorkspaceSection.patchStudio => 'Patch Studio',
+      WorkspaceSection.simulationLab => 'Simulation Lab',
+      WorkspaceSection.evidenceVault => 'Evidence Vault',
+    };
+    return Container(
+      height: 62,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: const BoxDecoration(
+        color: RenkeviaColors.surface,
+        border: Border(bottom: BorderSide(color: RenkeviaColors.hairline)),
+      ),
+      child: Row(
+        children: [
+          const _BrandMark(),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'RENKEVIA',
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: RenkeviaColors.ink,
+                    fontSize: 12,
+                    letterSpacing: 1.1,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '$sectionLabel • RUN 24-0717-A',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: RenkeviaColors.inkMuted,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          StatusPill(
+            label: controller.executionModeLabel == 'LIVE GPT-5.6'
+                ? 'LIVE'
+                : (controller.isConnectedCore ? 'CORE' : 'REPLAY'),
+            icon: controller.isConnectedCore
+                ? Icons.cable_rounded
+                : Icons.replay_outlined,
+            foreground: controller.isConnectedCore
+                ? RenkeviaColors.cyanDark
+                : RenkeviaColors.violet,
+            background: controller.isConnectedCore
+                ? RenkeviaColors.cyanWash
+                : const Color(0xFFEDEBF6),
+          ),
+          const SizedBox(width: 7),
+          const Tooltip(
+            message: 'Synthetic fixture • no PHI',
+            child: Icon(
+              Icons.shield_outlined,
+              color: RenkeviaColors.cyanDark,
+              size: 20,
+            ),
+          ),
+          IconButton(
+            key: const Key('mobile-reset-fixture'),
+            onPressed: controller.resetFixture,
+            tooltip: 'Reset synthetic run',
+            icon: const Icon(Icons.restart_alt_rounded, size: 20),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -56,55 +219,117 @@ class _CommandBar extends StatelessWidget {
         color: RenkeviaColors.surface,
         border: Border(bottom: BorderSide(color: RenkeviaColors.hairline)),
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.account_tree_outlined, size: 17),
-          const SizedBox(width: 9),
-          Text('RUN 24-0717-A', style: Theme.of(context).textTheme.labelMedium),
-          const SizedBox(width: 12),
-          const _DividerDot(),
-          const SizedBox(width: 12),
-          Text(
-            'Northstar University Hospital',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: RenkeviaColors.ink,
-              fontWeight: FontWeight.w600,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 1000;
+          return Row(
+            children: [
+              const Icon(Icons.account_tree_outlined, size: 17),
+              const SizedBox(width: 9),
+              Text(
+                'RUN 24-0717-A',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              const SizedBox(width: 12),
+              if (!compact) ...[const _DividerDot(), const SizedBox(width: 12)],
+              Expanded(
+                child: Text(
+                  compact ? 'Northstar UH' : 'Northstar University Hospital',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: RenkeviaColors.ink,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const StatusPill(
+                label: 'SYNTHETIC • NO PHI',
+                icon: Icons.shield_outlined,
+                foreground: RenkeviaColors.cyanDark,
+                background: RenkeviaColors.cyanWash,
+              ),
+              const SizedBox(width: 8),
+              StatusPill(
+                label: compact
+                    ? (controller.executionModeLabel == 'LIVE GPT-5.6'
+                          ? 'LIVE'
+                          : (controller.isConnectedCore ? 'CORE' : 'REPLAY'))
+                    : controller.executionModeLabel,
+                icon: controller.isConnectedCore
+                    ? Icons.cable_rounded
+                    : Icons.replay_outlined,
+                foreground: controller.isConnectedCore
+                    ? RenkeviaColors.cyanDark
+                    : RenkeviaColors.violet,
+                background: controller.isConnectedCore
+                    ? RenkeviaColors.cyanWash
+                    : const Color(0xFFEDEBF6),
+              ),
+              const SizedBox(width: 12),
+              IconButton(
+                onPressed: controller.resetFixture,
+                tooltip: 'Reset synthetic run',
+                icon: const Icon(Icons.restart_alt_rounded, size: 19),
+              ),
+              const SizedBox(width: 2),
+              const CircleAvatar(
+                radius: 15,
+                backgroundColor: RenkeviaColors.graphite,
+                child: Text(
+                  'AM',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _GatewayErrorBanner extends StatelessWidget {
+  const _GatewayErrorBanner({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      liveRegion: true,
+      label: message,
+      child: Container(
+        key: const Key('gateway-error-banner'),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+        color: RenkeviaColors.dangerWash,
+        child: Row(
+          children: [
+            const Icon(
+              Icons.gpp_bad_outlined,
+              color: RenkeviaColors.danger,
+              size: 17,
             ),
-          ),
-          const Spacer(),
-          const StatusPill(
-            label: 'SYNTHETIC • NO PHI',
-            icon: Icons.shield_outlined,
-            foreground: RenkeviaColors.cyanDark,
-            background: RenkeviaColors.cyanWash,
-          ),
-          const SizedBox(width: 8),
-          const StatusPill(
-            label: 'FIXTURE REPLAY',
-            icon: Icons.replay_outlined,
-            foreground: RenkeviaColors.violet,
-            background: Color(0xFFEDEBF6),
-          ),
-          const SizedBox(width: 12),
-          IconButton(
-            onPressed: controller.resetFixture,
-            tooltip: 'Reset synthetic run',
-            icon: const Icon(Icons.restart_alt_rounded, size: 19),
-          ),
-          const SizedBox(width: 2),
-          const CircleAvatar(
-            radius: 15,
-            backgroundColor: RenkeviaColors.graphite,
-            child: Text(
-              'AM',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 9,
-                fontWeight: FontWeight.w800,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                message,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: RenkeviaColors.danger,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -401,125 +626,13 @@ class _SectionBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (controller.section) {
       WorkspaceSection.responseRoom => ResponseRoomPage(controller: controller),
-      WorkspaceSection.patchStudio => const _ComingSection(
-        eyebrow: 'PATCH STUDIO / 02',
-        title: 'One Patch IR. Six synchronized artifacts.',
-        detail:
-            'This surface unlocks after the dependency graph reaches a reviewable candidate.',
-        icon: Icons.difference_outlined,
+      WorkspaceSection.patchStudio => PatchStudioPage(controller: controller),
+      WorkspaceSection.simulationLab => SimulationLabPage(
+        controller: controller,
       ),
-      WorkspaceSection.simulationLab => const _ComingSection(
-        eyebrow: 'SIMULATION LAB / 03',
-        title: 'Patient pathways become executable assertions.',
-        detail:
-            'The red-to-green regression matrix is the next vertical slice.',
-        icon: Icons.grid_view_outlined,
-      ),
-      WorkspaceSection.evidenceVault => const _ComingSection(
-        eyebrow: 'EVIDENCE VAULT / 04',
-        title: 'Every mutation carries its proof and rollback.',
-        detail:
-            'Provenance, audit events, approvals, and exact restoration converge here.',
-        icon: Icons.inventory_2_outlined,
+      WorkspaceSection.evidenceVault => EvidenceVaultPage(
+        controller: controller,
       ),
     };
-  }
-}
-
-class _ComingSection extends StatelessWidget {
-  const _ComingSection({
-    required this.eyebrow,
-    required this.title,
-    required this.detail,
-    required this.icon,
-  });
-
-  final String eyebrow;
-  final String title;
-  final String detail;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560),
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  color: RenkeviaColors.cyanWash,
-                  borderRadius: BorderRadius.circular(13),
-                ),
-                child: Icon(icon, color: RenkeviaColors.cyanDark),
-              ),
-              const SizedBox(height: 20),
-              Text(eyebrow, style: Theme.of(context).textTheme.labelMedium),
-              const SizedBox(height: 10),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                detail,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DesktopRequired extends StatelessWidget {
-  const _DesktopRequired();
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: RenkeviaColors.graphite,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 480),
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const _BrandMark(),
-                const SizedBox(height: 22),
-                const Text(
-                  'Institutional workspace requires a larger canvas',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    height: 1.2,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Open RENKEVIA at 1024px or wider to inspect synchronized evidence, graphs, and diffs safely.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFFB8C4C2),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

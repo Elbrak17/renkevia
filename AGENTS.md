@@ -23,7 +23,7 @@ The product is a change compiler and safety workbench, not a chatbot and not a c
 
 ## Technical direction
 
-- Client: Flutter Web, responsive from 1280x720 upward, keyboard accessible.
+- Client: Flutter Web, responsive across modern mobile, tablet, laptop, and desktop viewports; keyboard accessible.
 - Backend/orchestrator: TypeScript on Node.js unless a documented constraint proves a better choice.
 - API: OpenAI Responses API with GPT-5.6 family models.
 - Model routing: Luna for low-risk normalization; Terra for bounded extraction/drafting; Sol for patch synthesis, contradiction resolution, and final audit.
@@ -56,8 +56,9 @@ The product is a change compiler and safety workbench, not a chatbot and not a c
 Use the commands that exist for the current phase; never report a check as passed if it was skipped.
 
 ```bash
+npm run check:offline
+npm run demo:core
 npm run verify:phase0
 npm run probe:preflight
+cd app && flutter analyze && flutter test && flutter build web --release
 ```
-
-When Flutter and the backend are added, extend this section with the canonical format, lint, test, golden-test, and build commands.

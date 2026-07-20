@@ -9,9 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # Flutter's web icon tree shaker currently retains a Cupertino fallback from
-  # the framework even though RENKEVIA itself uses Material symbols.
-  cupertino_icons: ^1.0.8
+  # Flutter's web icon tree shaker retains a framework-level Cupertino
+  # fallback even though RENKEVIA itself uses Material symbols.
+  cupertino_icons: ^1.0.9
 
 dev_dependencies:
   flutter_test:
@@ -20,3 +20,30 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    # Alias Flutter's Material fallback to the same local files so the web
+    # demo never pauses on a fonts.gstatic.com request in an isolated venue.
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
+    - family: RenkeviaSans
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
+    - family: RenkeviaMono
+      fonts:
+        - asset: assets/fonts/RobotoMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/RobotoMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/RobotoMono-Bold.ttf
+          weight: 700

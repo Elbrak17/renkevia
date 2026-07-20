@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/features/response_room/widgets/dependency_graph.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
+import 'package:renkevia/src/shared/responsive_metric_width.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
 class ResponseRoomPage extends StatelessWidget {
@@ -11,10 +12,16 @@ class ResponseRoomPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 600;
     return ColoredBox(
       color: RenkeviaColors.canvas,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(22, 22, 22, 30),
+        padding: EdgeInsets.fromLTRB(
+          compact ? 12 : 22,
+          compact ? 16 : 22,
+          compact ? 12 : 22,
+          30,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -37,88 +44,101 @@ class _IncidentHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 680;
+        final incident = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'RESPONSE ROOM / 01',
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
-                      const SizedBox(width: 10),
-                      const StatusPill(
-                        label: 'SEV-1 OPERATIONAL',
-                        icon: Icons.priority_high_rounded,
-                        foreground: RenkeviaColors.danger,
-                        background: RenkeviaColors.dangerWash,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Critical IV carrier shortage',
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 7),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 760),
-                    child: Text(
-                      'Compile one institution-wide response from a contradictory synthetic corpus—before any artifact can drift alone.',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ),
-                ],
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 10,
+              runSpacing: 7,
+              children: [
+                Text(
+                  'RESPONSE ROOM / 01',
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                const StatusPill(
+                  label: 'SEV-1 OPERATIONAL',
+                  icon: Icons.priority_high_rounded,
+                  foreground: RenkeviaColors.danger,
+                  background: RenkeviaColors.dangerWash,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Critical IV carrier shortage',
+              style: compact
+                  ? Theme.of(context).textTheme.headlineMedium
+                  : Theme.of(context).textTheme.headlineLarge,
+            ),
+            const SizedBox(height: 7),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: Text(
+                'Compile one institution-wide response from a contradictory synthetic corpus—before any artifact can drift alone.',
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
-            const SizedBox(width: 20),
-            _CompileButton(controller: controller),
           ],
-        ),
-        const SizedBox(height: 18),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        );
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _Metric(
-              label: 'CORPUS',
-              value: '12',
-              detail: 'mixed artifacts',
-              icon: Icons.folder_copy_outlined,
-            ),
-            const _Metric(
-              label: 'BLAST RADIUS',
-              value: '7',
-              detail: 'linked systems',
-              icon: Icons.hub_outlined,
-            ),
-            const _Metric(
-              label: 'PATIENT SUITES',
-              value: '24',
-              detail: 'synthetic paths',
-              icon: Icons.fact_check_outlined,
-            ),
-            _Metric(
-              label: 'BLOCKERS',
-              value: controller.pediatricBlockerRevealed ? '1' : '—',
-              detail: controller.pediatricBlockerRevealed
-                  ? 'critical exception'
-                  : 'mapping pending',
-              icon: controller.pediatricBlockerRevealed
-                  ? Icons.report_gmailerrorred_outlined
-                  : Icons.hourglass_top_rounded,
-              danger: controller.pediatricBlockerRevealed,
+            if (compact) ...[
+              incident,
+              const SizedBox(height: 14),
+              _CompileButton(controller: controller),
+            ] else
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: incident),
+                  const SizedBox(width: 20),
+                  _CompileButton(controller: controller),
+                ],
+              ),
+            const SizedBox(height: 18),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                const _Metric(
+                  label: 'CORPUS',
+                  value: '12',
+                  detail: 'mixed artifacts',
+                  icon: Icons.folder_copy_outlined,
+                ),
+                const _Metric(
+                  label: 'BLAST RADIUS',
+                  value: '7',
+                  detail: 'linked systems',
+                  icon: Icons.hub_outlined,
+                ),
+                const _Metric(
+                  label: 'PATIENT SUITES',
+                  value: '24',
+                  detail: 'synthetic paths',
+                  icon: Icons.fact_check_outlined,
+                ),
+                _Metric(
+                  label: 'BLOCKERS',
+                  value: controller.pediatricBlockerRevealed ? '1' : '—',
+                  detail: controller.pediatricBlockerRevealed
+                      ? 'critical exception'
+                      : 'mapping pending',
+                  icon: controller.pediatricBlockerRevealed
+                      ? Icons.report_gmailerrorred_outlined
+                      : Icons.hourglass_top_rounded,
+                  danger: controller.pediatricBlockerRevealed,
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -183,8 +203,10 @@ class _Metric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final foreground = danger ? RenkeviaColors.danger : RenkeviaColors.ink;
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final metricWidth = responsiveMetricWidth(viewportWidth, desktopWidth: 198);
     return Container(
-      width: 198,
+      width: metricWidth,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
       decoration: BoxDecoration(
         color: danger ? RenkeviaColors.dangerWash : RenkeviaColors.surface,
@@ -262,36 +284,72 @@ class _RunStages extends StatelessWidget {
       ('05', 'Verify', 'Patient regressions'),
     ];
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 13, 16, 12),
-      decoration: BoxDecoration(
-        color: RenkeviaColors.graphite,
-        borderRadius: BorderRadius.circular(11),
-      ),
-      child: Row(
-        children: [
-          for (var index = 0; index < stages.length; index++) ...[
-            Expanded(
-              child: _Stage(
-                number: stages[index].$1,
-                title: stages[index].$2,
-                detail: stages[index].$3,
-                completed: index < activeIndex,
-                active: index == activeIndex,
-                blocked: state == CompileState.blocked && index == activeIndex,
-              ),
-            ),
-            if (index < stages.length - 1)
-              Container(
-                width: 26,
-                height: 1,
-                color: index < activeIndex
-                    ? RenkeviaColors.cyan
-                    : RenkeviaColors.hairlineDark,
-              ),
-          ],
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final vertical = constraints.maxWidth < 680;
+        return Container(
+          padding: const EdgeInsets.fromLTRB(16, 13, 16, 12),
+          decoration: BoxDecoration(
+            color: RenkeviaColors.graphite,
+            borderRadius: BorderRadius.circular(11),
+          ),
+          child: vertical
+              ? Column(
+                  children: [
+                    for (var index = 0; index < stages.length; index++) ...[
+                      _Stage(
+                        number: stages[index].$1,
+                        title: stages[index].$2,
+                        detail: stages[index].$3,
+                        completed: index < activeIndex,
+                        active: index == activeIndex,
+                        blocked:
+                            state == CompileState.blocked &&
+                            index == activeIndex,
+                      ),
+                      if (index < stages.length - 1)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            width: 1,
+                            height: 10,
+                            margin: const EdgeInsets.only(left: 14),
+                            color: index < activeIndex
+                                ? RenkeviaColors.cyan
+                                : RenkeviaColors.hairlineDark,
+                          ),
+                        ),
+                    ],
+                  ],
+                )
+              : Row(
+                  children: [
+                    for (var index = 0; index < stages.length; index++) ...[
+                      Expanded(
+                        child: _Stage(
+                          number: stages[index].$1,
+                          title: stages[index].$2,
+                          detail: stages[index].$3,
+                          completed: index < activeIndex,
+                          active: index == activeIndex,
+                          blocked:
+                              state == CompileState.blocked &&
+                              index == activeIndex,
+                        ),
+                      ),
+                      if (index < stages.length - 1)
+                        Container(
+                          width: 26,
+                          height: 1,
+                          color: index < activeIndex
+                              ? RenkeviaColors.cyan
+                              : RenkeviaColors.hairlineDark,
+                        ),
+                    ],
+                  ],
+                ),
+        );
+      },
     );
   }
 }
@@ -382,6 +440,23 @@ class _Workspace extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        if (constraints.maxWidth < 720) {
+          return Column(
+            children: [
+              SizedBox(
+                height: 330,
+                child: _EvidenceRail(controller: controller),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(height: 540, child: _GraphPanel(controller: controller)),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 360,
+                child: _EvidenceInspector(controller: controller),
+              ),
+            ],
+          );
+        }
         final showInspectorBeside = constraints.maxWidth >= 1060;
         final core = SizedBox(
           height: 570,
@@ -431,9 +506,9 @@ class _GraphPanel extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 13, 12, 11),
-            child: const _GraphHeader(),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(15, 13, 12, 11),
+            child: _GraphHeader(),
           ),
           const Divider(height: 1),
           Expanded(

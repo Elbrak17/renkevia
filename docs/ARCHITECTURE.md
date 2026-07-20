@@ -1,10 +1,10 @@
 # Architecture
 
-Status: target architecture for the first vertical slice. Components are not considered implemented until verified.
+Status: executable vertical-slice architecture. The Flutter surfaces, Northstar sandbox, deterministic compiler/simulation core, and guarded OpenAI orchestration adapter are implemented. Live capability claims remain gated on paid-account probes and saved evidence.
 
 ## System boundary
 
-RENKEVIA is one Flutter Web application backed by an orchestration service and deterministic compiler/simulation core. A separate fictional legacy-EHR sandbox exists solely as an external no-API target for Computer Use.
+RENKEVIA is one Flutter Web application backed by an orchestration service and deterministic compiler/simulation core. A separate fictional legacy-EHR sandbox, **Northstar Clinical System**, exists solely as an external no-API target for Computer Use; Northstar is not a second product or an alternate name for RENKEVIA.
 
 ```text
 Flutter Web
@@ -38,6 +38,21 @@ Orchestrator (Node.js / TypeScript)
 - `AuditEvent`: append-only actor/action/input/output hashes and timestamps.
 
 The model never emits arbitrary write commands. It proposes schema-constrained objects that the deterministic layer validates and interprets.
+
+## Implemented deterministic boundary
+
+`server/` currently owns the trusted, network-free product core:
+
+- `renkevia.patch-ir/v1` structural validation plus semantic invariants;
+- corpus-region and checksum resolution for every Patch IR evidence reference;
+- precondition-checked compilation into six institutional artifact types;
+- evidence-linked diffs and deterministic provenance coverage;
+- 24 synthetic pathways and 96 assertions;
+- full and partially staged rollback with exact sealed-state hash comparison;
+- server-computed approval blockers and an unconditional prohibition on final commit;
+- a hash-chained append-only audit ledger that records input/output hashes rather than corpus contents.
+
+The OpenAI adapter sits outside this trusted core. It implements family routing, strict structured Patch IR synthesis, Programmatic Tool Calling, native Multi-agent review, Computer Use staging, and a hash-chained cost ledger. GPT-5.6 proposals pass the same validator and deterministic checks as fixtures; API success can never directly toggle approval.
 
 ## Model routing
 
@@ -115,4 +130,3 @@ Every transition has explicit preconditions. A failed or incomplete run is a fir
 - Ephemeral run workspace; encrypted transport; secrets held server-side.
 - Logs contain identifiers and hashes, not full sensitive documents.
 - Zero-data-retention-compatible design may be discussed only as an architectural posture, not as a compliance certification.
-
