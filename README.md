@@ -63,6 +63,13 @@ The interface then displays `CONNECTED CORE` at every viewport. It treats a
 network or contract failure as blocking and never silently substitutes replay
 data. The OpenAI key remains exclusively on the server.
 
+For the final funded proof, enable the guarded server live mode and add
+`--dart-define=RENKEVIA_LIVE_REASONING=true` to the Flutter command. The v0.8
+action then runs Patch IR synthesis, Programmatic Tool Calling, and native
+Multi-agent audit through the real API. The header changes to `LIVE GPT-5.6`;
+later screens reveal the exact proof returned by that run rather than issuing
+duplicate paid calls.
+
 The bounded paid-account proof is a separate command:
 
 ```bash
