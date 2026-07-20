@@ -3,14 +3,19 @@
 ## Required before submission
 
 - [ ] Devpost registration completed by the project owner.
-- [ ] All chained pull requests are green and merged into `main`.
-- [ ] GitHub Pages deployment opens on mobile and desktop.
-- [ ] Downloaded CI Web artifact matches the deployed build.
-- [ ] Final screenshots contain readable text and no missing-font squares.
+- [x] Consolidated pull request #11 is green and merged into `main`.
+- [x] GitHub Pages deployment opens over HTTPS and the release build has passed
+  desktop, tablet, and mobile browser capture.
+- [x] CI visual proof and the Pages deployment were produced from the same
+  product commit; the later submission-copy update does not alter the app.
+- [x] Final browser screenshots contain readable text and no missing-font
+  squares.
 - [ ] Demo video is public/unlisted as required and stays within the time limit.
-- [ ] Devpost description leads with the institutional transformation, not a
-  model-feature list.
-- [ ] Repository URL, live URL, video URL, and license are supplied.
+- [x] Devpost description leads with the institutional transformation, not a
+  model-feature list; see `DEVPOST_SUBMISSION.md`.
+- [x] Repository URL, live URL, and license are supplied in the submission
+  draft.
+- [ ] Final video URL is inserted into the submission draft and Devpost form.
 
 ## Live API gate
 
@@ -23,13 +28,15 @@
 
 ## Safety and truthfulness gate
 
-- [ ] Synthetic/no-PHI label remains visible.
+- [x] Synthetic/no-PHI label remains visible.
+- [x] No API key, real patient data, real hospital identity, or billing detail is
+  visible in the repository, logs, or final screenshots.
 - [ ] No API key, real patient data, real hospital identity, or billing detail is
-  visible in repository, logs, screenshots, or video.
-- [ ] No claim of HIPAA compliance, clinical validation, production readiness,
+  visible in the final video.
+- [x] No claim of HIPAA compliance, clinical validation, production readiness,
   autonomous approval, or autonomous final write.
-- [ ] Northstar is called a fictional legacy target, never the product name.
-- [ ] Human approval is shown; final commit is not executed.
+- [x] Northstar is called a fictional legacy target, never the product name.
+- [x] Human approval is shown; final commit is not executed.
 
 Run the final machine checks:
 
