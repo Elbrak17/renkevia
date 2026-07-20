@@ -5,6 +5,8 @@ import { evaluateApprovalGate } from '../core/approval-policy.js';
 import { compilePatch, provenanceCoverage, rollbackCompiledPatch } from '../core/patch-compiler.js';
 import { runSimulation } from '../core/simulation-engine.js';
 import { candidatePatchV07, northstarBaseline, revisedPatchV08, specialistReviewFixture, syntheticPathways } from '../fixtures/northstar.js';
+import type { LiveReasoningPipelineResult } from '../openai/live-reasoning-pipeline.js';
+import { createLiveReasoningPipeline, createLiveRunId } from '../openai/live-pipeline-factory.js';
 
 const candidateCompiled = compilePatch(northstarBaseline, candidatePatchV07);
 const candidateSimulation = runSimulation(candidateCompiled, syntheticPathways);
@@ -95,7 +97,14 @@ function assertFixture(input: Record<string, unknown>): void {
   }
 }
 
-export function createDemoApiServer(env: NodeJS.ProcessEnv = process.env): Server {
+export interface LivePipelineRunner {
+  run(rootRunId: string): Promise<LiveReasoningPipelineResult>;
+}
+
+export function createDemoApiServer(
+  env: NodeJS.ProcessEnv = process.env,
+  livePipelineFactory: () => LivePipelineRunner = () => createLiveReasoningPipeline(env),
+): Server {
   return createServer(async (request, response) => {
     if (!setHeaders(response, request, env)) {
       send(response, 403, { error: 'origin_not_allowed' });
@@ -152,6 +161,49 @@ export function createDemoApiServer(env: NodeJS.ProcessEnv = process.env): Serve
           blockers: gate.blockers,
           finalCommitAllowed: false,
         });
+        return;
+      }
+      if (request.method === 'POST' && url.pathname === '/api/live/reasoning') {
+        if (env.LIVE_OPENAI_ENABLED !== 'true') {
+          send(response, 503, { error: 'live_disabled', finalCommitAllowed: false });
+          return;
+        }
+        const input = await body(request);
+        assertFixture(input);
+        if (input.confirmLive !== true) {
+          send(response, 400, { error: 'live_confirmation_required', finalCommitAllowed: false });
+          return;
+        }
+        try {
+          const result = await livePipelineFactory().run(createLiveRunId());
+          const compiled = compilePatch(northstarBaseline, result.patch);
+          send(response, 200, {
+            synthetic: true,
+            mode: 'live_gpt_5_6',
+            rootRunId: result.rootRunId,
+            responseIds: [result.patchResponseId, result.programmaticResponseId, result.auditResponseId],
+            patchVersion: result.patch.version,
+            patchStatus: result.patch.status,
+            diffCount: compiled.diffs.length,
+            pathwayCount: result.simulation.pathwayCount,
+            passedPathways: result.simulation.passedPathways,
+            assertionCount: result.simulation.assertionCount,
+            passedAssertions: result.simulation.passedAssertions,
+            provenanceCoverage: provenanceCoverage(compiled),
+            exactRollbackVerified: result.exactRollbackVerified,
+            reviewCount: result.reviews.length,
+            roles: result.reviews.map((review) => review.role),
+            preservedDissentIds: result.reviews.filter((review) => review.verdict === 'dissent').map((review) => review.id),
+            approvalControlEnabled: result.approval.approvalControlEnabled,
+            blockers: result.approval.blockers,
+            finalCommitAllowed: false,
+          });
+        } catch (error) {
+          const code = error && typeof error === 'object' && 'code' in error && typeof (error as { code?: unknown }).code === 'string'
+            ? (error as { code: string }).code
+            : error instanceof Error ? error.name : 'live_run_failed';
+          send(response, 502, { error: code, finalCommitAllowed: false });
+        }
         return;
       }
       send(response, 404, { error: 'not_found' });

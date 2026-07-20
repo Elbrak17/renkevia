@@ -171,7 +171,9 @@ class _MobileCommandBar extends StatelessWidget {
             ),
           ),
           StatusPill(
-            label: controller.isConnectedCore ? 'CORE' : 'REPLAY',
+            label: controller.executionModeLabel == 'LIVE GPT-5.6'
+                ? 'LIVE'
+                : (controller.isConnectedCore ? 'CORE' : 'REPLAY'),
             icon: controller.isConnectedCore
                 ? Icons.cable_rounded
                 : Icons.replay_outlined,
@@ -251,7 +253,9 @@ class _CommandBar extends StatelessWidget {
               const SizedBox(width: 8),
               StatusPill(
                 label: compact
-                    ? (controller.isConnectedCore ? 'CORE' : 'REPLAY')
+                    ? (controller.executionModeLabel == 'LIVE GPT-5.6'
+                          ? 'LIVE'
+                          : (controller.isConnectedCore ? 'CORE' : 'REPLAY'))
                     : controller.executionModeLabel,
                 icon: controller.isConnectedCore
                     ? Icons.cable_rounded

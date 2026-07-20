@@ -57,3 +57,17 @@ flutter run -d chrome \
 Connected mode is labeled `CONNECTED CORE` on every viewport. Network or
 contract failures become blocking UI errors; the client never silently falls
 back to fixture replay. Both modes use synthetic, non-clinical data.
+
+After the API project is funded and the server-side live gates are explicitly
+enabled, the same build can invoke the complete GPT-5.6 reasoning chain during
+the v0.8 recompilation step:
+
+```bash
+flutter run -d chrome \
+  --dart-define=RENKEVIA_API_BASE_URL=http://127.0.0.1:8787 \
+  --dart-define=RENKEVIA_LIVE_REASONING=true
+```
+
+The header then reads `LIVE GPT-5.6`. The live result is held in memory and its
+simulation/audit proofs are revealed through the following demo stages; an API
+failure remains blocking and is never replaced with fixture data.
