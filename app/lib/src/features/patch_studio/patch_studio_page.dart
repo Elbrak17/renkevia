@@ -616,7 +616,7 @@ class _ArtifactDiffPanel extends StatelessWidget {
     final artifact = controller.selectedPatchArtifact;
     final revised = controller.patchRevised;
     final spec = _artifactSpec(artifact, revised: revised);
-    final artifacts = PatchArtifact.values;
+    const artifacts = PatchArtifact.values;
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
