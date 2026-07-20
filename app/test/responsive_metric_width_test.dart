@@ -12,6 +12,13 @@ void main() {
     expect(responsiveMetricWidth(320, desktopWidth: 212), 296);
   });
 
+  test('supports full-width mobile metrics for long clinical values', () {
+    expect(
+      responsiveMetricWidth(390, desktopWidth: 212, twoColumn: false),
+      366,
+    );
+  });
+
   test('preserves each feature metric width outside mobile mode', () {
     expect(responsiveMetricWidth(600, desktopWidth: 198), 198);
     expect(responsiveMetricWidth(1440, desktopWidth: 212), 212);
