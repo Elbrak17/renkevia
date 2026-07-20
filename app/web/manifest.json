@@ -6,7 +6,7 @@
     "background_color": "#142020",
     "theme_color": "#142020",
     "description": "Compile institutional evidence into synchronized, tested, provenance-linked hospital change packages.",
-    "orientation": "landscape-primary",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {

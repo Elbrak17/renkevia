@@ -42,6 +42,13 @@ for (const file of requiredFiles) {
   }
 }
 
+const webManifest = JSON.parse(
+  await readFile(resolve(root, 'app/web/manifest.json'), 'utf8').catch(() => '{}'),
+);
+if (webManifest.orientation === 'landscape' || webManifest.orientation === 'landscape-primary') {
+  failures.push('app/web/manifest.json: installed PWA must not force landscape orientation');
+}
+
 for (const [file, phrases] of requiredPhrases) {
   const text = await readFile(resolve(root, file), 'utf8').catch(() => '');
   for (const phrase of phrases) {
