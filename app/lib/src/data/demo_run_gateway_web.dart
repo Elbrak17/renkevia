@@ -48,22 +48,25 @@ class ConnectedCoreGateway implements DemoRunGateway {
 
   int _integer(Map<String, dynamic> value, String key) {
     final field = value[key];
-    if (field is! int)
+    if (field is! int) {
       throw DemoGatewayContractError('Core field $key was invalid.');
+    }
     return field;
   }
 
   bool _boolean(Map<String, dynamic> value, String key) {
     final field = value[key];
-    if (field is! bool)
+    if (field is! bool) {
       throw DemoGatewayContractError('Core field $key was invalid.');
+    }
     return field;
   }
 
   String _string(Map<String, dynamic> value, String key) {
     final field = value[key];
-    if (field is! String)
+    if (field is! String) {
       throw DemoGatewayContractError('Core field $key was invalid.');
+    }
     return field;
   }
 
