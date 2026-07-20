@@ -35,10 +35,9 @@ class ConnectedCoreGateway implements DemoRunGateway {
       requestHeaders: const {'content-type': 'application/json'},
       sendData: jsonEncode(const {'fixtureId': 'FIXTURE-8D4A'}),
     );
-    if (response.status < 200 || response.status >= 300) {
-      throw DemoGatewayContractError(
-        'Core rejected $path (${response.status}).',
-      );
+    final status = response.status ?? 0;
+    if (status < 200 || status >= 300) {
+      throw DemoGatewayContractError('Core rejected $path ($status).');
     }
     final value = jsonDecode(response.responseText ?? '');
     if (value is! Map<String, dynamic>) {
