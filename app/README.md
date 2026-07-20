@@ -38,6 +38,22 @@ flutter build web
 `web/flutter_bootstrap.js` pins CanvasKit to the local web bundle so a restricted
 venue network cannot leave the application on an empty loading surface.
 
-The UI never sends an OpenAI key from the browser. Live model calls will be made
-by a separate server-side orchestration layer. Every current result is visibly
-labeled `FIXTURE REPLAY` and uses synthetic, non-clinical data.
+The UI never sends an OpenAI key from the browser. Live model calls are made by
+the separate server-side orchestration layer.
+
+## Execution modes
+
+The default build uses `FIXTURE REPLAY`. To connect the same Flutter Web
+surface to the sealed TypeScript core, start the API from the repository root
+and build or run Flutter with a compile-time base URL:
+
+```bash
+npm run serve:api
+cd app
+flutter run -d chrome \
+  --dart-define=RENKEVIA_API_BASE_URL=http://127.0.0.1:8787
+```
+
+Connected mode is labeled `CONNECTED CORE` on every viewport. Network or
+contract failures become blocking UI errors; the client never silently falls
+back to fixture replay. Both modes use synthetic, non-clinical data.

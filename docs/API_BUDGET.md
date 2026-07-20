@@ -49,6 +49,13 @@ The initial $5 budget is reserved as follows:
 Multi-agent and Computer Use live runs stay disabled until their individual
 probes pass and a per-run estimate fits the remaining balance.
 
+`npm run demo:live` executes the bounded reasoning chain only when
+`LIVE_OPENAI_ENABLED=true`: Sol Patch IR revision, hosted Programmatic Tool
+Calling for the sealed pathways, and four-way native Multi-agent audit. Each
+stage receives its own cost-ledger reservation. The command writes a sanitized
+pass/fail record and never stores prompts, corpus contents, the API key, or a
+final-write capability.
+
 ## Hard guards owned by our backend
 
 OpenAI project budgets are alert thresholds, not hard caps. The orchestration

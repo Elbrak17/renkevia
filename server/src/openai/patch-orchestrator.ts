@@ -21,6 +21,7 @@ export class PatchOrchestrator {
     incidentId: string;
     corpus: EvidenceArtifactManifest[];
     baseline: InstitutionState;
+    challenge?: unknown;
   }): Promise<PatchSynthesisResult> {
     if (!input.baseline.synthetic || input.corpus.some((artifact) => !artifact.synthetic)) {
       throw new Error('Live orchestration accepts the sealed synthetic corpus only.');
@@ -47,6 +48,7 @@ export class PatchOrchestrator {
               incidentId: input.incidentId,
               corpus: input.corpus,
               baseline: input.baseline,
+              challenge: input.challenge,
             }),
           },
         ],
