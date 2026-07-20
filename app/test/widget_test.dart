@@ -400,6 +400,13 @@ void main() {
   testWidgets('mobile shell keeps all four institutional surfaces reachable', (
     tester,
   ) async {
+    final previousFlutterErrorHandler = FlutterError.onError;
+    FlutterError.onError = (details) {
+      FlutterError.dumpErrorToConsole(details, forceReport: true);
+      previousFlutterErrorHandler?.call(details);
+    };
+    addTearDown(() => FlutterError.onError = previousFlutterErrorHandler);
+
     await setCompactCanvas(tester);
     await tester.pumpWidget(const RenkeviaApp());
     await tester.pumpAndSettle();
