@@ -67,10 +67,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.textContaining(
-        'SYNTHETIC • NO PATIENT DATA',
-        findRichText: true,
-      ),
+      find.textContaining('SYNTHETIC • NO PATIENT DATA', findRichText: true),
       findsOneWidget,
     );
     expect(
@@ -306,10 +303,7 @@ void main() {
     await sealEvidenceVault(tester);
 
     expect(
-      find.textContaining(
-        '4 REVIEWS COMPLETE • 1 DISSENT',
-        findRichText: true,
-      ),
+      find.textContaining('4 REVIEWS COMPLETE • 1 DISSENT', findRichText: true),
       findsOneWidget,
     );
     expect(find.text('DISSENT PRESERVED • LEGACY-01'), findsOneWidget);
