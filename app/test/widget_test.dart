@@ -20,6 +20,14 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
   }
 
+  void expectNoFlutterException(WidgetTester tester, String stage) {
+    expect(
+      tester.takeException(),
+      isNull,
+      reason: 'Unexpected Flutter exception during $stage',
+    );
+  }
+
   Future<void> sealEvidenceVault(WidgetTester tester) async {
     await tester.tap(find.text('Change plan'));
     await tester.pumpAndSettle();
@@ -395,6 +403,7 @@ void main() {
     await setCompactCanvas(tester);
     await tester.pumpWidget(const RenkeviaApp());
     await tester.pumpAndSettle();
+    expectNoFlutterException(tester, 'mobile impact review');
 
     expect(find.text('RENKEVIA'), findsOneWidget);
     expect(
@@ -408,6 +417,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('mobile-nav-patch-studio')));
     await tester.pumpAndSettle();
+    expectNoFlutterException(tester, 'mobile change plan');
     expect(
       find.text('Fix the rule once. Never repair six files by hand.'),
       findsOneWidget,
@@ -415,6 +425,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('mobile-nav-simulation-lab')));
     await tester.pumpAndSettle();
+    expectNoFlutterException(tester, 'mobile safety checks');
     expect(
       find.text('Make the hidden failure reproducible—then prove it is gone.'),
       findsOneWidget,
@@ -422,6 +433,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('mobile-nav-evidence-vault')));
     await tester.pumpAndSettle();
+    expectNoFlutterException(tester, 'mobile approval record');
     expect(
       find.text('Turn every claim into an accountable approval record.'),
       findsOneWidget,
@@ -429,6 +441,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('mobile-nav-response-room')));
     await tester.pumpAndSettle();
+    expectNoFlutterException(tester, 'mobile return to impact review');
     expect(
       find.text('Protect every care pathway from one shortage.'),
       findsOneWidget,
