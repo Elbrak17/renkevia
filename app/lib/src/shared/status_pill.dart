@@ -22,15 +22,12 @@ class StatusPill extends StatelessWidget {
         color: background,
         borderRadius: BorderRadius.circular(99),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 12, color: foreground),
-            const SizedBox(width: 5),
-          ],
-          Text(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final labelText = Text(
             label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: foreground,
               fontSize: 10,
@@ -38,8 +35,21 @@ class StatusPill extends StatelessWidget {
               letterSpacing: 0.55,
               fontWeight: FontWeight.w800,
             ),
-          ),
-        ],
+          );
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 12, color: foreground),
+                const SizedBox(width: 5),
+              ],
+              if (constraints.hasBoundedWidth)
+                Flexible(child: labelText)
+              else
+                labelText,
+            ],
+          );
+        },
       ),
     );
   }

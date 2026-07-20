@@ -53,14 +53,14 @@ class RenkeviaWordmark extends StatelessWidget {
           accent: RenkeviaColors.cyan,
         ),
         if (!compact) ...[
-          const SizedBox(width: 11),
+          const SizedBox(width: 10),
           Text(
             'RENKEVIA',
             style: TextStyle(
               color: foreground,
               fontSize: 15,
               height: 1,
-              letterSpacing: 2.25,
+              letterSpacing: 2,
               fontWeight: FontWeight.w800,
             ),
           ),

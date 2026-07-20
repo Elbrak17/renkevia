@@ -241,8 +241,8 @@ class _CommandBar extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const StatusPill(
-                label: 'SYNTHETIC • NO PATIENT DATA',
+              StatusPill(
+                label: compact ? 'SYNTHETIC' : 'SYNTHETIC • NO PATIENT DATA',
                 icon: Icons.shield_outlined,
                 foreground: RenkeviaColors.cyanDark,
                 background: RenkeviaColors.cyanWash,
@@ -441,6 +441,7 @@ class _NavigationRail extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           Icons.lock_clock_outlined,
@@ -448,13 +449,17 @@ class _NavigationRail extends StatelessWidget {
                           size: 15,
                         ),
                         SizedBox(width: 7),
-                        Text(
-                          'HUMAN DECISION REQUIRED',
-                          style: TextStyle(
-                            color: RenkeviaColors.amber,
-                            fontSize: 10,
-                            letterSpacing: 0.7,
-                            fontWeight: FontWeight.w800,
+                        Expanded(
+                          child: Text(
+                            'HUMAN DECISION REQUIRED',
+                            maxLines: 2,
+                            style: TextStyle(
+                              color: RenkeviaColors.amber,
+                              fontSize: 10,
+                              height: 1.25,
+                              letterSpacing: 0.7,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
                       ],

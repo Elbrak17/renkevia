@@ -500,7 +500,7 @@ class _RegressionMatrix extends StatelessWidget {
                     fontSize: 10,
                   ),
                 );
-                if (constraints.maxWidth < 520) {
+                if (constraints.maxWidth < 720) {
                   return Wrap(
                     spacing: 13,
                     runSpacing: 8,

@@ -115,7 +115,7 @@ void main() {
       await tester.tap(find.text('Change plan'));
       await tester.pumpAndSettle();
 
-      expect(find.text('CANDIDATE • BLOCKED'), findsOneWidget);
+      expect(find.text('1 EXCEPTION TO RESOLVE'), findsOneWidget);
       expect(find.textContaining('PED-07 exception missing'), findsOneWidget);
       expect(
         find.text('! population exception is not represented'),
@@ -206,7 +206,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('v0.8 • READY TO RETEST'), findsOneWidget);
-    expect(find.text('23 / 24'), findsOneWidget);
+    expect(find.text('23 of 24'), findsOneWidget);
     expect(find.text('Test the revised plan'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('simulation-primary-button')));
@@ -276,7 +276,7 @@ void main() {
     await tester.pumpAndSettle();
     await sealEvidenceVault(tester);
 
-    expect(find.text('VAULT SEALED • 1 DISSENT'), findsOneWidget);
+    expect(find.text('4 REVIEWS COMPLETE • 1 DISSENT'), findsOneWidget);
     expect(find.text('DISSENT PRESERVED • LEGACY-01'), findsOneWidget);
     expect(find.text('100%'), findsOneWidget);
     expect(find.byKey(const Key('legacy-staging-blocker')), findsOneWidget);
@@ -342,7 +342,7 @@ void main() {
       await sealEvidenceVault(tester);
       await stageLegacyAndReturnProof(tester);
 
-      expect(find.text('STAGED • AWAITING HUMAN APPROVAL'), findsOneWidget);
+      expect(find.text('READY FOR HUMAN DECISION'), findsOneWidget);
       expect(find.byKey(const Key('legacy-staging-proof')), findsOneWidget);
       expect(find.byKey(const Key('legacy-staging-blocker')), findsNothing);
       expect(
