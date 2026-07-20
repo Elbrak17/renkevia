@@ -211,15 +211,29 @@ class _LegacyBadge extends StatelessWidget {
               fontWeight: FontWeight.w800,
             ),
           );
+          if (constraints.hasBoundedWidth) {
+            return Text.rich(
+              TextSpan(
+                children: [
+                  WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
+                    child: Icon(icon, size: 12, color: color),
+                  ),
+                  const TextSpan(text: '  '),
+                  TextSpan(text: label),
+                ],
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: labelText.style,
+            );
+          }
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, size: 12, color: color),
               const SizedBox(width: 5),
-              if (constraints.hasBoundedWidth)
-                Flexible(child: labelText)
-              else
-                labelText,
+              labelText,
             ],
           );
         },
