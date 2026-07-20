@@ -1227,29 +1227,58 @@ class _ProjectionLedger extends StatelessWidget {
         color: RenkeviaColors.surfaceMuted,
         border: Border(top: BorderSide(color: RenkeviaColors.hairline)),
       ),
-      child: Row(
-        children: [
-          Icon(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final leading = Icon(
             recompiling ? Icons.sync_rounded : Icons.link_rounded,
             size: 15,
             color: recompiling ? RenkeviaColors.amber : RenkeviaColors.violet,
-          ),
-          const SizedBox(width: 7),
-          Text(
-            recompiling ? 'ATOMIC PROJECTION PASS' : 'REVISION COHERENCE',
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-          const Spacer(),
-          for (final artifact in PatchArtifact.values) ...[
-            _RevisionDot(
-              label: _artifactSpec(artifact, revised: revised).shortTitle,
-              selected: artifact == selected,
-              revised: revised,
-              working: recompiling,
-            ),
-            if (artifact != PatchArtifact.values.last) const SizedBox(width: 7),
-          ],
-        ],
+          );
+          if (constraints.maxWidth < 420) {
+            return Row(
+              children: [
+                leading,
+                const SizedBox(width: 7),
+                Expanded(
+                  child: Text(
+                    recompiling ? 'UPDATING 6 TARGETS' : '6 TARGETS LINKED',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _RevisionDot(
+                  label: _artifactSpec(selected, revised: revised).shortTitle,
+                  selected: true,
+                  revised: revised,
+                  working: recompiling,
+                ),
+              ],
+            );
+          }
+          return Row(
+            children: [
+              leading,
+              const SizedBox(width: 7),
+              Text(
+                recompiling ? 'ATOMIC PROJECTION PASS' : 'REVISION COHERENCE',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              const Spacer(),
+              for (final artifact in PatchArtifact.values) ...[
+                _RevisionDot(
+                  label: _artifactSpec(artifact, revised: revised).shortTitle,
+                  selected: artifact == selected,
+                  revised: revised,
+                  working: recompiling,
+                ),
+                if (artifact != PatchArtifact.values.last)
+                  const SizedBox(width: 7),
+              ],
+            ],
+          );
+        },
       ),
     );
   }
