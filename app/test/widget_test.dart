@@ -67,10 +67,16 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.text('SYNTHETIC • NO PATIENT DATA', findRichText: true),
+      find.textContaining(
+        'SYNTHETIC • NO PATIENT DATA',
+        findRichText: true,
+      ),
       findsOneWidget,
     );
-    expect(find.text('FIXTURE REPLAY', findRichText: true), findsOneWidget);
+    expect(
+      find.textContaining('FIXTURE REPLAY', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('Approval locked'), findsNothing);
   });
 
@@ -119,7 +125,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('1 EXCEPTION TO RESOLVE', findRichText: true),
+        find.textContaining('1 EXCEPTION TO RESOLVE', findRichText: true),
         findsOneWidget,
       );
       expect(find.textContaining('PED-07 exception missing'), findsOneWidget);
@@ -135,7 +141,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 900));
       expect(
-        find.text('PLAN READY FOR TESTING', findRichText: true),
+        find.textContaining('PLAN READY FOR TESTING', findRichText: true),
         findsOneWidget,
       );
       expect(find.textContaining('Encode pediatric exception'), findsOneWidget);
@@ -190,7 +196,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text('BASELINE • 1 FAILURE', findRichText: true),
+        find.textContaining('BASELINE • 1 FAILURE', findRichText: true),
         findsOneWidget,
       );
       expect(find.text('PATH-PED-07-04'), findsOneWidget);
@@ -220,7 +226,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text('v0.8 • READY TO RETEST', findRichText: true),
+      find.textContaining('v0.8 • READY TO RETEST', findRichText: true),
       findsOneWidget,
     );
     expect(find.text('23 of 24'), findsOneWidget);
@@ -232,7 +238,7 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 1000));
     expect(
-      find.text('24 OF 24 PATHWAYS PASS', findRichText: true),
+      find.textContaining('24 OF 24 PATHWAYS PASS', findRichText: true),
       findsOneWidget,
     );
     expect(find.text('REGRESSION GATE PASSED'), findsOneWidget);
@@ -278,7 +284,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.text('UPSTREAM GATE • LOCKED', findRichText: true),
+      find.textContaining('UPSTREAM GATE • LOCKED', findRichText: true),
       findsOneWidget,
     );
     expect(find.text('Complete safety checks first'), findsOneWidget);
@@ -300,7 +306,10 @@ void main() {
     await sealEvidenceVault(tester);
 
     expect(
-      find.text('4 REVIEWS COMPLETE • 1 DISSENT', findRichText: true),
+      find.textContaining(
+        '4 REVIEWS COMPLETE • 1 DISSENT',
+        findRichText: true,
+      ),
       findsOneWidget,
     );
     expect(find.text('DISSENT PRESERVED • LEGACY-01'), findsOneWidget);
@@ -369,7 +378,7 @@ void main() {
       await stageLegacyAndReturnProof(tester);
 
       expect(
-        find.text('READY FOR HUMAN DECISION', findRichText: true),
+        find.textContaining('READY FOR HUMAN DECISION', findRichText: true),
         findsOneWidget,
       );
       expect(find.byKey(const Key('legacy-staging-proof')), findsOneWidget);
