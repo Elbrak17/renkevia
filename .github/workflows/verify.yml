@@ -29,6 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run check:offline
       - run: npm run demo:core
+      - run: npm run verify:submission
       - run: npm audit --audit-level=high
 
   flutter-web:
