@@ -128,7 +128,7 @@ void main() {
       expect(find.text('Updating every target…'), findsOneWidget);
 
       await tester.pump(const Duration(milliseconds: 900));
-      expect(find.text('REVISED • RETEST REQUIRED'), findsOneWidget);
+      expect(find.text('PLAN READY FOR TESTING'), findsOneWidget);
       expect(find.textContaining('Encode pediatric exception'), findsOneWidget);
       expect(find.text('RETEST REQUIRED'), findsOneWidget);
       expect(
@@ -154,7 +154,9 @@ void main() {
 
     await tester.tap(find.text('Change plan'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('artifact-pumpLibrary')));
+    final pumpProjection = find.byKey(const Key('artifact-pumpLibrary'));
+    await tester.ensureVisible(pumpProjection);
+    await tester.tap(pumpProjection);
     await tester.pumpAndSettle();
 
     expect(find.text('Infusion pump library fragment'), findsOneWidget);
@@ -214,7 +216,7 @@ void main() {
     expect(find.text('Checking 24 pathways…'), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 1000));
-    expect(find.text('24 / 24 VERIFIED'), findsOneWidget);
+    expect(find.text('24 OF 24 PATHWAYS PASS'), findsOneWidget);
     expect(find.text('REGRESSION GATE PASSED'), findsOneWidget);
     expect(find.text('RESOLVED'), findsOneWidget);
     expect(
@@ -278,7 +280,7 @@ void main() {
 
     expect(find.text('4 REVIEWS COMPLETE • 1 DISSENT'), findsOneWidget);
     expect(find.text('DISSENT PRESERVED • LEGACY-01'), findsOneWidget);
-    expect(find.text('100%'), findsOneWidget);
+    expect(find.text('100% traceable'), findsOneWidget);
     expect(find.byKey(const Key('legacy-staging-blocker')), findsOneWidget);
     expect(find.text('APPROVAL REMAINS LOCKED'), findsOneWidget);
 
