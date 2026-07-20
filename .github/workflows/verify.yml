@@ -1,0 +1,58 @@
+name: Verify
+
+on:
+  push:
+    branches:
+      - main
+      - 'agent/**'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: TypeScript safety boundary
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check:offline
+      - run: npm run demo:core
+      - run: npm audit --audit-level=high
+
+  flutter-web:
+    name: Flutter Web product surface
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v6
+      - uses: subosito/flutter-action@v2.23.0
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+      - run: flutter pub get --enforce-lockfile
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build web --release
+      - uses: actions/upload-artifact@v4.6.2
+        with:
+          name: renkevia-web-${{ github.sha }}
+          path: app/build/web
+          if-no-files-found: error
+          retention-days: 7

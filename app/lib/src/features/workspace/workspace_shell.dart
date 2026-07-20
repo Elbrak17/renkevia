@@ -34,6 +34,8 @@ class WorkspaceShell extends StatelessWidget {
                     child: Column(
                       children: [
                         _CommandBar(controller: controller),
+                        if (controller.lastGatewayError case final error?)
+                          _GatewayErrorBanner(message: error),
                         Expanded(child: _SectionBody(controller: controller)),
                       ],
                     ),
@@ -61,6 +63,8 @@ class _MobileWorkspace extends StatelessWidget {
       child: Column(
         children: [
           _MobileCommandBar(controller: controller),
+          if (controller.lastGatewayError case final error?)
+            _GatewayErrorBanner(message: error),
           Expanded(child: _SectionBody(controller: controller)),
           DecoratedBox(
             decoration: const BoxDecoration(
@@ -166,6 +170,19 @@ class _MobileCommandBar extends StatelessWidget {
               ],
             ),
           ),
+          StatusPill(
+            label: controller.isConnectedCore ? 'CORE' : 'REPLAY',
+            icon: controller.isConnectedCore
+                ? Icons.cable_rounded
+                : Icons.replay_outlined,
+            foreground: controller.isConnectedCore
+                ? RenkeviaColors.cyanDark
+                : RenkeviaColors.violet,
+            background: controller.isConnectedCore
+                ? RenkeviaColors.cyanWash
+                : const Color(0xFFEDEBF6),
+          ),
+          const SizedBox(width: 7),
           const Tooltip(
             message: 'Synthetic fixture • no PHI',
             child: Icon(
@@ -232,15 +249,21 @@ class _CommandBar extends StatelessWidget {
                 background: RenkeviaColors.cyanWash,
               ),
               const SizedBox(width: 8),
-              if (!compact) ...[
-                const StatusPill(
-                  label: 'FIXTURE REPLAY',
-                  icon: Icons.replay_outlined,
-                  foreground: RenkeviaColors.violet,
-                  background: Color(0xFFEDEBF6),
-                ),
-                const SizedBox(width: 12),
-              ],
+              StatusPill(
+                label: compact
+                    ? (controller.isConnectedCore ? 'CORE' : 'REPLAY')
+                    : controller.executionModeLabel,
+                icon: controller.isConnectedCore
+                    ? Icons.cable_rounded
+                    : Icons.replay_outlined,
+                foreground: controller.isConnectedCore
+                    ? RenkeviaColors.cyanDark
+                    : RenkeviaColors.violet,
+                background: controller.isConnectedCore
+                    ? RenkeviaColors.cyanWash
+                    : const Color(0xFFEDEBF6),
+              ),
+              const SizedBox(width: 12),
               IconButton(
                 onPressed: controller.resetFixture,
                 tooltip: 'Reset synthetic run',
@@ -262,6 +285,47 @@ class _CommandBar extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _GatewayErrorBanner extends StatelessWidget {
+  const _GatewayErrorBanner({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      liveRegion: true,
+      label: message,
+      child: Container(
+        key: const Key('gateway-error-banner'),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+        color: RenkeviaColors.dangerWash,
+        child: Row(
+          children: [
+            const Icon(
+              Icons.gpp_bad_outlined,
+              color: RenkeviaColors.danger,
+              size: 17,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                message,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: RenkeviaColors.danger,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
