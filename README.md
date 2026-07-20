@@ -47,6 +47,32 @@ flutter test
 flutter build web --release
 ```
 
+## Run modes
+
+The public Flutter Web build starts in honest, zero-cost `FIXTURE REPLAY` mode.
+For the server-computed path, run the API and compile Flutter with its base URL:
+
+```bash
+npm run serve:api
+cd app
+flutter run -d chrome \
+  --dart-define=RENKEVIA_API_BASE_URL=http://127.0.0.1:8787
+```
+
+The interface then displays `CONNECTED CORE` at every viewport. It treats a
+network or contract failure as blocking and never silently substitutes replay
+data. The OpenAI key remains exclusively on the server.
+
+The bounded paid-account proof is a separate command:
+
+```bash
+LIVE_OPENAI_ENABLED=true npm run demo:live
+```
+
+It reserves worst-case cost before network access, performs no automatic retry,
+and saves only sanitized evidence. Do not enable it until the API project is
+funded and the configured run/total limits have been reviewed.
+
 The custom Flutter bootstrap serves CanvasKit from the build itself, so the demo does not depend on a renderer CDN at judging time.
 
 Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into source, a fixture, an issue, or chat.
@@ -63,6 +89,9 @@ Live probes require `OPENAI_API_KEY` in the environment. Never paste a key into 
 - [Design system](docs/DESIGN_SYSTEM.md)
 - [Risk register](docs/RISK_REGISTER.md)
 - [API budget and truthfulness contract](docs/API_BUDGET.md)
+- [2:55 demo script](docs/DEMO_SCRIPT.md)
+- [Proof manifest](docs/PROOF_MANIFEST.md)
+- [Submission checklist](docs/SUBMISSION_CHECKLIST.md)
 - [Deterministic core](server/README.md)
 
 ## Status language
