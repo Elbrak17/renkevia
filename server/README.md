@@ -1,7 +1,8 @@
 # RENKEVIA deterministic core
 
-This package is the trusted software boundary between model proposals and the
-Flutter client. It contains no OpenAI client and performs no network calls.
+This package contains both the trusted deterministic boundary and a separate,
+untrusted OpenAI orchestration adapter. Only the adapter can perform network
+calls; every proposal must cross back through the deterministic boundary.
 
 Implemented in this slice:
 
@@ -28,5 +29,7 @@ npm run demo:core
 npm run check:offline
 ```
 
-The future GPT-5.6 adapter must emit `PatchIR` through a strict structured-output
-contract and pass it to `validatePatchIR`. Model output never bypasses this core.
+The GPT-5.6 adapter emits `PatchIR` through a strict structured-output contract
+and passes it to `validatePatchIR`, provenance resolution, compilation, and
+simulation. Programmatic tools are read-only, Multi-agent dissent is preserved,
+and Computer Use stops before the fictional final-commit control.

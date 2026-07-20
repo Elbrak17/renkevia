@@ -26,3 +26,7 @@ coverage/
 probes/results/*.json
 !probes/results/.gitkeep
 
+# Local orchestration ledgers and replay evidence
+server/runtime/*.json
+server/runtime/*.jsonl
+server/runtime/*.replay

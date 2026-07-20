@@ -1,6 +1,6 @@
 # Architecture
 
-Status: target architecture for the first vertical slice. The Flutter surfaces, Northstar sandbox, and deterministic compiler/simulation core are implemented and locally verified. The OpenAI orchestration adapter remains capability-scaffolded until live probes pass with an authorized API key.
+Status: executable vertical-slice architecture. The Flutter surfaces, Northstar sandbox, deterministic compiler/simulation core, and guarded OpenAI orchestration adapter are implemented. Live capability claims remain gated on paid-account probes and saved evidence.
 
 ## System boundary
 
@@ -52,7 +52,7 @@ The model never emits arbitrary write commands. It proposes schema-constrained o
 - server-computed approval blockers and an unconditional prohibition on final commit;
 - a hash-chained append-only audit ledger that records input/output hashes rather than corpus contents.
 
-The OpenAI adapter will sit outside this trusted core. GPT-5.6 proposals must pass the same validator and deterministic checks as fixtures; API success can never directly toggle approval.
+The OpenAI adapter sits outside this trusted core. It implements family routing, strict structured Patch IR synthesis, Programmatic Tool Calling, native Multi-agent review, Computer Use staging, and a hash-chained cost ledger. GPT-5.6 proposals pass the same validator and deterministic checks as fixtures; API success can never directly toggle approval.
 
 ## Model routing
 

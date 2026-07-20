@@ -90,7 +90,7 @@ function evaluateAssertion(
   };
 }
 
-function runPathway(compiled: CompiledPatch, pathway: PatientPathway): PathwayResult {
+export function runPathway(compiled: CompiledPatch, pathway: PatientPathway): PathwayResult {
   const assertions = pathway.assertions.map((assertion) =>
     evaluateAssertion(compiled, pathway.id, assertion),
   );
