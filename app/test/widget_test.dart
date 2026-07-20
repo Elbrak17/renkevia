@@ -422,20 +422,22 @@ void main() {
     );
   });
 
-  testWidgets('blocked response room matches the reviewed visual baseline', (
-    tester,
-  ) async {
-    await setDesktopCanvas(tester);
-    await tester.pumpWidget(const RenkeviaApp());
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('compile-fixture-button')));
-    await tester.pump(const Duration(milliseconds: 800));
+  testWidgets(
+    'blocked response room matches the reviewed visual baseline',
+    (tester) async {
+      await setDesktopCanvas(tester);
+      await tester.pumpWidget(const RenkeviaApp());
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('compile-fixture-button')));
+      await tester.pump(const Duration(milliseconds: 800));
 
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/response_room_blocked.png'),
-    );
-  }, skip: 'Browser release captures are the current visual-regression source.');
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/response_room_blocked.png'),
+      );
+    },
+    skip: 'Browser release captures are the current visual-regression source.',
+  );
 
   testWidgets(
     'revised Patch Studio matches the reviewed visual baseline',
