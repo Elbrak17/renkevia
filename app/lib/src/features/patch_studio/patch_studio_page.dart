@@ -680,7 +680,7 @@ class _ArtifactDiffPanel extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               scrollDirection: Axis.horizontal,
-              scrollCacheExtent: 900,
+              scrollCacheExtent: const ScrollCacheExtent.pixels(900),
               itemCount: PatchArtifact.values.length,
               separatorBuilder: (_, _) => const SizedBox(width: 6),
               itemBuilder: (context, index) {
