@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
 import 'package:renkevia/src/shared/decision_surface.dart';
@@ -678,85 +677,27 @@ class _ArtifactDiffPanel extends StatelessWidget {
           const Divider(height: 1),
           SizedBox(
             height: 48,
-            child: ListView.separated(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               scrollDirection: Axis.horizontal,
-              scrollCacheExtent: const ScrollCacheExtent.pixels(900),
-              itemCount: PatchArtifact.values.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 6),
-              itemBuilder: (context, index) {
-                final item = PatchArtifact.values[index];
-                final itemSpec = _artifactSpec(item, revised: revised);
-                final selected = item == artifact;
-                final linked = _mutationAffects(
-                  controller.selectedMutationId,
-                  item,
-                );
-                return Semantics(
-                  selected: selected,
-                  button: true,
-                  label:
-                      'Open ${itemSpec.title} projection${linked ? ', linked to ${controller.selectedMutationId}' : ''}',
-                  child: InkWell(
-                    key: Key('artifact-${item.name}'),
-                    onTap: () => controller.selectPatchArtifact(item),
-                    borderRadius: BorderRadius.circular(6),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9),
-                      decoration: BoxDecoration(
-                        color: selected
-                            ? RenkeviaColors.graphite
-                            : (linked
-                                  ? const Color(0xFFF0EEF8)
-                                  : RenkeviaColors.surfaceRaised),
-                        border: Border.all(
-                          color: selected
-                              ? RenkeviaColors.graphite
-                              : (linked
-                                    ? const Color(0xFFC9C5E1)
-                                    : RenkeviaColors.hairline),
-                        ),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            itemSpec.icon,
-                            size: 12,
-                            color: selected
-                                ? RenkeviaColors.cyan
-                                : (linked
-                                      ? RenkeviaColors.violet
-                                      : RenkeviaColors.inkMuted),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            itemSpec.shortTitle,
-                            style: TextStyle(
-                              color: selected
-                                  ? Colors.white
-                                  : RenkeviaColors.ink,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          if (linked) ...[
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.link_rounded,
-                              key: Key('affected-${item.name}'),
-                              size: 9,
-                              color: selected
-                                  ? RenkeviaColors.cyan
-                                  : RenkeviaColors.violet,
-                            ),
-                          ],
-                        ],
-                      ),
+              child: Row(
+                children: [
+                  for (
+                    var index = 0;
+                    index < PatchArtifact.values.length;
+                    index++
+                  ) ...[
+                    _ArtifactProjectionTab(
+                      controller: controller,
+                      artifact: PatchArtifact.values[index],
+                      selected: PatchArtifact.values[index] == artifact,
+                      revised: revised,
                     ),
-                  ),
-                );
-              },
+                    if (index < PatchArtifact.values.length - 1)
+                      const SizedBox(width: 6),
+                  ],
+                ],
+              ),
             ),
           ),
           const Divider(height: 1),
@@ -788,6 +729,88 @@ class _ArtifactDiffPanel extends StatelessWidget {
                 controller.patchCompileState == PatchCompileState.recompiling,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ArtifactProjectionTab extends StatelessWidget {
+  const _ArtifactProjectionTab({
+    required this.controller,
+    required this.artifact,
+    required this.selected,
+    required this.revised,
+  });
+
+  final DemoRunController controller;
+  final PatchArtifact artifact;
+  final bool selected;
+  final bool revised;
+
+  @override
+  Widget build(BuildContext context) {
+    final spec = _artifactSpec(artifact, revised: revised);
+    final linked = _mutationAffects(controller.selectedMutationId, artifact);
+    return Semantics(
+      selected: selected,
+      button: true,
+      label:
+          'Open ${spec.title} projection${linked ? ', linked to ${controller.selectedMutationId}' : ''}',
+      child: InkWell(
+        key: Key('artifact-${artifact.name}'),
+        onTap: () => controller.selectPatchArtifact(artifact),
+        borderRadius: BorderRadius.circular(6),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 9),
+          decoration: BoxDecoration(
+            color: selected
+                ? RenkeviaColors.graphite
+                : (linked
+                      ? const Color(0xFFF0EEF8)
+                      : RenkeviaColors.surfaceRaised),
+            border: Border.all(
+              color: selected
+                  ? RenkeviaColors.graphite
+                  : (linked
+                        ? const Color(0xFFC9C5E1)
+                        : RenkeviaColors.hairline),
+            ),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                spec.icon,
+                size: 12,
+                color: selected
+                    ? RenkeviaColors.cyan
+                    : (linked
+                          ? RenkeviaColors.violet
+                          : RenkeviaColors.inkMuted),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                spec.shortTitle,
+                style: TextStyle(
+                  color: selected ? Colors.white : RenkeviaColors.ink,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (linked) ...[
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.link_rounded,
+                  key: Key('affected-${artifact.name}'),
+                  size: 9,
+                  color: selected
+                      ? RenkeviaColors.cyan
+                      : RenkeviaColors.violet,
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
