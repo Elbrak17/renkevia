@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/data/demo_run_gateway.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
+import 'package:renkevia/src/features/workspace/workspace_deep_link.dart';
 import 'package:renkevia/src/features/workspace/workspace_shell.dart';
 
 class RenkeviaApp extends StatefulWidget {
@@ -19,7 +20,10 @@ class _RenkeviaAppState extends State<RenkeviaApp> {
   @override
   void initState() {
     super.initState();
-    _controller = DemoRunController(gateway: widget.gateway);
+    _controller = DemoRunController(
+      gateway: widget.gateway,
+      initialSection: workspaceSectionFromUri(Uri.base),
+    );
   }
 
   @override

@@ -27,11 +27,14 @@ enum PatchArtifact {
 }
 
 class DemoRunController extends ChangeNotifier {
-  DemoRunController({DemoRunGateway? gateway})
-    : _gateway = gateway ?? createDemoRunGateway();
+  DemoRunController({
+    DemoRunGateway? gateway,
+    WorkspaceSection initialSection = WorkspaceSection.responseRoom,
+  }) : _gateway = gateway ?? createDemoRunGateway(),
+       _section = initialSection;
 
   final DemoRunGateway _gateway;
-  WorkspaceSection _section = WorkspaceSection.responseRoom;
+  WorkspaceSection _section;
   CompileState _compileState = CompileState.ready;
   PatchCompileState _patchCompileState = PatchCompileState.blocked;
   String _selectedEvidenceId = 'SRC-001';
