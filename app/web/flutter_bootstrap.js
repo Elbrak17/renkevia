@@ -7,4 +7,8 @@ _flutter.loader.load({
   config: {
     canvasKitBaseUrl: 'canvaskit/',
   },
+  onEntrypointLoaded: async (engineInitializer) => {
+    const appRunner = await engineInitializer.initializeEngine();
+    await appRunner.runApp();
+  },
 });

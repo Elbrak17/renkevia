@@ -12,6 +12,10 @@
 | Computer Use never commits | origin/action/final-target tests | Northstar safe-stop proof |
 | Browser never receives the OpenAI key | server-only transport + Flutter gateway | execution-mode badge |
 | UI is Flutter Web and responsive | Flutter analyze/test/build CI | mobile, tablet, desktop captures |
+| Twelve distinct failure modes fail closed | `npm run eval:deterministic`; deterministic eval test | Judge-readable scenario result in repository |
+| Codex materially improved product quality | Git history, tests, CI and `CODEX_BUILD_LOG.md` | Before/after release captures and custom decision surface |
+| Impact claims are bounded and falsifiable | `IMPACT_MODEL.md`; `npm run impact:scenario` | Prototype measures distinguished from pilot hypotheses |
+| Differentiation is precise, not absolute hype | dated `DIFFERENTIATION.md` scan | Narrow integration claim in submission copy |
 
 Live GPT-5.6 claims require a passing sanitized record created by
 `npm run demo:live`. Until then, the repository truthfully proves the complete

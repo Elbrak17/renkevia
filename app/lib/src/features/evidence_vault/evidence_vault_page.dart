@@ -4,7 +4,7 @@ import 'package:renkevia/src/features/evidence_vault/evidence_vault_fixture.dart
 import 'package:renkevia/src/features/legacy_ehr/legacy_ehr_fixture.dart';
 import 'package:renkevia/src/features/legacy_ehr/legacy_ehr_sandbox_page.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
-import 'package:renkevia/src/shared/responsive_metric_width.dart';
+import 'package:renkevia/src/shared/decision_surface.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
 class EvidenceVaultPage extends StatelessWidget {
@@ -30,9 +30,25 @@ class EvidenceVaultPage extends StatelessWidget {
             _VaultHeader(controller: controller),
             const SizedBox(height: 16),
             _VaultTrace(controller: controller),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+            const RenkeviaSectionHeading(
+              eyebrow: 'HUMAN REVIEW',
+              title: 'See each specialist’s conclusion before approval',
+              summary:
+                  'Reviewers remain independent, their disagreement stays visible, and the approval gate explains exactly what still prevents a final write.',
+              icon: Icons.groups_2_outlined,
+            ),
+            const SizedBox(height: 14),
             _ReviewWorkspace(controller: controller),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+            const RenkeviaSectionHeading(
+              eyebrow: 'ACCOUNTABILITY',
+              title: 'Trace, reverse and audit the entire change',
+              summary:
+                  'Raw identifiers and hashes live here for auditors. The primary approval view above stays focused on the decision and its unresolved conditions.',
+              icon: Icons.history_rounded,
+            ),
+            const SizedBox(height: 14),
             _ProofLedger(controller: controller),
           ],
         ),
@@ -94,12 +110,12 @@ class _VaultHeader extends StatelessWidget {
     final action = Semantics(
       button: true,
       label: !verified
-          ? 'Open Simulation Lab and verify candidate version 0.8'
+          ? 'Open safety checks and verify the revised plan'
           : (sealed
                 ? (legacyVerified
-                      ? 'Legacy proof accepted; named human approval is required'
-                      : 'Open the fictional legacy EHR staging sandbox')
-                : 'Run four independent specialist review fixtures'),
+                      ? 'Legacy staging is proven; a named human decision is required'
+                      : 'Open the fictional legacy system to prepare staging')
+                : 'Request four independent specialist reviews'),
       child: FilledButton.icon(
         key: const Key('evidence-vault-primary-button'),
         onPressed: !verified
@@ -129,218 +145,100 @@ class _VaultHeader extends StatelessWidget {
               ),
         label: Text(
           !verified
-              ? 'Verify candidate first'
+              ? 'Complete safety checks first'
               : switch (state) {
-                  EvidenceVaultRunState.ready => 'Run four specialist audits',
+                  EvidenceVaultRunState.ready => 'Request specialist review',
                   EvidenceVaultRunState.reviewing =>
-                    'Audits running in parallel…',
+                    'Four reviews in progress…',
                   EvidenceVaultRunState.sealed =>
                     legacyVerified
-                        ? 'Staged • named human next'
-                        : 'Open fictional legacy sandbox',
+                        ? 'Awaiting named approver'
+                        : 'Prepare legacy staging',
                 },
         ),
       ),
     );
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < 720;
-        final summary = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: 10,
-              runSpacing: 6,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(
-                  'EVIDENCE VAULT / 04',
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-                StatusPill(
-                  label: status.$1,
-                  icon: sealed
-                      ? Icons.inventory_2_outlined
-                      : (reviewing
-                            ? Icons.groups_outlined
-                            : Icons.lock_clock_outlined),
-                  foreground: status.$2,
-                  background: status.$3,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Evidence becomes an accountable change record.',
-              style: compact
-                  ? Theme.of(context).textTheme.headlineMedium
-                  : Theme.of(context).textTheme.headlineLarge,
-            ),
-            const SizedBox(height: 7),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 800),
-              child: Text(
-                legacyVerified
-                    ? 'The fictional legacy screen was rechecked, staged, and captured as proof. LEGACY-01 remains inspectable; only a named human can approve the final write.'
-                    : sealed
-                    ? 'Four independent reviews, six provenance-linked projections, and an exact rollback are sealed together. LEGACY-01 remains visible and blocking.'
-                    : 'Challenge candidate v0.8 from four independent specialist contexts, preserve disagreement, then prove every material claim and reversal hash.',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-          ],
-        );
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (compact) ...[
-              summary,
-              const SizedBox(height: 14),
-              action,
-            ] else
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: summary),
-                  const SizedBox(width: 20),
-                  action,
-                ],
-              ),
-            const SizedBox(height: 18),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _VaultMetric(
-                  label: 'REVIEWS',
-                  value: sealed ? '4 / 4' : (reviewing ? '… / 4' : '0 / 4'),
-                  detail: sealed ? 'independent returns' : 'required contexts',
-                  icon: Icons.groups_2_outlined,
-                  success: sealed,
-                  warning: verified && !sealed,
-                  danger: !verified,
-                ),
-                _VaultMetric(
-                  label: 'DISSENT',
-                  value: sealed ? '1' : '—',
-                  detail: sealed ? 'LEGACY-01 preserved' : 'not synthesized',
-                  icon: Icons.record_voice_over_outlined,
-                  warning: sealed || verified,
-                  danger: !verified,
-                ),
-                _VaultMetric(
-                  label: 'PROVENANCE',
-                  value: sealed ? '100%' : '—',
-                  detail: sealed ? '6 / 6 projections' : 'seal pending',
-                  icon: Icons.link_rounded,
-                  success: sealed,
-                  warning: verified && !sealed,
-                  danger: !verified,
-                ),
-                _VaultMetric(
-                  label: 'ROLLBACK',
-                  value: sealed ? '6 / 6' : '—',
-                  detail: sealed
-                      ? 'exact hash restore'
-                      : 'verification pending',
-                  icon: Icons.settings_backup_restore_rounded,
-                  success: sealed,
-                  warning: verified && !sealed,
-                  danger: !verified,
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _VaultMetric extends StatelessWidget {
-  const _VaultMetric({
-    required this.label,
-    required this.value,
-    required this.detail,
-    required this.icon,
-    this.success = false,
-    this.warning = false,
-    this.danger = false,
-  });
-
-  final String label;
-  final String value;
-  final String detail;
-  final IconData icon;
-  final bool success;
-  final bool warning;
-  final bool danger;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = danger
-        ? RenkeviaColors.danger
-        : (success
-              ? RenkeviaColors.success
-              : (warning ? const Color(0xFF9A6918) : RenkeviaColors.cyanDark));
-    final wash = danger
-        ? RenkeviaColors.dangerWash
-        : (success
+    return RenkeviaDecisionHero(
+      eyebrow: 'STEP 4 OF 4  •  APPROVAL RECORD',
+      title: legacyVerified
+          ? 'Everything is ready—except the human decision.'
+          : (sealed
+                ? 'Agreement is useful. Preserved disagreement is safer.'
+                : 'Turn every claim into an accountable approval record.'),
+      summary: legacyVerified
+          ? 'The fictional legacy screen was rechecked, prepared in staging and captured as visual proof. RENKEVIA stops here: the final write remains disabled until a named authorized person approves it.'
+          : (sealed
+                ? 'Pharmacy, clinical informatics, pediatric safety and an adversarial reviewer examined the same package independently. Their evidence, dissent and exact rollback now travel with the change.'
+                : 'Four specialist perspectives challenge the same revision without sharing conclusions first. RENKEVIA preserves disagreement, ties every material claim to evidence and keeps rollback beside the approval decision.'),
+      status: StatusPill(
+        label: legacyVerified
+            ? 'READY FOR HUMAN DECISION'
+            : (sealed ? '4 REVIEWS COMPLETE • 1 DISSENT' : status.$1),
+        icon: legacyVerified
+            ? Icons.how_to_reg_outlined
+            : (sealed
+                  ? Icons.inventory_2_outlined
+                  : (reviewing
+                        ? Icons.groups_outlined
+                        : Icons.lock_clock_outlined)),
+        foreground: status.$2,
+        background: status.$3,
+      ),
+      action: action,
+      alert: legacyVerified
+          ? 'Human boundary: RENKEVIA prepared the legacy change but cannot press the final commit button. The approval control remains intentionally locked.'
+          : (sealed
+                ? 'Open concern: the legacy EHR offers no API. Its screen must be visually rechecked before staging, and final commit still requires a person.'
+                : 'The reviewers work independently so one confident answer cannot erase pharmacy, pediatric or legacy-system concerns.'),
+      alertIcon: legacyVerified
+          ? Icons.pan_tool_alt_outlined
+          : (sealed ? Icons.desktop_windows_outlined : Icons.groups_outlined),
+      alertTone: legacyVerified
+          ? RenkeviaColors.violet
+          : (sealed ? RenkeviaColors.amber : status.$2),
+      alertBackground: legacyVerified
+          ? const Color(0xFFEDEBF6)
+          : (sealed ? RenkeviaColors.amberWash : status.$3),
+      facts: [
+        RenkeviaDecisionFact(
+          label: sealed
+              ? 'independent perspectives returned'
+              : 'required perspectives',
+          value: sealed
+              ? '4 of 4 reviews'
+              : (reviewing ? 'Reviewing…' : '4 reviewers'),
+          icon: Icons.groups_2_outlined,
+          tone: sealed ? RenkeviaColors.success : RenkeviaColors.amber,
+          background: sealed
               ? RenkeviaColors.successWash
-              : (warning ? RenkeviaColors.amberWash : RenkeviaColors.surface));
-    final viewportWidth = MediaQuery.sizeOf(context).width;
-    final metricWidth = responsiveMetricWidth(
-      viewportWidth,
-      desktopWidth: 212,
-      twoColumn: false,
-    );
-    return Container(
-      width: metricWidth,
-      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
-      decoration: BoxDecoration(
-        color: wash,
-        border: Border.all(color: accent.withValues(alpha: 0.28)),
-        borderRadius: BorderRadius.circular(9),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: accent, size: 18),
-          const SizedBox(width: 10),
-          Text(
-            value,
-            style: TextStyle(
-              color: danger ? RenkeviaColors.danger : RenkeviaColors.ink,
-              fontSize: 20,
-              height: 1,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(width: 9),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: accent,
-                    fontSize: 8,
-                    letterSpacing: 0.6,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  detail,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+              : RenkeviaColors.amberWash,
+        ),
+        RenkeviaDecisionFact(
+          label: sealed ? 'kept visible for the approver' : 'not yet collected',
+          value: sealed ? '1 open concern' : 'Dissent pending',
+          icon: Icons.record_voice_over_outlined,
+          tone: RenkeviaColors.amber,
+          background: RenkeviaColors.amberWash,
+        ),
+        RenkeviaDecisionFact(
+          label: sealed ? 'material changes linked' : 'record not sealed',
+          value: sealed ? '100% traceable' : 'Evidence pending',
+          icon: Icons.link_rounded,
+          tone: sealed ? RenkeviaColors.success : RenkeviaColors.inkMuted,
+          background: sealed
+              ? RenkeviaColors.successWash
+              : RenkeviaColors.surfaceMuted,
+        ),
+        RenkeviaDecisionFact(
+          label: sealed ? 'exact restoration available' : 'not yet verified',
+          value: sealed ? '6 of 6 reversible' : 'Rollback pending',
+          icon: Icons.settings_backup_restore_rounded,
+          tone: sealed ? RenkeviaColors.success : RenkeviaColors.inkMuted,
+          background: sealed
+              ? RenkeviaColors.successWash
+              : RenkeviaColors.surfaceMuted,
+        ),
+      ],
     );
   }
 }
@@ -357,154 +255,48 @@ class _VaultTrace extends StatelessWidget {
     final reviewing = state == EvidenceVaultRunState.reviewing;
     final sealed = state == EvidenceVaultRunState.sealed;
     final legacyVerified = controller.legacyStagingVerified;
-    final steps = <_VaultStepData>[
-      _VaultStepData(
-        icon: Icons.verified_outlined,
-        title: 'Regression suite',
-        detail: verified ? '24 / 24 verified' : 'verification required',
-        state: verified ? _VaultStepState.done : _VaultStepState.failed,
-      ),
-      _VaultStepData(
-        icon: Icons.groups_2_outlined,
-        title: 'Review mesh',
-        detail: reviewing
-            ? 'four contexts running'
-            : (sealed ? '4 / 4 returned' : 'not started'),
-        state: reviewing
-            ? _VaultStepState.active
-            : (sealed ? _VaultStepState.done : _VaultStepState.waiting),
-      ),
-      _VaultStepData(
-        icon: Icons.inventory_2_outlined,
-        title: 'Proof bundle',
-        detail: sealed ? 'provenance + rollback sealed' : 'awaiting reviews',
-        state: sealed ? _VaultStepState.done : _VaultStepState.waiting,
-      ),
-      _VaultStepData(
-        icon: Icons.desktop_windows_outlined,
-        title: 'Legacy staging',
-        detail: legacyVerified
-            ? 'proof accepted • human next'
-            : (sealed ? 'LEGACY-01 blocking' : 'downstream gate'),
-        state: legacyVerified
-            ? _VaultStepState.done
-            : (sealed ? _VaultStepState.failed : _VaultStepState.waiting),
-      ),
-    ];
-    return LayoutBuilder(
-      builder: (context, constraints) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: RenkeviaColors.graphite,
-          borderRadius: BorderRadius.circular(11),
+    return RenkeviaJourney(
+      title: 'Approval readiness',
+      steps: [
+        RenkeviaJourneyStep(
+          label: 'Safety proven',
+          detail: verified ? '24 pathways pass' : 'Safety checks required',
+          icon: Icons.verified_outlined,
+          state: verified
+              ? RenkeviaJourneyState.complete
+              : RenkeviaJourneyState.blocked,
         ),
-        child: constraints.maxWidth < 680
-            ? Column(
-                children: [
-                  for (var index = 0; index < steps.length; index++) ...[
-                    _VaultStep(data: steps[index]),
-                    if (index < steps.length - 1)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          width: 1,
-                          height: 10,
-                          margin: const EdgeInsets.only(left: 14),
-                          color: _vaultStepColor(
-                            steps[index + 1].state,
-                          ).withValues(alpha: 0.7),
-                        ),
-                      ),
-                  ],
-                ],
-              )
-            : Row(
-                children: [
-                  for (var index = 0; index < steps.length; index++) ...[
-                    Expanded(child: _VaultStep(data: steps[index])),
-                    if (index < steps.length - 1)
-                      Container(
-                        width: 32,
-                        height: 1,
-                        color: _vaultStepColor(
-                          steps[index + 1].state,
-                        ).withValues(alpha: 0.7),
-                      ),
-                  ],
-                ],
-              ),
-      ),
-    );
-  }
-}
-
-enum _VaultStepState { done, active, failed, waiting }
-
-class _VaultStepData {
-  const _VaultStepData({
-    required this.icon,
-    required this.title,
-    required this.detail,
-    required this.state,
-  });
-
-  final IconData icon;
-  final String title;
-  final String detail;
-  final _VaultStepState state;
-}
-
-Color _vaultStepColor(_VaultStepState state) => switch (state) {
-  _VaultStepState.done => RenkeviaColors.cyan,
-  _VaultStepState.active => RenkeviaColors.amber,
-  _VaultStepState.failed => RenkeviaColors.danger,
-  _VaultStepState.waiting => const Color(0xFF71817F),
-};
-
-class _VaultStep extends StatelessWidget {
-  const _VaultStep({required this.data});
-
-  final _VaultStepData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = _vaultStepColor(data.state);
-    return Row(
-      children: [
-        Container(
-          width: 29,
-          height: 29,
-          decoration: BoxDecoration(
-            color: accent.withValues(alpha: 0.13),
-            shape: BoxShape.circle,
-            border: Border.all(color: accent),
-          ),
-          child: Icon(data.icon, color: accent, size: 14),
+        RenkeviaJourneyStep(
+          label: 'Specialists challenge',
+          detail: reviewing
+              ? '4 reviews in progress'
+              : (sealed ? '4 reviews returned' : 'Not started'),
+          icon: Icons.groups_2_outlined,
+          state: reviewing
+              ? RenkeviaJourneyState.current
+              : (sealed
+                    ? RenkeviaJourneyState.complete
+                    : RenkeviaJourneyState.waiting),
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                data.title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                data.detail,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Color(0xFF93A5A3), fontSize: 8.5),
-              ),
-            ],
-          ),
+        RenkeviaJourneyStep(
+          label: 'Proof sealed',
+          detail: sealed ? 'Evidence + rollback ready' : 'Waiting for reviews',
+          icon: Icons.inventory_2_outlined,
+          state: sealed
+              ? RenkeviaJourneyState.complete
+              : RenkeviaJourneyState.waiting,
+        ),
+        RenkeviaJourneyStep(
+          label: 'Human decides',
+          detail: legacyVerified
+              ? 'Named approval required'
+              : (sealed ? 'Legacy staging required' : 'Downstream gate'),
+          icon: Icons.how_to_reg_outlined,
+          state: legacyVerified
+              ? RenkeviaJourneyState.current
+              : (sealed
+                    ? RenkeviaJourneyState.blocked
+                    : RenkeviaJourneyState.waiting),
         ),
       ],
     );

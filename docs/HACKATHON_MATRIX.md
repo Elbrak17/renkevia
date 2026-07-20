@@ -29,8 +29,9 @@ Rules and deadline must be rechecked on Devpost immediately before submission. R
 | Shortages create cross-system operational work | ASHP shortage-management material documents coordinated conservation and operational changes | Cite the exact current page in the submission and show matching synthetic artifact classes |
 | Shortage management consumes major labor and can disrupt care | Vizient reports survey estimates including labor burden, errors, and disruptions | Keep language attributed to the survey; do not generalize beyond its sample |
 | Supply-chain dependence has US/Asia relevance | Japan MHLW material documents dependence for selected antimicrobial inputs | Use as context only; do not imply RENKEVIA fixes manufacturing supply |
-| RENKEVIA improves completeness and coordination | Not yet measured | Run the preregistered baselines and publish raw synthetic eval results |
-| RENKEVIA is novel | Preliminary scan only | Complete dated competitor table and qualify the claim precisely |
+| RENKEVIA’s deterministic boundary handles seeded failure modes | 12/12 network-free robustness scenarios plus 96-assertion vertical fixture | Keep this distinct from an unrun comparative GPT evaluation |
+| RENKEVIA improves real coordination time | Transparent illustrative model only | Replace every planning assumption with preregistered pilot observations before claiming savings |
+| RENKEVIA is differentiated | Dated primary-source adjacent-product scan | Use the narrow integration claim; never claim an unverifiable absolute world first |
 
 ## Judge-memory sentence
 
@@ -41,4 +42,3 @@ Rules and deadline must be rechecked on Devpost immediately before submission. R
 - ASHP shortage resources: https://www.ashp.org/drug-shortages/shortage-resources/publications/fluid-shortages-suggestions-for-management-and-conservation
 - Vizient shortage survey release: https://www.vizient.com/newsroom/news-releases/new-vizient-survey-finds-drug-shortages-cost-hospitals-nearly-900m-annually-in-labor-expenses
 - Japan Ministry of Health, Labour and Welfare material: https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryou/keizaianpo_koukinseizai.html
-

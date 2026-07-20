@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/features/response_room/widgets/dependency_graph.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
-import 'package:renkevia/src/shared/responsive_metric_width.dart';
+import 'package:renkevia/src/shared/decision_surface.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
 class ResponseRoomPage extends StatelessWidget {
@@ -28,7 +28,17 @@ class ResponseRoomPage extends StatelessWidget {
             _IncidentHeader(controller: controller),
             const SizedBox(height: 16),
             _RunStages(state: controller.compileState),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+            RenkeviaSectionHeading(
+              eyebrow: 'DECISION EVIDENCE',
+              title: controller.pediatricBlockerRevealed
+                  ? 'Why the rollout is blocked'
+                  : 'What the shortage can affect',
+              summary:
+                  'Select a hospital source to see the exact claim behind the dependency map. Technical identifiers stay available here for auditors without dominating the decision above.',
+              icon: Icons.manage_search_outlined,
+            ),
+            const SizedBox(height: 14),
             _Workspace(controller: controller),
           ],
         ),
@@ -44,101 +54,58 @@ class _IncidentHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < 680;
-        final incident = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 10,
-              runSpacing: 7,
-              children: [
-                Text(
-                  'RESPONSE ROOM / 01',
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-                const StatusPill(
-                  label: 'SEV-1 OPERATIONAL',
-                  icon: Icons.priority_high_rounded,
-                  foreground: RenkeviaColors.danger,
-                  background: RenkeviaColors.dangerWash,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Critical IV carrier shortage',
-              style: compact
-                  ? Theme.of(context).textTheme.headlineMedium
-                  : Theme.of(context).textTheme.headlineLarge,
-            ),
-            const SizedBox(height: 7),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 760),
-              child: Text(
-                'Compile one institution-wide response from a contradictory synthetic corpus—before any artifact can drift alone.',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-          ],
-        );
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (compact) ...[
-              incident,
-              const SizedBox(height: 14),
-              _CompileButton(controller: controller),
-            ] else
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: incident),
-                  const SizedBox(width: 20),
-                  _CompileButton(controller: controller),
-                ],
-              ),
-            const SizedBox(height: 18),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                const _Metric(
-                  label: 'CORPUS',
-                  value: '12',
-                  detail: 'mixed artifacts',
-                  icon: Icons.folder_copy_outlined,
-                ),
-                const _Metric(
-                  label: 'BLAST RADIUS',
-                  value: '7',
-                  detail: 'linked systems',
-                  icon: Icons.hub_outlined,
-                ),
-                const _Metric(
-                  label: 'PATIENT SUITES',
-                  value: '24',
-                  detail: 'synthetic paths',
-                  icon: Icons.fact_check_outlined,
-                ),
-                _Metric(
-                  label: 'BLOCKERS',
-                  value: controller.pediatricBlockerRevealed ? '1' : '—',
-                  detail: controller.pediatricBlockerRevealed
-                      ? 'critical exception'
-                      : 'mapping pending',
-                  icon: controller.pediatricBlockerRevealed
-                      ? Icons.report_gmailerrorred_outlined
-                      : Icons.hourglass_top_rounded,
-                  danger: controller.pediatricBlockerRevealed,
-                ),
-              ],
-            ),
-          ],
-        );
-      },
+    final blocked = controller.pediatricBlockerRevealed;
+    return RenkeviaDecisionHero(
+      eyebrow: 'STEP 1 OF 4  •  IMPACT REVIEW',
+      title: blocked
+          ? 'A hidden pediatric exception stops an unsafe rollout.'
+          : 'Protect every care pathway from one shortage.',
+      summary: blocked
+          ? 'RENKEVIA traced the carrier-fluid change across policy, orders, pumps, labels and the legacy EHR. One older pediatric rule contradicts the adult-only plan and must be resolved before anything changes.'
+          : 'A critical IV carrier shortage reaches far beyond one order. RENKEVIA reads the institutional record, maps every dependency and shows the complete impact before anyone edits a live system.',
+      status: StatusPill(
+        label: blocked ? 'DECISION BLOCKED' : 'URGENT SHORTAGE',
+        icon: blocked ? Icons.gpp_bad_outlined : Icons.priority_high_rounded,
+        foreground: RenkeviaColors.danger,
+        background: RenkeviaColors.dangerWash,
+      ),
+      action: _CompileButton(controller: controller),
+      alert: blocked
+          ? 'Safety finding: the 2019 pediatric exception still requires the original carrier below 30 kg. Review the synchronized change plan next.'
+          : 'No patient data is used. This guided case contains synthetic hospital documents and patient pathways.',
+      alertIcon: blocked ? Icons.child_care_outlined : Icons.shield_outlined,
+      alertTone: blocked ? RenkeviaColors.danger : RenkeviaColors.cyanDark,
+      alertBackground: blocked
+          ? RenkeviaColors.dangerWash
+          : RenkeviaColors.cyanWash,
+      facts: [
+        const RenkeviaDecisionFact(
+          label: 'institutional sources',
+          value: '12 documents',
+          icon: Icons.folder_copy_outlined,
+        ),
+        const RenkeviaDecisionFact(
+          label: 'connected targets',
+          value: '7 systems',
+          icon: Icons.hub_outlined,
+        ),
+        const RenkeviaDecisionFact(
+          label: 'synthetic safety cases',
+          value: '24 pathways',
+          icon: Icons.fact_check_outlined,
+        ),
+        RenkeviaDecisionFact(
+          label: blocked ? 'requires resolution' : 'mapping in progress',
+          value: blocked ? '1 safety blocker' : 'Impact pending',
+          icon: blocked
+              ? Icons.report_gmailerrorred_outlined
+              : Icons.hourglass_top_rounded,
+          tone: blocked ? RenkeviaColors.danger : RenkeviaColors.cyanDark,
+          background: blocked
+              ? RenkeviaColors.dangerWash
+              : RenkeviaColors.surfaceMuted,
+        ),
+      ],
     );
   }
 }
@@ -154,13 +121,15 @@ class _CompileButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: state == CompileState.blocked
-          ? 'Reset the synthetic compilation'
-          : 'Run deterministic fixture compilation',
+          ? 'Open the synchronized change plan'
+          : 'Map the shortage across institutional systems',
       child: FilledButton.icon(
         key: const Key('compile-fixture-button'),
         onPressed: state == CompileState.mapping
             ? null
-            : controller.compileFixture,
+            : (state == CompileState.blocked
+                  ? () => controller.selectSection(WorkspaceSection.patchStudio)
+                  : controller.compileFixture),
         icon: state == CompileState.mapping
             ? const SizedBox.square(
                 dimension: 15,
@@ -171,94 +140,15 @@ class _CompileButton extends StatelessWidget {
               )
             : Icon(
                 state == CompileState.blocked
-                    ? Icons.restart_alt_rounded
+                    ? Icons.arrow_forward_rounded
                     : Icons.play_arrow_rounded,
                 size: 18,
               ),
         label: Text(switch (state) {
-          CompileState.ready => 'Compile fixture',
-          CompileState.mapping => 'Mapping 12 artifacts…',
-          CompileState.blocked => 'Reset fixture',
+          CompileState.ready => 'Map the full impact',
+          CompileState.mapping => 'Tracing every dependency…',
+          CompileState.blocked => 'Review the change plan',
         }),
-      ),
-    );
-  }
-}
-
-class _Metric extends StatelessWidget {
-  const _Metric({
-    required this.label,
-    required this.value,
-    required this.detail,
-    required this.icon,
-    this.danger = false,
-  });
-
-  final String label;
-  final String value;
-  final String detail;
-  final IconData icon;
-  final bool danger;
-
-  @override
-  Widget build(BuildContext context) {
-    final foreground = danger ? RenkeviaColors.danger : RenkeviaColors.ink;
-    final viewportWidth = MediaQuery.sizeOf(context).width;
-    final metricWidth = responsiveMetricWidth(viewportWidth, desktopWidth: 198);
-    return Container(
-      width: metricWidth,
-      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
-      decoration: BoxDecoration(
-        color: danger ? RenkeviaColors.dangerWash : RenkeviaColors.surface,
-        border: Border.all(
-          color: danger ? const Color(0xFFEBC0B9) : RenkeviaColors.hairline,
-        ),
-        borderRadius: BorderRadius.circular(9),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: danger ? RenkeviaColors.danger : RenkeviaColors.cyanDark,
-            size: 18,
-          ),
-          const SizedBox(width: 10),
-          Text(
-            value,
-            style: TextStyle(
-              color: foreground,
-              fontSize: 20,
-              height: 1,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(width: 9),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: danger
-                        ? RenkeviaColors.danger
-                        : RenkeviaColors.inkMuted,
-                    fontSize: 8,
-                    letterSpacing: 0.6,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  detail,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -277,155 +167,36 @@ class _RunStages extends StatelessWidget {
       CompileState.blocked => 2,
     };
     const stages = [
-      ('01', 'Ingest', '12 artifacts sealed'),
-      ('02', 'Map', 'Evidence-linked graph'),
-      ('03', 'Challenge', 'Population exceptions'),
-      ('04', 'Compile', 'Patch IR candidate'),
-      ('05', 'Verify', 'Patient regressions'),
+      ('Gather evidence', '12 sources secured'),
+      ('Trace impact', 'Systems connected'),
+      ('Find exceptions', 'Population rules checked'),
+      ('Prepare change', 'One synchronized plan'),
+      ('Prove safety', 'Patient pathways tested'),
     ];
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final vertical = constraints.maxWidth < 680;
-        return Container(
-          padding: const EdgeInsets.fromLTRB(16, 13, 16, 12),
-          decoration: BoxDecoration(
-            color: RenkeviaColors.graphite,
-            borderRadius: BorderRadius.circular(11),
+    return RenkeviaJourney(
+      title: 'How RENKEVIA reaches a safe decision',
+      steps: [
+        for (var index = 0; index < stages.length; index++)
+          RenkeviaJourneyStep(
+            label: stages[index].$1,
+            detail: stages[index].$2,
+            icon: index == 0
+                ? Icons.folder_copy_outlined
+                : (index == 1
+                      ? Icons.hub_outlined
+                      : (index == 2
+                            ? Icons.manage_search_outlined
+                            : (index == 3
+                                  ? Icons.difference_outlined
+                                  : Icons.fact_check_outlined))),
+            state: state == CompileState.blocked && index == activeIndex
+                ? RenkeviaJourneyState.blocked
+                : (index < activeIndex
+                      ? RenkeviaJourneyState.complete
+                      : (index == activeIndex
+                            ? RenkeviaJourneyState.current
+                            : RenkeviaJourneyState.waiting)),
           ),
-          child: vertical
-              ? Column(
-                  children: [
-                    for (var index = 0; index < stages.length; index++) ...[
-                      _Stage(
-                        number: stages[index].$1,
-                        title: stages[index].$2,
-                        detail: stages[index].$3,
-                        completed: index < activeIndex,
-                        active: index == activeIndex,
-                        blocked:
-                            state == CompileState.blocked &&
-                            index == activeIndex,
-                      ),
-                      if (index < stages.length - 1)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                            width: 1,
-                            height: 10,
-                            margin: const EdgeInsets.only(left: 14),
-                            color: index < activeIndex
-                                ? RenkeviaColors.cyan
-                                : RenkeviaColors.hairlineDark,
-                          ),
-                        ),
-                    ],
-                  ],
-                )
-              : Row(
-                  children: [
-                    for (var index = 0; index < stages.length; index++) ...[
-                      Expanded(
-                        child: _Stage(
-                          number: stages[index].$1,
-                          title: stages[index].$2,
-                          detail: stages[index].$3,
-                          completed: index < activeIndex,
-                          active: index == activeIndex,
-                          blocked:
-                              state == CompileState.blocked &&
-                              index == activeIndex,
-                        ),
-                      ),
-                      if (index < stages.length - 1)
-                        Container(
-                          width: 26,
-                          height: 1,
-                          color: index < activeIndex
-                              ? RenkeviaColors.cyan
-                              : RenkeviaColors.hairlineDark,
-                        ),
-                    ],
-                  ],
-                ),
-        );
-      },
-    );
-  }
-}
-
-class _Stage extends StatelessWidget {
-  const _Stage({
-    required this.number,
-    required this.title,
-    required this.detail,
-    required this.completed,
-    required this.active,
-    required this.blocked,
-  });
-
-  final String number;
-  final String title;
-  final String detail;
-  final bool completed;
-  final bool active;
-  final bool blocked;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = blocked
-        ? RenkeviaColors.danger
-        : (active || completed ? RenkeviaColors.cyan : const Color(0xFF71817F));
-    return Row(
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            color: active || completed
-                ? accent.withValues(alpha: 0.14)
-                : Colors.transparent,
-            shape: BoxShape.circle,
-            border: Border.all(color: accent),
-          ),
-          child: Center(
-            child: completed
-                ? Icon(Icons.check_rounded, color: accent, size: 14)
-                : Text(
-                    number,
-                    style: TextStyle(
-                      color: accent,
-                      fontSize: 8,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: active || completed
-                      ? Colors.white
-                      : const Color(0xFF9AA8A6),
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                detail,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Color(0xFF71817F), fontSize: 8),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -521,7 +292,7 @@ class _GraphPanel extends StatelessWidget {
             height: 38,
             padding: const EdgeInsets.symmetric(horizontal: 13),
             decoration: const BoxDecoration(
-              color: Color(0xFFF6F5EF),
+              color: RenkeviaColors.surfaceMuted,
               border: Border(top: BorderSide(color: RenkeviaColors.hairline)),
             ),
             child: Row(
@@ -535,8 +306,8 @@ class _GraphPanel extends StatelessWidget {
                 Expanded(
                   child: Text(
                     controller.pediatricBlockerRevealed
-                        ? 'PED-07 contradicts the candidate scope. Approval remains locked until the exception is compiled and retested.'
-                        : 'Run the fixture compiler to challenge this apparently adult-only change against hidden population dependencies.',
+                        ? 'The pediatric rule contradicts the adult-only plan. Approval stays locked until the exception is synchronized and retested.'
+                        : 'Map the full impact to challenge the apparent adult-only scope against hidden population dependencies.',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -717,7 +488,7 @@ class _EvidenceRail extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'SEALED CORPUS',
+                    'HOSPITAL SOURCES',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelMedium,
@@ -765,7 +536,7 @@ class _EvidenceRail extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: const BoxDecoration(
-              color: Color(0xFFF6F5EF),
+              color: RenkeviaColors.surfaceMuted,
               border: Border(top: BorderSide(color: RenkeviaColors.hairline)),
             ),
             child: Row(
@@ -778,7 +549,7 @@ class _EvidenceRail extends StatelessWidget {
                 const SizedBox(width: 7),
                 Expanded(
                   child: Text(
-                    'Checksums locked • source regions addressable',
+                    'Original regions preserved for review',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
@@ -921,7 +692,7 @@ class _EvidenceInspector extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  'EVIDENCE INSPECTOR',
+                  'SOURCE DETAIL',
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
                 const Spacer(),
@@ -1032,7 +803,7 @@ class _PediatricEvidence extends StatelessWidget {
           height: 116,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFFF0EEE7),
+            color: RenkeviaColors.surfaceInset,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: RenkeviaColors.hairline),
           ),

@@ -5,6 +5,7 @@ import 'package:renkevia/src/features/patch_studio/patch_studio_page.dart';
 import 'package:renkevia/src/features/response_room/response_room_page.dart';
 import 'package:renkevia/src/features/simulation_lab/simulation_lab_page.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
+import 'package:renkevia/src/shared/renkevia_brand.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
 class WorkspaceShell extends StatelessWidget {
@@ -21,10 +22,7 @@ class WorkspaceShell extends StatelessWidget {
           body: LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth < 920) {
-                return _MobileWorkspace(
-                  controller: controller,
-                  showLabels: constraints.maxWidth >= 430,
-                );
+                return _MobileWorkspace(controller: controller);
               }
               final compact = constraints.maxWidth < 1260;
               return Row(
@@ -51,10 +49,9 @@ class WorkspaceShell extends StatelessWidget {
 }
 
 class _MobileWorkspace extends StatelessWidget {
-  const _MobileWorkspace({required this.controller, required this.showLabels});
+  const _MobileWorkspace({required this.controller});
 
   final DemoRunController controller;
-  final bool showLabels;
 
   @override
   Widget build(BuildContext context) {
@@ -73,11 +70,9 @@ class _MobileWorkspace extends StatelessWidget {
             ),
             child: NavigationBar(
               key: const Key('mobile-workspace-navigation'),
-              height: 66,
+              height: 72,
               selectedIndex: selectedIndex,
-              labelBehavior: showLabels
-                  ? NavigationDestinationLabelBehavior.alwaysShow
-                  : NavigationDestinationLabelBehavior.onlyShowSelected,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
               onDestinationSelected: (index) =>
                   controller.selectSection(WorkspaceSection.values[index]),
               destinations: const [
@@ -85,29 +80,29 @@ class _MobileWorkspace extends StatelessWidget {
                   key: Key('mobile-nav-response-room'),
                   icon: Icon(Icons.hub_outlined),
                   selectedIcon: Icon(Icons.hub_rounded),
-                  label: 'Response',
-                  tooltip: 'Response Room',
+                  label: 'Impact',
+                  tooltip: 'Impact review',
                 ),
                 NavigationDestination(
                   key: Key('mobile-nav-patch-studio'),
                   icon: Icon(Icons.difference_outlined),
                   selectedIcon: Icon(Icons.difference_rounded),
-                  label: 'Patch',
-                  tooltip: 'Patch Studio',
+                  label: 'Plan',
+                  tooltip: 'Change plan',
                 ),
                 NavigationDestination(
                   key: Key('mobile-nav-simulation-lab'),
                   icon: Icon(Icons.grid_view_outlined),
                   selectedIcon: Icon(Icons.grid_view_rounded),
-                  label: 'Simulate',
-                  tooltip: 'Simulation Lab',
+                  label: 'Test',
+                  tooltip: 'Safety checks',
                 ),
                 NavigationDestination(
                   key: Key('mobile-nav-evidence-vault'),
                   icon: Icon(Icons.inventory_2_outlined),
                   selectedIcon: Icon(Icons.inventory_2_rounded),
-                  label: 'Evidence',
-                  tooltip: 'Evidence Vault',
+                  label: 'Approve',
+                  tooltip: 'Approval record',
                 ),
               ],
             ),
@@ -126,10 +121,10 @@ class _MobileCommandBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sectionLabel = switch (controller.section) {
-      WorkspaceSection.responseRoom => 'Response Room',
-      WorkspaceSection.patchStudio => 'Patch Studio',
-      WorkspaceSection.simulationLab => 'Simulation Lab',
-      WorkspaceSection.evidenceVault => 'Evidence Vault',
+      WorkspaceSection.responseRoom => 'Impact review',
+      WorkspaceSection.patchStudio => 'Change plan',
+      WorkspaceSection.simulationLab => 'Safety checks',
+      WorkspaceSection.evidenceVault => 'Approval record',
     };
     return Container(
       height: 62,
@@ -140,7 +135,7 @@ class _MobileCommandBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const _BrandMark(),
+          const RenkeviaMark(size: 34),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -159,7 +154,7 @@ class _MobileCommandBar extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '$sectionLabel • RUN 24-0717-A',
+                  '$sectionLabel • Northstar UH',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -173,7 +168,7 @@ class _MobileCommandBar extends StatelessWidget {
           StatusPill(
             label: controller.executionModeLabel == 'LIVE GPT-5.6'
                 ? 'LIVE'
-                : (controller.isConnectedCore ? 'CORE' : 'REPLAY'),
+                : (controller.isConnectedCore ? 'CONNECTED' : 'DEMO'),
             icon: controller.isConnectedCore
                 ? Icons.cable_rounded
                 : Icons.replay_outlined,
@@ -186,7 +181,7 @@ class _MobileCommandBar extends StatelessWidget {
           ),
           const SizedBox(width: 7),
           const Tooltip(
-            message: 'Synthetic fixture • no PHI',
+            message: 'Synthetic scenario • no patient data',
             child: Icon(
               Icons.shield_outlined,
               color: RenkeviaColors.cyanDark,
@@ -196,7 +191,7 @@ class _MobileCommandBar extends StatelessWidget {
           IconButton(
             key: const Key('mobile-reset-fixture'),
             onPressed: controller.resetFixture,
-            tooltip: 'Reset synthetic run',
+            tooltip: 'Restart guided review',
             icon: const Icon(Icons.restart_alt_rounded, size: 20),
           ),
         ],
@@ -224,17 +219,19 @@ class _CommandBar extends StatelessWidget {
           final compact = constraints.maxWidth < 1000;
           return Row(
             children: [
-              const Icon(Icons.account_tree_outlined, size: 17),
+              Icon(_sectionIcon(controller.section), size: 18),
               const SizedBox(width: 9),
               Text(
-                'RUN 24-0717-A',
-                style: Theme.of(context).textTheme.labelMedium,
+                _sectionLabel(controller.section),
+                style: Theme.of(context).textTheme.labelLarge,
               ),
               const SizedBox(width: 12),
               if (!compact) ...[const _DividerDot(), const SizedBox(width: 12)],
               Expanded(
                 child: Text(
-                  compact ? 'Northstar UH' : 'Northstar University Hospital',
+                  compact
+                      ? 'Northstar UH'
+                      : 'Northstar University Hospital • shortage review',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -245,7 +242,7 @@ class _CommandBar extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               const StatusPill(
-                label: 'SYNTHETIC • NO PHI',
+                label: 'SYNTHETIC • NO PATIENT DATA',
                 icon: Icons.shield_outlined,
                 foreground: RenkeviaColors.cyanDark,
                 background: RenkeviaColors.cyanWash,
@@ -255,7 +252,7 @@ class _CommandBar extends StatelessWidget {
                 label: compact
                     ? (controller.executionModeLabel == 'LIVE GPT-5.6'
                           ? 'LIVE'
-                          : (controller.isConnectedCore ? 'CORE' : 'REPLAY'))
+                          : (controller.isConnectedCore ? 'CONNECTED' : 'DEMO'))
                     : controller.executionModeLabel,
                 icon: controller.isConnectedCore
                     ? Icons.cable_rounded
@@ -270,7 +267,7 @@ class _CommandBar extends StatelessWidget {
               const SizedBox(width: 12),
               IconButton(
                 onPressed: controller.resetFixture,
-                tooltip: 'Reset synthetic run',
+                tooltip: 'Restart guided review',
                 icon: const Icon(Icons.restart_alt_rounded, size: 19),
               ),
               const SizedBox(width: 2),
@@ -371,23 +368,14 @@ class _NavigationRail extends StatelessWidget {
             SizedBox(
               height: 76,
               child: compact
-                  ? const Center(child: _BrandMark())
+                  ? const Center(
+                      child: RenkeviaMark(size: 38, foreground: Colors.white),
+                    )
                   : const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 19),
-                      child: Row(
-                        children: [
-                          _BrandMark(),
-                          SizedBox(width: 11),
-                          Text(
-                            'RENKEVIA',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              letterSpacing: 1.5,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ],
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: RenkeviaWordmark(onDark: true),
                       ),
                     ),
             ),
@@ -395,7 +383,7 @@ class _NavigationRail extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.fromLTRB(19, 3, 19, 15),
                 child: Text(
-                  'CHANGE COMPILER / 01',
+                  'ONE CHANGE • EVERY DEPENDENCY',
                   style: TextStyle(
                     color: Color(0xFF8FA2A0),
                     fontSize: 9,
@@ -408,8 +396,8 @@ class _NavigationRail extends StatelessWidget {
               compact: compact,
               selected: controller.section == WorkspaceSection.responseRoom,
               icon: Icons.hub_outlined,
-              label: 'Response Room',
-              detail: 'Map blast radius',
+              label: 'Impact review',
+              detail: 'Understand who & what changes',
               onTap: () =>
                   controller.selectSection(WorkspaceSection.responseRoom),
             ),
@@ -417,8 +405,8 @@ class _NavigationRail extends StatelessWidget {
               compact: compact,
               selected: controller.section == WorkspaceSection.patchStudio,
               icon: Icons.difference_outlined,
-              label: 'Patch Studio',
-              detail: 'Compile artifacts',
+              label: 'Change plan',
+              detail: 'Synchronize every system',
               onTap: () =>
                   controller.selectSection(WorkspaceSection.patchStudio),
             ),
@@ -426,8 +414,8 @@ class _NavigationRail extends StatelessWidget {
               compact: compact,
               selected: controller.section == WorkspaceSection.simulationLab,
               icon: Icons.grid_view_outlined,
-              label: 'Simulation Lab',
-              detail: 'Test pathways',
+              label: 'Safety checks',
+              detail: 'Test patient pathways',
               onTap: () =>
                   controller.selectSection(WorkspaceSection.simulationLab),
             ),
@@ -435,8 +423,8 @@ class _NavigationRail extends StatelessWidget {
               compact: compact,
               selected: controller.section == WorkspaceSection.evidenceVault,
               icon: Icons.inventory_2_outlined,
-              label: 'Evidence Vault',
-              detail: 'Prove & rollback',
+              label: 'Approval record',
+              detail: 'Review proof & rollback',
               onTap: () =>
                   controller.selectSection(WorkspaceSection.evidenceVault),
             ),
@@ -461,7 +449,7 @@ class _NavigationRail extends StatelessWidget {
                         ),
                         SizedBox(width: 7),
                         Text(
-                          'APPROVAL LOCKED',
+                          'HUMAN DECISION REQUIRED',
                           style: TextStyle(
                             color: RenkeviaColors.amber,
                             fontSize: 9,
@@ -473,7 +461,7 @@ class _NavigationRail extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Final writes remain outside the model capability set.',
+                      'RENKEVIA can prepare and verify changes. Only a named person can approve them.',
                       style: TextStyle(
                         color: Color(0xFFAAB8B6),
                         fontSize: 10,
@@ -496,32 +484,6 @@ class _NavigationRail extends StatelessWidget {
                 ),
               ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _BrandMark extends StatelessWidget {
-  const _BrandMark();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 31,
-      height: 31,
-      decoration: BoxDecoration(
-        border: Border.all(color: RenkeviaColors.cyan, width: 1.5),
-        borderRadius: BorderRadius.circular(7),
-      ),
-      child: const Center(
-        child: Text(
-          'R',
-          style: TextStyle(
-            color: RenkeviaColors.cyan,
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-          ),
         ),
       ),
     );
@@ -616,6 +578,20 @@ class _NavItem extends StatelessWidget {
     return compact ? Tooltip(message: label, child: content) : content;
   }
 }
+
+String _sectionLabel(WorkspaceSection section) => switch (section) {
+  WorkspaceSection.responseRoom => 'Impact review',
+  WorkspaceSection.patchStudio => 'Change plan',
+  WorkspaceSection.simulationLab => 'Safety checks',
+  WorkspaceSection.evidenceVault => 'Approval record',
+};
+
+IconData _sectionIcon(WorkspaceSection section) => switch (section) {
+  WorkspaceSection.responseRoom => Icons.hub_outlined,
+  WorkspaceSection.patchStudio => Icons.difference_outlined,
+  WorkspaceSection.simulationLab => Icons.fact_check_outlined,
+  WorkspaceSection.evidenceVault => Icons.approval_outlined,
+};
 
 class _SectionBody extends StatelessWidget {
   const _SectionBody({required this.controller});

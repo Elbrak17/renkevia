@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/features/simulation_lab/simulation_fixture.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
-import 'package:renkevia/src/shared/responsive_metric_width.dart';
+import 'package:renkevia/src/shared/decision_surface.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
 class SimulationLabPage extends StatelessWidget {
@@ -30,7 +30,15 @@ class SimulationLabPage extends StatelessWidget {
             _SimulationHeader(controller: controller, snapshot: snapshot),
             const SizedBox(height: 16),
             _RunTrace(controller: controller),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+            const RenkeviaSectionHeading(
+              eyebrow: 'SAFETY EVIDENCE',
+              title: 'Inspect the pathway that changes the decision',
+              summary:
+                  'The matrix keeps every synthetic pathway visible, but the review starts with the counterexample: who is affected, what failed and which source resolves it.',
+              icon: Icons.fact_check_outlined,
+            ),
+            const SizedBox(height: 14),
             _SimulationWorkspace(controller: controller),
           ],
         ),
@@ -77,17 +85,21 @@ class _SimulationHeader extends StatelessWidget {
     final action = Semantics(
       button: true,
       label: !patchReady
-          ? 'Open Patch Studio and compile candidate version 0.8'
+          ? 'Open the change plan and prepare the safe candidate'
           : (verified
-                ? 'All deterministic patient pathways verified'
-                : 'Run deterministic patient pathways for candidate version 0.8'),
+                ? 'Open the specialist approval record'
+                : 'Run the same patient pathway checks against the revised plan'),
       child: FilledButton.icon(
         key: const Key('simulation-primary-button'),
         onPressed: !patchReady
             ? () => controller.selectSection(WorkspaceSection.patchStudio)
             : (state == SimulationRunState.baselineFailed
                   ? controller.runRevisedSimulation
-                  : null),
+                  : (verified
+                        ? () => controller.selectSection(
+                            WorkspaceSection.evidenceVault,
+                          )
+                        : null)),
         icon: running
             ? const SizedBox.square(
                 dimension: 15,
@@ -98,7 +110,7 @@ class _SimulationHeader extends StatelessWidget {
               )
             : Icon(
                 verified
-                    ? Icons.verified_rounded
+                    ? Icons.arrow_forward_rounded
                     : (patchReady
                           ? Icons.play_arrow_rounded
                           : Icons.arrow_back_rounded),
@@ -106,209 +118,87 @@ class _SimulationHeader extends StatelessWidget {
               ),
         label: Text(
           !patchReady
-              ? 'Compile Patch v0.8 first'
+              ? 'Resolve the change plan first'
               : switch (state) {
-                  SimulationRunState.baselineFailed => 'Run revised candidate',
-                  SimulationRunState.running => 'Executing 96 assertions…',
-                  SimulationRunState.verified => 'Verified • audits next',
+                  SimulationRunState.baselineFailed => 'Test the revised plan',
+                  SimulationRunState.running => 'Checking 24 pathways…',
+                  SimulationRunState.verified => 'Review specialist approval',
                 },
         ),
       ),
     );
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < 700;
-        final summary = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 10,
-              runSpacing: 7,
-              children: [
-                Text(
-                  'SIMULATION LAB / 03',
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-                StatusPill(
-                  label: status.$1,
-                  icon: verified
-                      ? Icons.verified_outlined
-                      : (running
-                            ? Icons.sync_rounded
-                            : Icons.warning_amber_rounded),
-                  foreground: status.$2,
-                  background: status.$3,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Patient pathways become executable assertions.',
-              style: compact
-                  ? Theme.of(context).textTheme.headlineMedium
-                  : Theme.of(context).textTheme.headlineLarge,
-            ),
-            const SizedBox(height: 7),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 790),
-              child: Text(
-                verified
-                    ? 'The same sealed fixture that rejected v0.7 now accepts v0.8. The original counterexample remains inspectable; specialist review is still required.'
-                    : 'A reproducible pediatric counterexample rejected v0.7. Retest the synchronized v0.8 candidate against the same 24 pathways and 96 assertions.',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-          ],
-        );
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (compact) ...[
-              summary,
-              const SizedBox(height: 14),
-              action,
-            ] else
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: summary),
-                  const SizedBox(width: 20),
-                  action,
-                ],
-              ),
-            const SizedBox(height: 18),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _Metric(
-                  label: 'PATHWAYS',
-                  value: running ? '— / 24' : '${snapshot.passedPathways} / 24',
-                  detail: verified ? 'all representative' : '1 counterexample',
-                  icon: Icons.route_outlined,
-                  danger: !verified && !running,
-                  success: verified,
-                ),
-                _Metric(
-                  label: 'ASSERTIONS',
-                  value: running
-                      ? '0 / 96'
-                      : '${snapshot.passedAssertions} / ${snapshot.totalAssertions}',
-                  detail: running ? 'deterministic queue' : 'schema-bound',
-                  icon: Icons.rule_folder_outlined,
-                  danger: !verified && !running,
-                  success: verified,
-                ),
-                _Metric(
-                  label: 'PROVENANCE',
-                  value: '${snapshot.provenanceCoverage}%',
-                  detail: verified ? 'every assertion linked' : '1 broken edge',
-                  icon: Icons.link_rounded,
-                  danger: !verified && !running,
-                  success: verified,
-                ),
-                _Metric(
-                  label: 'APPROVAL',
-                  value: 'LOCKED',
-                  detail: verified ? '4 audits required' : 'regression blocker',
-                  icon: Icons.lock_clock_outlined,
-                  warning: verified || running,
-                  danger: !verified && !running,
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _Metric extends StatelessWidget {
-  const _Metric({
-    required this.label,
-    required this.value,
-    required this.detail,
-    required this.icon,
-    this.danger = false,
-    this.success = false,
-    this.warning = false,
-  });
-
-  final String label;
-  final String value;
-  final String detail;
-  final IconData icon;
-  final bool danger;
-  final bool success;
-  final bool warning;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = danger
-        ? RenkeviaColors.danger
-        : (success
-              ? RenkeviaColors.success
-              : (warning ? const Color(0xFF9A6918) : RenkeviaColors.cyanDark));
-    final wash = danger
-        ? RenkeviaColors.dangerWash
-        : (success
+    final failed = !verified && !running;
+    return RenkeviaDecisionHero(
+      eyebrow: 'STEP 3 OF 4  •  SAFETY CHECKS',
+      title: verified
+          ? 'The revised plan protects every tested pathway.'
+          : 'Make the hidden failure reproducible—then prove it is gone.',
+      summary: verified
+          ? 'The exact same sealed cases that rejected the first plan now accept the synchronized revision. Every result remains linked to its source and the original pediatric counterexample stays visible for reviewers.'
+          : 'RENKEVIA turns representative synthetic patient journeys into deterministic safety checks. The first plan fails the pediatric pathway by design; the revised plan must pass the same evidence, not an easier test.',
+      status: StatusPill(
+        label: verified
+            ? '24 OF 24 PATHWAYS PASS'
+            : (running ? 'SAFETY CHECKS RUNNING' : status.$1),
+        icon: verified
+            ? Icons.verified_outlined
+            : (running ? Icons.sync_rounded : Icons.warning_amber_rounded),
+        foreground: status.$2,
+        background: status.$3,
+      ),
+      action: action,
+      alert: verified
+          ? 'Result: 96 of 96 checks pass, every result has supporting provenance, and exact rollback remains available.'
+          : 'Counterexample: a child below 30 kg receives the adult carrier substitution in plan v0.7. Approval remains locked until the revised plan passes.',
+      alertIcon: verified
+          ? Icons.verified_user_outlined
+          : Icons.child_care_outlined,
+      alertTone: verified ? RenkeviaColors.success : RenkeviaColors.danger,
+      alertBackground: verified
+          ? RenkeviaColors.successWash
+          : RenkeviaColors.dangerWash,
+      facts: [
+        RenkeviaDecisionFact(
+          label: verified
+              ? 'representative cases pass'
+              : 'one case still fails',
+          value: running ? 'Checking…' : '${snapshot.passedPathways} of 24',
+          icon: Icons.route_outlined,
+          tone: verified ? RenkeviaColors.success : RenkeviaColors.danger,
+          background: verified
               ? RenkeviaColors.successWash
-              : (warning ? RenkeviaColors.amberWash : RenkeviaColors.surface));
-    final viewportWidth = MediaQuery.sizeOf(context).width;
-    final metricWidth = responsiveMetricWidth(
-      viewportWidth,
-      desktopWidth: 212,
-      twoColumn: false,
-    );
-    return Container(
-      width: metricWidth,
-      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
-      decoration: BoxDecoration(
-        color: wash,
-        border: Border.all(color: accent.withValues(alpha: 0.28)),
-        borderRadius: BorderRadius.circular(9),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: accent, size: 18),
-          const SizedBox(width: 10),
-          Text(
-            value,
-            style: TextStyle(
-              color: danger ? RenkeviaColors.danger : RenkeviaColors.ink,
-              fontSize: value.length > 7 ? 15 : 20,
-              height: 1,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(width: 9),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: accent,
-                    fontSize: 8,
-                    letterSpacing: 0.6,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  detail,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+              : (failed
+                    ? RenkeviaColors.dangerWash
+                    : RenkeviaColors.surfaceMuted),
+        ),
+        RenkeviaDecisionFact(
+          label: 'deterministic safety checks',
+          value: running
+              ? 'Running…'
+              : '${snapshot.passedAssertions} of ${snapshot.totalAssertions}',
+          icon: Icons.rule_folder_outlined,
+          tone: verified ? RenkeviaColors.success : RenkeviaColors.cyanDark,
+        ),
+        RenkeviaDecisionFact(
+          label: verified
+              ? 'results linked to evidence'
+              : 'one link incomplete',
+          value: '${snapshot.provenanceCoverage}% traceable',
+          icon: Icons.link_rounded,
+          tone: verified ? RenkeviaColors.success : RenkeviaColors.danger,
+        ),
+        RenkeviaDecisionFact(
+          label: verified
+              ? 'specialist review required'
+              : 'safety gate blocked',
+          value: verified ? '4 reviewers next' : 'Approval locked',
+          icon: Icons.lock_clock_outlined,
+          tone: verified ? RenkeviaColors.amber : RenkeviaColors.danger,
+          background: verified
+              ? RenkeviaColors.amberWash
+              : RenkeviaColors.dangerWash,
+        ),
+      ],
     );
   }
 }
@@ -324,150 +214,40 @@ class _RunTrace extends StatelessWidget {
     final running = state == SimulationRunState.running;
     final verified = state == SimulationRunState.verified;
     final revised = controller.patchRevised;
-    final steps = <_RunStepData>[
-      const _RunStepData(
-        icon: Icons.lock_outline_rounded,
-        title: 'Fixture sealed',
-        detail: 'SIM-24-0717 • hash 8D4A',
-        state: _RunStepState.done,
-      ),
-      _RunStepData(
-        icon: Icons.schema_outlined,
-        title: revised ? 'Candidate v0.8' : 'Candidate v0.7',
-        detail: revised ? 'six projections synchronized' : 'PED-07 edge absent',
-        state: revised ? _RunStepState.done : _RunStepState.failed,
-      ),
-      _RunStepData(
-        icon: Icons.account_tree_outlined,
-        title: 'Deterministic executor',
-        detail: running
-            ? 'evaluating 96 assertions'
-            : (verified ? '24 pathways verified' : '23 pass • 1 fail'),
-        state: running
-            ? _RunStepState.active
-            : (verified ? _RunStepState.done : _RunStepState.failed),
-      ),
-      _RunStepData(
-        icon: Icons.lock_clock_outlined,
-        title: 'Approval gate',
-        detail: verified ? 'specialist audits pending' : 'regression blocking',
-        state: _RunStepState.waiting,
-      ),
-    ];
-    return LayoutBuilder(
-      builder: (context, constraints) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: RenkeviaColors.graphite,
-          borderRadius: BorderRadius.circular(11),
+    return RenkeviaJourney(
+      title: 'Safety verification path',
+      steps: [
+        const RenkeviaJourneyStep(
+          label: 'Cases locked',
+          detail: 'Same 24 cases every run',
+          icon: Icons.lock_outline_rounded,
+          state: RenkeviaJourneyState.complete,
         ),
-        child: constraints.maxWidth < 680
-            ? Column(
-                children: [
-                  for (var index = 0; index < steps.length; index++) ...[
-                    _RunStep(data: steps[index]),
-                    if (index < steps.length - 1)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          width: 1,
-                          height: 10,
-                          margin: const EdgeInsets.only(left: 14),
-                          color: _runStepColor(
-                            steps[index + 1].state,
-                          ).withValues(alpha: 0.7),
-                        ),
-                      ),
-                  ],
-                ],
-              )
-            : Row(
-                children: [
-                  for (var index = 0; index < steps.length; index++) ...[
-                    Expanded(child: _RunStep(data: steps[index])),
-                    if (index < steps.length - 1)
-                      Container(
-                        width: 32,
-                        height: 1,
-                        color: _runStepColor(
-                          steps[index + 1].state,
-                        ).withValues(alpha: 0.7),
-                      ),
-                  ],
-                ],
-              ),
-      ),
-    );
-  }
-}
-
-enum _RunStepState { done, active, failed, waiting }
-
-class _RunStepData {
-  const _RunStepData({
-    required this.icon,
-    required this.title,
-    required this.detail,
-    required this.state,
-  });
-
-  final IconData icon;
-  final String title;
-  final String detail;
-  final _RunStepState state;
-}
-
-Color _runStepColor(_RunStepState state) => switch (state) {
-  _RunStepState.done => RenkeviaColors.cyan,
-  _RunStepState.active => RenkeviaColors.amber,
-  _RunStepState.failed => RenkeviaColors.danger,
-  _RunStepState.waiting => const Color(0xFF71817F),
-};
-
-class _RunStep extends StatelessWidget {
-  const _RunStep({required this.data});
-
-  final _RunStepData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = _runStepColor(data.state);
-    return Row(
-      children: [
-        Container(
-          width: 29,
-          height: 29,
-          decoration: BoxDecoration(
-            color: accent.withValues(alpha: 0.13),
-            shape: BoxShape.circle,
-            border: Border.all(color: accent),
-          ),
-          child: Icon(data.icon, color: accent, size: 14),
+        RenkeviaJourneyStep(
+          label: revised ? 'Revised plan loaded' : 'Blocked plan loaded',
+          detail: revised ? '6 targets synchronized' : 'Pediatric rule missing',
+          icon: Icons.schema_outlined,
+          state: revised
+              ? RenkeviaJourneyState.complete
+              : RenkeviaJourneyState.blocked,
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                data.title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                data.detail,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Color(0xFF93A5A3), fontSize: 8.5),
-              ),
-            ],
-          ),
+        RenkeviaJourneyStep(
+          label: 'Patient paths checked',
+          detail: running
+              ? '96 checks in progress'
+              : (verified ? '24 pathways pass' : '1 pathway fails'),
+          icon: Icons.account_tree_outlined,
+          state: running
+              ? RenkeviaJourneyState.current
+              : (verified
+                    ? RenkeviaJourneyState.complete
+                    : RenkeviaJourneyState.blocked),
+        ),
+        RenkeviaJourneyStep(
+          label: 'Independent review',
+          detail: verified ? '4 specialists required' : 'Safety gate locked',
+          icon: Icons.groups_outlined,
+          state: RenkeviaJourneyState.waiting,
         ),
       ],
     );

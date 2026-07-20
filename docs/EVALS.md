@@ -1,8 +1,10 @@
 # Evaluation plan
 
-Status: preregistered plan. No result exists yet. Targets are go/no-go thresholds for the hackathon prototype, not clinical-performance claims.
+Status: preregistered plan plus an implemented network-free robustness suite. Targets are go/no-go thresholds for the hackathon prototype, not clinical-performance claims.
 
-The full twelve-scenario comparison has not been run. A narrower deterministic vertical-fixture check is implemented and must not be presented as the complete evaluation: candidate `v0.7` produces one seeded failure at `PATH-PED-07-04/A1` (23/24 pathways and 95/96 assertions); revised `v0.8` produces 24/24 pathways and 96/96 assertions, with exact full and partial-stage rollback. Reproduce it with `npm run test:core` and `npm run demo:core`.
+The versioned twelve-scenario **deterministic robustness suite** is implemented and currently passes 12/12 without network access. It covers the hidden population exception, a safe recompilation, evidence checksum drift, target-state drift, a missing system projection, ambiguous evidence, partial-stage rollback, uploaded prompt-injection text, duplicated evidence, incomplete specialist review, open legacy dissent/missing proof, and out-of-band staging drift. Reproduce the raw JSON with `npm run eval:deterministic`; the same suite is asserted in `server/test/deterministic-eval.test.ts`.
+
+The comparative GPT baseline experiment has not been run because the project has no funded live evidence record. That limitation is explicit: 12/12 proves deterministic guard behavior, not model quality or superiority. Candidate `v0.7` produces one seeded failure at `PATH-PED-07-04/A1` (23/24 pathways and 95/96 assertions); revised `v0.8` produces 24/24 pathways and 96/96 assertions, with exact full and partial-stage rollback. Reproduce the vertical fixture with `npm run test:core` and `npm run demo:core`.
 
 ## Evaluation question
 
@@ -21,7 +23,7 @@ The purpose is not to prove one model better than another. It is to isolate the 
 
 ## Synthetic scenario set
 
-Create at least twelve versioned scenarios spanning:
+The implemented robustness suite spans:
 
 - adult-only apparent scope with a hidden pediatric exception;
 - alias mismatch across policy and order-set exports;
@@ -31,12 +33,12 @@ Create at least twelve versioned scenarios spanning:
 - rollback after partial staging;
 - prompt-injection text embedded in an uploaded artifact;
 - duplicated evidence that must not inflate confidence;
-- visually encoded table dependency;
-- model/tool timeout and partial specialist-review failure;
-- cache invalidation after a policy update;
-- legacy-screen drift between inspection and staging.
+- visually encoded table dependency through the seeded pediatric source identity;
+- partial specialist-review failure;
+- evidence/cache identity invalidation after a source update;
+- legacy state drift between inspection and staging.
 
-At least four scenarios remain hidden from prompt and implementation authors until the evaluation run.
+Hidden holdout scenarios remain a requirement for a real pilot. The hackathon robustness cases are public synthetic software tests and must not be described as blinded clinical evaluation.
 
 ## Ground truth
 
@@ -101,6 +103,17 @@ This demonstrates which GPT-5.6 features are causally useful rather than decorat
 - Store raw machine-readable results before creating charts.
 - Label replays, cached responses, and live generations distinctly.
 - Never cherry-pick only successful runs for the submission.
+
+## Current machine-readable result
+
+As of 2026-07-20:
+
+| Suite | Result | Scope |
+|---|---:|---|
+| Vertical pathway fixture | v0.7: 23/24; v0.8: 24/24 | One dramatic before/after scenario |
+| Assertions | v0.7: 95/96; v0.8: 96/96 | Deterministic software checks |
+| Robustness scenarios | 12/12 | Guard and failure-mode behavior |
+| Comparative live GPT baselines | Not run | Requires a funded, version-pinned live run |
 
 ## Human evaluation
 

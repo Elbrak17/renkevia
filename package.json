@@ -13,6 +13,8 @@
     "typecheck:core": "tsc -p server/tsconfig.json",
     "test:core": "node --import tsx --test server/test/*.test.ts",
     "demo:core": "node --import tsx server/src/demo.ts",
+    "eval:deterministic": "node --import tsx server/src/evals/deterministic-robustness.ts",
+    "impact:scenario": "node scripts/impact-model.mjs",
     "demo:live": "node --import tsx server/src/live-demo.ts",
     "serve:api": "node --import tsx server/src/http/demo-api.ts",
     "test:probes": "node --test probes/test/*.test.mjs",

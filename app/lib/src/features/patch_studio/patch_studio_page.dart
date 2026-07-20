@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:renkevia/src/core/theme/renkevia_theme.dart';
 import 'package:renkevia/src/features/workspace/demo_run_controller.dart';
-import 'package:renkevia/src/shared/responsive_metric_width.dart';
+import 'package:renkevia/src/shared/decision_surface.dart';
 import 'package:renkevia/src/shared/status_pill.dart';
 
 class PatchStudioPage extends StatelessWidget {
@@ -27,7 +27,15 @@ class PatchStudioPage extends StatelessWidget {
             _PatchHeader(controller: controller),
             const SizedBox(height: 16),
             _CompileTrace(state: controller.patchCompileState),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+            const RenkeviaSectionHeading(
+              eyebrow: 'SYNCHRONIZED CHANGE',
+              title: 'Review one rule across every hospital target',
+              summary:
+                  'Choose a target to inspect its exact before-and-after change. The structured implementation details remain visible as supporting proof, not as the primary task.',
+              icon: Icons.difference_outlined,
+            ),
+            const SizedBox(height: 14),
             _PatchWorkspace(controller: controller),
           ],
         ),
@@ -49,13 +57,16 @@ class _PatchHeader extends StatelessWidget {
     final action = Semantics(
       button: true,
       label: revised
-          ? 'Patch revised; simulation is required next'
+          ? 'Open patient pathway safety checks'
           : 'Recompile every artifact with the pediatric exception',
       child: FilledButton.icon(
         key: const Key('recompile-patch-button'),
-        onPressed: controller.patchCompileState == PatchCompileState.blocked
-            ? controller.recompilePatch
-            : null,
+        onPressed: recompiling
+            ? null
+            : (revised
+                  ? () =>
+                        controller.selectSection(WorkspaceSection.simulationLab)
+                  : controller.recompilePatch),
         icon: recompiling
             ? const SizedBox.square(
                 dimension: 15,
@@ -65,206 +76,71 @@ class _PatchHeader extends StatelessWidget {
                 ),
               )
             : Icon(
-                revised ? Icons.check_rounded : Icons.account_tree_outlined,
+                revised ? Icons.arrow_forward_rounded : Icons.auto_fix_high,
                 size: 18,
               ),
         label: Text(switch (controller.patchCompileState) {
-          PatchCompileState.blocked => 'Compile PED-07 exception',
-          PatchCompileState.recompiling => 'Projecting six artifacts…',
-          PatchCompileState.revised => 'Recompiled • verify next',
+          PatchCompileState.blocked => 'Synchronize the safe plan',
+          PatchCompileState.recompiling => 'Updating every target…',
+          PatchCompileState.revised => 'Run safety checks',
         }),
       ),
     );
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compact = constraints.maxWidth < 700;
-        final summary = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 10,
-              runSpacing: 7,
-              children: [
-                Text(
-                  'PATCH STUDIO / 02',
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-                StatusPill(
-                  label: revised
-                      ? 'REVISED • RETEST REQUIRED'
-                      : 'CANDIDATE • BLOCKED',
-                  icon: revised
-                      ? Icons.rule_folder_outlined
-                      : Icons.block_outlined,
-                  foreground: revised
-                      ? const Color(0xFF9A6918)
-                      : RenkeviaColors.danger,
-                  background: revised
-                      ? RenkeviaColors.amberWash
-                      : RenkeviaColors.dangerWash,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'One Patch IR. Six synchronized artifacts.',
-              style: compact
-                  ? Theme.of(context).textTheme.headlineMedium
-                  : Theme.of(context).textTheme.headlineLarge,
-            ),
-            const SizedBox(height: 7),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 780),
-              child: Text(
-                revised
-                    ? 'The pediatric exception changed every affected projection together. The candidate must still survive patient-pathway regressions.'
-                    : 'The candidate is internally coherent for adults, but PED-07 proves its scope is incomplete. Fix the source of truth—not six files by hand.',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-          ],
-        );
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (compact) ...[
-              summary,
-              const SizedBox(height: 14),
-              action,
-            ] else
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: summary),
-                  const SizedBox(width: 20),
-                  action,
-                ],
-              ),
-            const SizedBox(height: 18),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _PatchMetric(
-                  label: 'PATCH IR',
-                  value: revised ? 'v0.8' : 'v0.7',
-                  detail: revised ? 'revision candidate' : 'blocked candidate',
-                  icon: Icons.schema_outlined,
-                ),
-                const _PatchMetric(
-                  label: 'PROJECTIONS',
-                  value: '6',
-                  detail: 'one compiler pass',
-                  icon: Icons.copy_all_outlined,
-                ),
-                const _PatchMetric(
-                  label: 'SOURCE LINKS',
-                  value: '9',
-                  detail: 'immutable regions',
-                  icon: Icons.link_rounded,
-                ),
-                _PatchMetric(
-                  label: revised ? 'NEXT GATE' : 'BLOCKERS',
-                  value: revised ? '24' : '1',
-                  detail: revised ? 'patient suites' : 'PED-07 exception',
-                  icon: revised
-                      ? Icons.fact_check_outlined
-                      : Icons.report_gmailerrorred_outlined,
-                  danger: !revised,
-                  warning: revised,
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _PatchMetric extends StatelessWidget {
-  const _PatchMetric({
-    required this.label,
-    required this.value,
-    required this.detail,
-    required this.icon,
-    this.danger = false,
-    this.warning = false,
-  });
-
-  final String label;
-  final String value;
-  final String detail;
-  final IconData icon;
-  final bool danger;
-  final bool warning;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = danger
-        ? RenkeviaColors.danger
-        : (warning ? const Color(0xFF9A6918) : RenkeviaColors.cyanDark);
-    final wash = danger
-        ? RenkeviaColors.dangerWash
-        : (warning ? RenkeviaColors.amberWash : RenkeviaColors.surface);
-    final viewportWidth = MediaQuery.sizeOf(context).width;
-    final metricWidth = responsiveMetricWidth(
-      viewportWidth,
-      desktopWidth: 198,
-      twoColumn: false,
-    );
-    return Container(
-      width: metricWidth,
-      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
-      decoration: BoxDecoration(
-        color: wash,
-        border: Border.all(
-          color: danger
-              ? const Color(0xFFEBC0B9)
-              : (warning ? const Color(0xFFE9D09E) : RenkeviaColors.hairline),
+    return RenkeviaDecisionHero(
+      eyebrow: 'STEP 2 OF 4  •  CHANGE PLAN',
+      title: revised
+          ? 'One correction now reaches every affected system.'
+          : 'Fix the rule once. Never repair six files by hand.',
+      summary: revised
+          ? 'The pediatric exception is now represented in policy, orders, pump settings, labels, staff communication and the staged EHR plan. The synchronized package is complete, but it is not yet proven safe.'
+          : 'RENKEVIA turns the conflicting source material into one reviewable change plan. Updating the shared rule recompiles every institutional target together and preserves exactly why each field changed.',
+      status: StatusPill(
+        label: revised ? 'PLAN READY FOR TESTING' : '1 EXCEPTION TO RESOLVE',
+        icon: revised ? Icons.task_alt_rounded : Icons.block_outlined,
+        foreground: revised ? RenkeviaColors.success : RenkeviaColors.danger,
+        background: revised
+            ? RenkeviaColors.successWash
+            : RenkeviaColors.dangerWash,
+      ),
+      action: action,
+      alert: revised
+          ? 'The plan changed 12 fields across 6 targets in one atomic revision. Safety testing is the next required gate.'
+          : 'PED-07 requires the original carrier below 30 kg. RENKEVIA will add that exception to the shared plan and project it everywhere it matters.',
+      alertIcon: revised ? Icons.sync_alt_rounded : Icons.child_care_outlined,
+      alertTone: revised ? RenkeviaColors.success : RenkeviaColors.danger,
+      alertBackground: revised
+          ? RenkeviaColors.successWash
+          : RenkeviaColors.dangerWash,
+      facts: [
+        RenkeviaDecisionFact(
+          label: revised
+              ? 'current safe candidate'
+              : 'current blocked candidate',
+          value: revised ? 'Plan v0.8' : 'Plan v0.7',
+          icon: Icons.schema_outlined,
         ),
-        borderRadius: BorderRadius.circular(9),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: accent, size: 18),
-          const SizedBox(width: 10),
-          Text(
-            value,
-            style: TextStyle(
-              color: danger ? RenkeviaColors.danger : RenkeviaColors.ink,
-              fontSize: 20,
-              height: 1,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(width: 9),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: accent,
-                    fontSize: 8,
-                    letterSpacing: 0.6,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  detail,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        const RenkeviaDecisionFact(
+          label: 'updated together',
+          value: '6 targets',
+          icon: Icons.copy_all_outlined,
+        ),
+        const RenkeviaDecisionFact(
+          label: 'linked evidence regions',
+          value: '9 sources',
+          icon: Icons.link_rounded,
+        ),
+        RenkeviaDecisionFact(
+          label: revised ? 'next required gate' : 'prevents approval',
+          value: revised ? '24 safety cases' : '1 exception',
+          icon: revised
+              ? Icons.fact_check_outlined
+              : Icons.report_gmailerrorred_outlined,
+          tone: revised ? RenkeviaColors.amber : RenkeviaColors.danger,
+          background: revised
+              ? RenkeviaColors.amberWash
+              : RenkeviaColors.dangerWash,
+        ),
+      ],
     );
   }
 }
@@ -278,144 +154,42 @@ class _CompileTrace extends StatelessWidget {
   Widget build(BuildContext context) {
     final revised = state == PatchCompileState.revised;
     final recompiling = state == PatchCompileState.recompiling;
-    final steps = [
-      const _TraceStep(
-        icon: Icons.source_outlined,
-        title: 'Evidence bound',
-        detail: '9 source regions',
-        state: _TraceState.done,
-      ),
-      _TraceStep(
-        icon: Icons.schema_outlined,
-        title: revised ? 'Patch IR v0.8' : 'Patch IR v0.7',
-        detail: recompiling ? 'Applying MUT-02' : 'Typed & schema-valid',
-        state: recompiling ? _TraceState.active : _TraceState.done,
-      ),
-      _TraceStep(
-        icon: Icons.call_split_outlined,
-        title: 'Six projections',
-        detail: revised
-            ? 'All at revision v0.8'
-            : (recompiling ? 'Atomic projection pass' : 'One scope missing'),
-        state: revised
-            ? _TraceState.done
-            : (recompiling ? _TraceState.active : _TraceState.blocked),
-      ),
-      _TraceStep(
-        icon: Icons.lock_clock_outlined,
-        title: 'Approval gate',
-        detail: revised ? 'Simulation required' : 'PED-07 blocking',
-        state: revised ? _TraceState.waiting : _TraceState.blocked,
-      ),
-    ];
-    return LayoutBuilder(
-      builder: (context, constraints) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: RenkeviaColors.graphite,
-          borderRadius: BorderRadius.circular(11),
+    return RenkeviaJourney(
+      title: 'What happens to this change',
+      steps: [
+        const RenkeviaJourneyStep(
+          label: 'Evidence attached',
+          detail: '9 exact source regions',
+          icon: Icons.source_outlined,
+          state: RenkeviaJourneyState.complete,
         ),
-        child: constraints.maxWidth < 680
-            ? Column(
-                children: [
-                  for (var index = 0; index < steps.length; index++) ...[
-                    steps[index],
-                    if (index < steps.length - 1)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          width: 1,
-                          height: 10,
-                          margin: const EdgeInsets.only(left: 14),
-                          color: _traceColor(
-                            steps[index + 1].state,
-                          ).withValues(alpha: 0.7),
-                        ),
-                      ),
-                  ],
-                ],
-              )
-            : Row(
-                children: [
-                  for (var index = 0; index < steps.length; index++) ...[
-                    Expanded(child: steps[index]),
-                    if (index < steps.length - 1)
-                      Container(
-                        width: 34,
-                        height: 1,
-                        color: _traceColor(
-                          steps[index + 1].state,
-                        ).withValues(alpha: 0.7),
-                      ),
-                  ],
-                ],
-              ),
-      ),
-    );
-  }
-}
-
-enum _TraceState { done, active, blocked, waiting }
-
-Color _traceColor(_TraceState state) => switch (state) {
-  _TraceState.done => RenkeviaColors.cyan,
-  _TraceState.active => RenkeviaColors.amber,
-  _TraceState.blocked => RenkeviaColors.danger,
-  _TraceState.waiting => const Color(0xFF71817F),
-};
-
-class _TraceStep extends StatelessWidget {
-  const _TraceStep({
-    required this.icon,
-    required this.title,
-    required this.detail,
-    required this.state,
-  });
-
-  final IconData icon;
-  final String title;
-  final String detail;
-  final _TraceState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = _traceColor(state);
-    return Row(
-      children: [
-        Container(
-          width: 29,
-          height: 29,
-          decoration: BoxDecoration(
-            color: accent.withValues(alpha: 0.13),
-            shape: BoxShape.circle,
-            border: Border.all(color: accent),
-          ),
-          child: Icon(icon, color: accent, size: 14),
+        RenkeviaJourneyStep(
+          label: revised ? 'Safe rule prepared' : 'Shared rule drafted',
+          detail: recompiling ? 'Applying the exception' : 'Structured plan',
+          icon: Icons.schema_outlined,
+          state: recompiling
+              ? RenkeviaJourneyState.current
+              : RenkeviaJourneyState.complete,
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                detail,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: accent, fontSize: 8),
-              ),
-            ],
-          ),
+        RenkeviaJourneyStep(
+          label: 'Every target updated',
+          detail: revised
+              ? '6 targets synchronized'
+              : (recompiling ? 'Updating together' : 'Scope incomplete'),
+          icon: Icons.call_split_outlined,
+          state: revised
+              ? RenkeviaJourneyState.complete
+              : (recompiling
+                    ? RenkeviaJourneyState.current
+                    : RenkeviaJourneyState.blocked),
+        ),
+        RenkeviaJourneyStep(
+          label: 'Safety gate',
+          detail: revised ? 'Patient tests required' : 'Exception blocking',
+          icon: Icons.lock_clock_outlined,
+          state: revised
+              ? RenkeviaJourneyState.waiting
+              : RenkeviaJourneyState.blocked,
         ),
       ],
     );
@@ -505,12 +279,14 @@ class _PatchIrOutline extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'PATCH IR OUTLINE',
+                        'CHANGE PLAN',
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        revised ? 'schema v1 • rev 0.8' : 'schema v1 • rev 0.7',
+                        revised
+                            ? 'safe revision v0.8 • structured details'
+                            : 'blocked revision v0.7 • structured details',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
@@ -530,7 +306,7 @@ class _PatchIrOutline extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
               children: [
                 const _OutlineSection(
-                  label: 'PRECONDITIONS',
+                  label: 'BEFORE THIS CHANGE',
                   count: '3',
                   children: [
                     _OutlineLeaf('PRE-01', 'Inventory threshold < 48h'),
@@ -540,7 +316,7 @@ class _PatchIrOutline extends StatelessWidget {
                 ),
                 const SizedBox(height: 7),
                 _OutlineSection(
-                  label: 'MUTATIONS',
+                  label: 'WHAT WILL CHANGE',
                   count: revised ? '2' : '1 + 1 blocked',
                   children: [
                     _MutationTile(
@@ -569,7 +345,7 @@ class _PatchIrOutline extends StatelessWidget {
                 ),
                 const SizedBox(height: 7),
                 _OutlineSection(
-                  label: 'VALIDATIONS',
+                  label: 'REQUIRED SAFETY CHECKS',
                   count: revised ? '4 pending' : '1 failed',
                   children: [
                     _OutlineLeaf(
@@ -585,7 +361,7 @@ class _PatchIrOutline extends StatelessWidget {
                 ),
                 const SizedBox(height: 7),
                 const _OutlineSection(
-                  label: 'ROLLBACK',
+                  label: 'HOW TO REVERSE IT',
                   count: '6 actions',
                   children: [
                     _OutlineLeaf('RBK-01', 'Restore sealed revision set'),
@@ -597,7 +373,7 @@ class _PatchIrOutline extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: const BoxDecoration(
-              color: Color(0xFFF6F5EF),
+              color: RenkeviaColors.surfaceMuted,
               border: Border(top: BorderSide(color: RenkeviaColors.hairline)),
             ),
             child: const Row(
@@ -610,7 +386,7 @@ class _PatchIrOutline extends StatelessWidget {
                 SizedBox(width: 7),
                 Expanded(
                   child: Text(
-                    'Schema-valid • deterministic projection only',
+                    'Structured plan • updates generated together',
                     style: TextStyle(
                       color: RenkeviaColors.inkMuted,
                       fontSize: 9,
@@ -875,7 +651,7 @@ class _ArtifactDiffPanel extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${spec.code} • deterministic projection • ${revised ? 'Patch IR v0.8' : 'Patch IR v0.7'}',
+                        '${spec.code} • synchronized target • ${revised ? 'plan v0.8' : 'plan v0.7'}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodyMedium,
@@ -984,7 +760,7 @@ class _ArtifactDiffPanel extends StatelessWidget {
           const Divider(height: 1),
           Expanded(
             child: ColoredBox(
-              color: const Color(0xFFF8F7F2),
+              color: RenkeviaColors.surface,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(15, 14, 15, 16),
                 child: Column(
@@ -1426,7 +1202,7 @@ class _ProjectionLedger extends StatelessWidget {
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: const BoxDecoration(
-        color: Color(0xFFF6F5EF),
+        color: RenkeviaColors.surfaceMuted,
         border: Border(top: BorderSide(color: RenkeviaColors.hairline)),
       ),
       child: Row(

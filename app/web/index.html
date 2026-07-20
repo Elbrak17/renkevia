@@ -19,7 +19,7 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="RENKEVIA compiles hospital evidence into synchronized, tested, provenance-linked change packages.">
-  <meta name="theme-color" content="#142020">
+  <meta name="theme-color" content="#10211f">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -30,16 +30,120 @@
 
   <title>RENKEVIA — Institutional Change Compiler</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      background: #f2f5f2;
+      color: #172522;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+    #renkevia-boot {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 72% 18%, rgba(40,184,170,.10), transparent 34%),
+        #f2f5f2;
+      transition: opacity 180ms ease-out, visibility 180ms ease-out;
+    }
+    #renkevia-boot.ready { opacity: 0; visibility: hidden; pointer-events: none; }
+    .boot-card {
+      width: min(520px, 100%);
+      padding: clamp(24px, 5vw, 40px);
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 1px 3px rgba(16,33,31,.07), 0 14px 38px rgba(16,33,31,.06);
+    }
+    .boot-brand { display: flex; align-items: center; gap: 14px; }
+    .boot-brand img { width: 46px; height: 46px; }
+    .boot-wordmark { font-size: 15px; font-weight: 800; letter-spacing: .18em; }
+    .boot-kicker { margin-top: 34px; color: #08736c; font-size: 11px; font-weight: 750; letter-spacing: .12em; }
+    .boot-card h1 { margin: 10px 0 10px; max-width: 420px; font-size: clamp(28px, 6vw, 42px); line-height: 1.05; letter-spacing: -.035em; }
+    .boot-message { margin: 0; color: #43534f; font-size: 15px; line-height: 1.55; }
+    .boot-progress { height: 3px; margin-top: 30px; overflow: hidden; border-radius: 999px; background: #e2f4f0; }
+    .boot-progress::after {
+      content: ""; display: block; width: 38%; height: 100%; border-radius: inherit; background: #28b8aa;
+      animation: boot-progress 1.15s ease-in-out infinite alternate;
+    }
+    .boot-recovery { display: none; margin-top: 20px; padding-top: 18px; border-top: 1px solid #dce4e0; }
+    .boot-recovery.visible { display: block; }
+    .boot-recovery button {
+      min-height: 48px; margin-top: 12px; padding: 0 18px; border: 0; border-radius: 12px;
+      background: #10211f; color: #fff; font: inherit; font-weight: 700; cursor: pointer;
+    }
+    @keyframes boot-progress { from { transform: translateX(-30%); } to { transform: translateX(190%); } }
+    @media (prefers-reduced-motion: reduce) {
+      #renkevia-boot { transition: none; }
+      .boot-progress::after { animation: none; width: 100%; }
+    }
+  </style>
 </head>
-<body style="margin:0;background:#142020">
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+<body>
+  <div id="renkevia-boot" role="status" aria-live="polite">
+    <main class="boot-card">
+      <div class="boot-brand">
+        <img src="icons/renkevia-mark.svg" width="46" height="46" alt="">
+        <span class="boot-wordmark">RENKEVIA</span>
+      </div>
+      <div class="boot-kicker">NORTHSTAR • GUIDED SAFETY REVIEW</div>
+      <h1>Preparing the change room.</h1>
+      <p id="boot-message" class="boot-message">Opening the sealed hospital scenario and its safety evidence…</p>
+      <div class="boot-progress" aria-hidden="true"></div>
+      <div id="boot-recovery" class="boot-recovery">
+        <p class="boot-message">The interface is taking longer than expected. A previous offline copy may still be active.</p>
+        <button type="button" id="boot-retry">Clear the old copy &amp; reopen</button>
+      </div>
+    </main>
+  </div>
+  <script>
+    (() => {
+      const recoveryKey = '__rkv_sw_clean';
+      const url = new URL(window.location.href);
+      if (url.searchParams.has(recoveryKey)) {
+        url.searchParams.delete(recoveryKey);
+        history.replaceState(null, '', url.pathname + url.search + url.hash);
+      }
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
+      const retireOldOfflineCopy = async () => {
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map((registration) => registration.unregister()));
+        }
+        if ('caches' in window) {
+          const names = await caches.keys();
+          await Promise.all(names.filter((name) => name.startsWith('flutter-')).map((name) => caches.delete(name)));
+        }
+      };
+
+      const loadFlutter = async () => {
+        try { await retireOldOfflineCopy(); } catch (_) { /* The app can still load without cache access. */ }
+        const script = document.createElement('script');
+        script.src = 'flutter_bootstrap.js';
+        script.defer = true;
+        script.onerror = () => document.getElementById('boot-recovery').classList.add('visible');
+        document.body.appendChild(script);
+      };
+
+      window.addEventListener('flutter-first-frame', () => {
+        document.getElementById('renkevia-boot').classList.add('ready');
+      });
+      navigator.serviceWorker?.addEventListener('message', (event) => {
+        if (event.data === 'RENKEVIA_SW_RETIRED') window.location.reload();
+      });
+      document.getElementById('boot-retry').addEventListener('click', async () => {
+        document.getElementById('boot-message').textContent = 'Clearing the previous offline copy…';
+        await retireOldOfflineCopy();
+        window.location.reload();
+      });
+      window.setTimeout(() => document.getElementById('boot-recovery').classList.add('visible'), 18000);
+      loadFlutter();
+    })();
+  </script>
 </body>
 </html>
