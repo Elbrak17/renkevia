@@ -436,7 +436,7 @@ void main() {
         matchesGoldenFile('goldens/response_room_blocked.png'),
       );
     },
-    skip: 'Browser release captures are the current visual-regression source.',
+    skip: true, // Browser release captures are the current visual baseline.
   );
 
   testWidgets(
@@ -455,7 +455,7 @@ void main() {
         matchesGoldenFile('goldens/patch_studio_revised.png'),
       );
     },
-    skip: 'Browser release captures are the current visual-regression source.',
+    skip: true, // Browser release captures are the current visual baseline.
   );
 
   testWidgets(
@@ -478,7 +478,7 @@ void main() {
         matchesGoldenFile('goldens/simulation_lab_verified.png'),
       );
     },
-    skip: 'Browser release captures are the current visual-regression source.',
+    skip: true, // Browser release captures are the current visual baseline.
   );
 
   testWidgets(
@@ -494,6 +494,6 @@ void main() {
         matchesGoldenFile('goldens/evidence_vault_sealed.png'),
       );
     },
-    skip: 'Browser release captures are the current visual-regression source.',
+    skip: true, // Browser release captures are the current visual baseline.
   );
 }
