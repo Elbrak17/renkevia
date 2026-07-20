@@ -55,8 +55,9 @@ institutional evidence into one testable, reviewable, reversible change package
 
 ## Recording truthfulness
 
-- Show the header mode: `FIXTURE REPLAY` for deterministic rehearsal or
-  `CONNECTED CORE` for the real server path.
+- Show the header mode: `FIXTURE REPLAY` for deterministic rehearsal,
+  `CONNECTED CORE` for the server-computed fixture, or `LIVE GPT-5.6` only when
+  the funded reasoning endpoint produced the proof held by the UI.
 - Do not label replay as a fresh GPT call.
 - A live GPT-5.6 run may be shown only after `npm run demo:live` saves a passing
   sanitized evidence record.
