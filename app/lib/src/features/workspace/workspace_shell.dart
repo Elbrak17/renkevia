@@ -278,7 +278,7 @@ class _CommandBar extends StatelessWidget {
                   'AM',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -386,7 +386,7 @@ class _NavigationRail extends StatelessWidget {
                   'ONE CHANGE • EVERY DEPENDENCY',
                   style: TextStyle(
                     color: Color(0xFF8FA2A0),
-                    fontSize: 9,
+                    fontSize: 10,
                     letterSpacing: 1.2,
                     fontWeight: FontWeight.w700,
                   ),
@@ -452,7 +452,7 @@ class _NavigationRail extends StatelessWidget {
                           'HUMAN DECISION REQUIRED',
                           style: TextStyle(
                             color: RenkeviaColors.amber,
-                            fontSize: 9,
+                            fontSize: 10,
                             letterSpacing: 0.7,
                             fontWeight: FontWeight.w800,
                           ),
@@ -565,7 +565,7 @@ class _NavItem extends StatelessWidget {
                           detail,
                           style: const TextStyle(
                             color: Color(0xFF82908E),
-                            fontSize: 9,
+                            fontSize: 10,
                           ),
                         ),
                       ],

@@ -450,7 +450,7 @@ class _SuiteTile extends StatelessWidget {
                           : '$passed / ${suite.pathwayIds.length} pathways',
                       style: TextStyle(
                         color: accent,
-                        fontSize: 8.5,
+                        fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -497,7 +497,7 @@ class _RegressionMatrix extends StatelessWidget {
                   '4 PATHWAYS / SUITE',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: RenkeviaColors.inkMuted,
-                    fontSize: 8,
+                    fontSize: 10,
                   ),
                 );
                 if (constraints.maxWidth < 520) {
@@ -588,7 +588,7 @@ class _RegressionMatrix extends StatelessWidget {
                           color: verified
                               ? RenkeviaColors.success
                               : RenkeviaColors.danger,
-                          fontSize: 9,
+                          fontSize: 10,
                           letterSpacing: 0.7,
                           fontWeight: FontWeight.w800,
                         ),
@@ -683,7 +683,7 @@ class _MatrixRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: RenkeviaColors.inkMuted,
-                      fontSize: 8.5,
+                      fontSize: 10,
                     ),
                   ),
                 ],
@@ -809,7 +809,9 @@ class _PediatricProof extends StatelessWidget {
         const SizedBox(height: 12),
         Text(
           'CAUSAL TRACE',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontSize: 8),
+          style: Theme.of(
+            context,
+          ).textTheme.labelMedium?.copyWith(fontSize: 10),
         ),
         const SizedBox(height: 8),
         const _TraceLine(
@@ -851,7 +853,7 @@ class _PediatricProof extends StatelessWidget {
                 'PATCH IR DELTA',
                 style: TextStyle(
                   color: Color(0xFF91A7A4),
-                  fontSize: 8,
+                  fontSize: 10,
                   letterSpacing: 0.7,
                   fontWeight: FontWeight.w800,
                 ),
@@ -866,7 +868,7 @@ class _PediatricProof extends StatelessWidget {
                       ? const Color(0xFF77D1AA)
                       : const Color(0xFFFF9D91),
                   fontFamily: 'RenkeviaMono',
-                  fontSize: 9,
+                  fontSize: 10,
                   height: 1.55,
                 ),
               ),
@@ -889,7 +891,7 @@ class _PediatricProof extends StatelessWidget {
                     : 'APPROVAL REMAINS LOCKED • reproducible regression',
                 style: const TextStyle(
                   color: Color(0xFF9A6918),
-                  fontSize: 8.5,
+                  fontSize: 10,
                   letterSpacing: 0.35,
                   fontWeight: FontWeight.w800,
                 ),
@@ -984,7 +986,7 @@ class _AssertionBlock extends StatelessWidget {
             label,
             style: TextStyle(
               color: color,
-              fontSize: 8,
+              fontSize: 10,
               letterSpacing: 0.65,
               fontWeight: FontWeight.w800,
             ),
@@ -1053,7 +1055,7 @@ class _TraceLine extends StatelessWidget {
                     index,
                     style: TextStyle(
                       color: color,
-                      fontSize: 7,
+                      fontSize: 10,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -1085,7 +1087,7 @@ class _TraceLine extends StatelessWidget {
                     detail,
                     style: const TextStyle(
                       color: RenkeviaColors.inkMuted,
-                      fontSize: 8.5,
+                      fontSize: 10,
                     ),
                   ),
                 ],
@@ -1128,7 +1130,7 @@ class _SourceRegion extends StatelessWidget {
                   'SRC-006 • archived table scan',
                   style: TextStyle(
                     color: RenkeviaColors.ink,
-                    fontSize: 8.5,
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -1137,7 +1139,7 @@ class _SourceRegion extends StatelessWidget {
                 'T3:C7',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: RenkeviaColors.violet,
-                  fontSize: 7.5,
+                  fontSize: 10,
                 ),
               ),
             ],
@@ -1174,7 +1176,7 @@ class _SourceRegion extends StatelessWidget {
                 : 'Region proves an exception absent from candidate v0.7.',
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(fontSize: 8.5),
+            ).textTheme.bodyMedium?.copyWith(fontSize: 10),
           ),
         ],
       ),
@@ -1212,9 +1214,10 @@ class _PanelHeading extends StatelessWidget {
               children: [
                 Text(
                   eyebrow,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelMedium?.copyWith(color: accent, fontSize: 8),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: accent,
+                    fontSize: 10,
+                  ),
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -1231,7 +1234,7 @@ class _PanelHeading extends StatelessWidget {
             trailing,
             style: TextStyle(
               color: accent,
-              fontSize: 8,
+              fontSize: 10,
               letterSpacing: 0.45,
               fontWeight: FontWeight.w800,
             ),

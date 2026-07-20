@@ -131,7 +131,7 @@ class DependencyGraph extends StatelessWidget {
                     'SELECT A NODE TO TRACE ITS SOURCE REGION',
                     style: TextStyle(
                       color: RenkeviaColors.inkMuted,
-                      fontSize: 7,
+                      fontSize: 10,
                       letterSpacing: 0.55,
                       fontWeight: FontWeight.w800,
                     ),
@@ -240,7 +240,7 @@ class _NodeCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: accent,
-                            fontSize: 7,
+                            fontSize: 10,
                             letterSpacing: 0.45,
                             fontWeight: FontWeight.w900,
                           ),
@@ -263,7 +263,7 @@ class _NodeCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: RenkeviaColors.inkMuted,
-                            fontSize: 7.5,
+                            fontSize: 10,
                           ),
                         ),
                       ],

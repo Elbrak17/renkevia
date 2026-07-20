@@ -342,7 +342,7 @@ class _GraphLegend extends StatelessWidget {
           label,
           style: const TextStyle(
             color: RenkeviaColors.inkMuted,
-            fontSize: 8,
+            fontSize: 10,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -505,7 +505,7 @@ class _EvidenceRail extends StatelessWidget {
                   '12 / 12',
                   style: TextStyle(
                     color: RenkeviaColors.success,
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -649,7 +649,7 @@ class _EvidenceTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(
                         context,
-                      ).textTheme.bodyMedium?.copyWith(fontSize: 9),
+                      ).textTheme.bodyMedium?.copyWith(fontSize: 10),
                     ),
                   ],
                 ),
@@ -661,7 +661,7 @@ class _EvidenceTile extends StatelessWidget {
                   color: critical
                       ? RenkeviaColors.danger
                       : RenkeviaColors.inkMuted,
-                  fontSize: 7,
+                  fontSize: 10,
                   letterSpacing: 0.4,
                   fontWeight: FontWeight.w800,
                 ),
@@ -854,7 +854,7 @@ class _PediatricEvidence extends StatelessWidget {
                   'OCR PREVIEW • SYNTHETIC',
                   style: TextStyle(
                     color: RenkeviaColors.inkMuted,
-                    fontSize: 7,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -918,7 +918,7 @@ class _DocumentExcerpt extends StatelessWidget {
             eyebrow,
             style: TextStyle(
               color: accent,
-              fontSize: 8,
+              fontSize: 10,
               letterSpacing: 0.6,
               fontWeight: FontWeight.w800,
             ),
@@ -1011,7 +1011,7 @@ class _TrustNote extends StatelessWidget {
                   text,
                   style: Theme.of(
                     context,
-                  ).textTheme.bodyMedium?.copyWith(fontSize: 9),
+                  ).textTheme.bodyMedium?.copyWith(fontSize: 10),
                 ),
               ],
             ),

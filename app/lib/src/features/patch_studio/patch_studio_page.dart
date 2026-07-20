@@ -389,7 +389,7 @@ class _PatchIrOutline extends StatelessWidget {
                     'Structured plan • updates generated together',
                     style: TextStyle(
                       color: RenkeviaColors.inkMuted,
-                      fontSize: 9,
+                      fontSize: 10,
                     ),
                   ),
                 ),
@@ -432,7 +432,7 @@ class _OutlineSection extends StatelessWidget {
                 count,
                 style: const TextStyle(
                   color: RenkeviaColors.inkMuted,
-                  fontSize: 8,
+                  fontSize: 10,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -481,7 +481,7 @@ class _OutlineLeaf extends StatelessWidget {
             id,
             style: TextStyle(
               color: accent,
-              fontSize: 7,
+              fontSize: 10,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -491,7 +491,7 @@ class _OutlineLeaf extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: accent, fontSize: 9),
+              style: TextStyle(color: accent, fontSize: 10),
             ),
           ),
         ],
@@ -580,7 +580,7 @@ class _MutationTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: accent,
-                        fontSize: 9,
+                        fontSize: 10,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -591,7 +591,7 @@ class _MutationTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: RenkeviaColors.inkMuted,
-                        fontSize: 8,
+                        fontSize: 10,
                         height: 1.25,
                       ),
                     ),
@@ -734,7 +734,7 @@ class _ArtifactDiffPanel extends StatelessWidget {
                               color: selected
                                   ? Colors.white
                                   : RenkeviaColors.ink,
-                              fontSize: 8,
+                              fontSize: 10,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -977,7 +977,7 @@ class _MetadataChip extends StatelessWidget {
             label,
             style: TextStyle(
               color: accent,
-              fontSize: 8,
+              fontSize: 10,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -1034,7 +1034,7 @@ class _UnifiedDiff extends StatelessWidget {
                     'STRUCTURED PROJECTION DIFF',
                     style: TextStyle(
                       color: Color(0xFFB9C5C3),
-                      fontSize: 8,
+                      fontSize: 10,
                       letterSpacing: 0.65,
                       fontWeight: FontWeight.w800,
                     ),
@@ -1042,7 +1042,10 @@ class _UnifiedDiff extends StatelessWidget {
                 ),
                 Text(
                   '${spec.lines.length} typed lines',
-                  style: const TextStyle(color: Color(0xFF7E8D8B), fontSize: 8),
+                  style: const TextStyle(
+                    color: Color(0xFF7E8D8B),
+                    fontSize: 10,
+                  ),
                 ),
               ],
             ),
@@ -1087,7 +1090,7 @@ class _DiffLineRow extends StatelessWidget {
             child: Text(
               '$index',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Color(0xFF667472), fontSize: 8),
+              style: const TextStyle(color: Color(0xFF667472), fontSize: 10),
             ),
           ),
           Container(width: 1, height: 17, color: const Color(0xFF344240)),
@@ -1111,7 +1114,7 @@ class _DiffLineRow extends StatelessWidget {
               style: TextStyle(
                 color: accent,
                 fontFamily: 'RenkeviaMono',
-                fontSize: 9,
+                fontSize: 10,
                 height: 1.25,
               ),
             ),
@@ -1161,7 +1164,7 @@ class _CausalLinks extends StatelessWidget {
                     color: revised
                         ? RenkeviaColors.cyanDark
                         : RenkeviaColors.danger,
-                    fontSize: 8,
+                    fontSize: 10,
                     letterSpacing: 0.55,
                     fontWeight: FontWeight.w900,
                   ),
@@ -1173,7 +1176,7 @@ class _CausalLinks extends StatelessWidget {
                       : 'SRC-006#T3:C7 has no mutation edge in Patch IR v0.7. Independent file editing is disabled.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: RenkeviaColors.ink,
-                    fontSize: 9,
+                    fontSize: 10,
                   ),
                 ),
               ],
@@ -1384,7 +1387,7 @@ class _ReviewRail extends StatelessWidget {
                           color: revised
                               ? const Color(0xFF9A6918)
                               : RenkeviaColors.danger,
-                          fontSize: 8,
+                          fontSize: 10,
                           letterSpacing: 0.55,
                           fontWeight: FontWeight.w900,
                         ),
@@ -1392,11 +1395,11 @@ class _ReviewRail extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         revised
-                            ? 'Patch compilation cannot satisfy a patient-safety assertion. Proceed to Simulation Lab.'
+                            ? 'The current plan cannot satisfy a safety check. Review the patient pathways next.'
                             : 'The root compiler cannot erase specialist dissent or enable a write.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: RenkeviaColors.ink,
-                          fontSize: 9,
+                          fontSize: 10,
                         ),
                       ),
                     ],
@@ -1461,7 +1464,7 @@ class _ReviewCard extends StatelessWidget {
                   initials,
                   style: TextStyle(
                     color: accent,
-                    fontSize: 8,
+                    fontSize: 10,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -1486,7 +1489,7 @@ class _ReviewCard extends StatelessWidget {
                       verdict,
                       style: TextStyle(
                         color: accent,
-                        fontSize: 7,
+                        fontSize: 10,
                         letterSpacing: 0.5,
                         fontWeight: FontWeight.w900,
                       ),
@@ -1510,7 +1513,7 @@ class _ReviewCard extends StatelessWidget {
             detail,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: RenkeviaColors.ink,
-              fontSize: 9,
+              fontSize: 10,
             ),
           ),
           const SizedBox(height: 8),
@@ -1525,7 +1528,7 @@ class _ReviewCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: accent,
-                    fontSize: 7,
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

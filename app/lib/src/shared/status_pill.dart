@@ -33,7 +33,7 @@ class StatusPill extends StatelessWidget {
             label,
             style: TextStyle(
               color: foreground,
-              fontSize: 9,
+              fontSize: 10,
               height: 1,
               letterSpacing: 0.55,
               fontWeight: FontWeight.w800,

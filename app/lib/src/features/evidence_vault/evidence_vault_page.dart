@@ -492,7 +492,7 @@ class _ReviewTile extends StatelessWidget {
                       label,
                       style: TextStyle(
                         color: color,
-                        fontSize: 8,
+                        fontSize: 10,
                         letterSpacing: 0.4,
                         fontWeight: FontWeight.w800,
                       ),
@@ -677,7 +677,7 @@ class _SealedFinding extends StatelessWidget {
                       '$verdict • ${review.findingId}',
                       style: TextStyle(
                         color: color,
-                        fontSize: 8.5,
+                        fontSize: 10,
                         letterSpacing: 0.55,
                         fontWeight: FontWeight.w800,
                       ),
@@ -705,7 +705,7 @@ class _SealedFinding extends StatelessWidget {
               'EVIDENCE USED',
               style: Theme.of(
                 context,
-              ).textTheme.labelMedium?.copyWith(fontSize: 8),
+              ).textTheme.labelMedium?.copyWith(fontSize: 10),
             ),
             const Spacer(),
             Text(
@@ -713,7 +713,7 @@ class _SealedFinding extends StatelessWidget {
               style: const TextStyle(
                 color: RenkeviaColors.violet,
                 fontFamily: 'RenkeviaMono',
-                fontSize: 8,
+                fontSize: 10,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -745,7 +745,7 @@ class _SealedFinding extends StatelessWidget {
                       evidenceId,
                       style: const TextStyle(
                         color: RenkeviaColors.ink,
-                        fontSize: 8.5,
+                        fontSize: 10,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -768,7 +768,7 @@ class _SealedFinding extends StatelessWidget {
                 'ROOT COMPILER DISPOSITION',
                 style: TextStyle(
                   color: Color(0xFF91A7A4),
-                  fontSize: 8,
+                  fontSize: 10,
                   letterSpacing: 0.65,
                   fontWeight: FontWeight.w800,
                 ),
@@ -867,7 +867,7 @@ class _ApprovalGate extends StatelessWidget {
                                 color: legacyVerified
                                     ? const Color(0xFF9A6918)
                                     : RenkeviaColors.danger,
-                                fontSize: 8.5,
+                                fontSize: 10,
                                 letterSpacing: 0.55,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -913,7 +913,7 @@ class _ApprovalGate extends StatelessWidget {
                             'LEGACY-01 • Stage v0.8 in the fictional no-API EHR and capture visual parity proof.',
                             style: TextStyle(
                               color: Color(0xFF79510F),
-                              fontSize: 9,
+                              fontSize: 10,
                               height: 1.4,
                               fontWeight: FontWeight.w600,
                             ),
@@ -944,7 +944,7 @@ class _ApprovalGate extends StatelessWidget {
                             '${controller.legacyStagingProof!.proofId} • screen ${controller.legacyStagingProof!.screenshotHash} • state recheck matched',
                             style: const TextStyle(
                               color: RenkeviaColors.success,
-                              fontSize: 9,
+                              fontSize: 10,
                               height: 1.4,
                               fontWeight: FontWeight.w700,
                             ),
@@ -966,7 +966,7 @@ class _ApprovalGate extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: RenkeviaColors.inkMuted,
-                    fontSize: 8.5,
+                    fontSize: 10,
                     height: 1.4,
                   ),
                 ),
@@ -1049,7 +1049,7 @@ class _ProofLedger extends StatelessWidget {
                       'APPEND-ONLY PROOF LEDGER',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color: RenkeviaColors.cyanDark,
-                        fontSize: 8,
+                        fontSize: 10,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -1301,7 +1301,7 @@ class _LedgerHeader extends StatelessWidget {
                 column,
                 style: const TextStyle(
                   color: Color(0xFFA8B9B7),
-                  fontSize: 8,
+                  fontSize: 10,
                   letterSpacing: 0.55,
                   fontWeight: FontWeight.w800,
                 ),
@@ -1344,7 +1344,7 @@ class _ProvenanceRow extends StatelessWidget {
                   record.artifact,
                   style: const TextStyle(
                     color: RenkeviaColors.inkMuted,
-                    fontSize: 8,
+                    fontSize: 10,
                   ),
                 ),
               ],
@@ -1366,7 +1366,7 @@ class _ProvenanceRow extends StatelessWidget {
                   'LINKED',
                   style: TextStyle(
                     color: RenkeviaColors.success,
-                    fontSize: 8,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -1409,7 +1409,7 @@ class _RollbackTable extends StatelessWidget {
                     'ROLLBACK EXACT • 6 / 6 • complete and partially staged fixtures restore PRE-8D4A',
                     style: TextStyle(
                       color: RenkeviaColors.success,
-                      fontSize: 9,
+                      fontSize: 10,
                       letterSpacing: 0.35,
                       fontWeight: FontWeight.w800,
                     ),
@@ -1462,7 +1462,7 @@ class _RollbackTable extends StatelessWidget {
                             color: record.isExact
                                 ? RenkeviaColors.success
                                 : RenkeviaColors.danger,
-                            fontSize: 8,
+                            fontSize: 10,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
@@ -1521,7 +1521,7 @@ class _AuditEventRow extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           event.actor,
-          style: const TextStyle(color: RenkeviaColors.inkMuted, fontSize: 8.5),
+          style: const TextStyle(color: RenkeviaColors.inkMuted, fontSize: 10),
         ),
       ],
     );
@@ -1607,7 +1607,7 @@ class _MonoText extends StatelessWidget {
       style: TextStyle(
         color: strong ? RenkeviaColors.ink : RenkeviaColors.inkMuted,
         fontFamily: 'RenkeviaMono',
-        fontSize: 8.5,
+        fontSize: 10,
         height: 1.35,
         fontWeight: strong ? FontWeight.w700 : FontWeight.w500,
       ),
@@ -1667,9 +1667,10 @@ class _PanelHeading extends StatelessWidget {
               children: [
                 Text(
                   eyebrow,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelMedium?.copyWith(color: accent, fontSize: 8),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: accent,
+                    fontSize: 10,
+                  ),
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -1686,7 +1687,7 @@ class _PanelHeading extends StatelessWidget {
             trailing,
             style: TextStyle(
               color: accent,
-              fontSize: 8,
+              fontSize: 10,
               letterSpacing: 0.45,
               fontWeight: FontWeight.w800,
             ),
