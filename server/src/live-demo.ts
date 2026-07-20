@@ -1,17 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { BudgetGuard, budgetConfigFromEnv } from './openai/budget-guard.js';
-import { CostLedger } from './openai/cost-ledger.js';
-import { LiveReasoningPipeline } from './openai/live-reasoning-pipeline.js';
-import { MultiAgentAuditOrchestrator } from './openai/multi-agent-audit.js';
-import { PatchOrchestrator } from './openai/patch-orchestrator.js';
-import { ProgrammaticSimulationOrchestrator } from './openai/programmatic-simulation.js';
-import { HttpResponsesTransport } from './openai/responses-transport.js';
-
-function rootRunId(): string {
-  return `LIVE-${new Date().toISOString().replace(/[-:.TZ]/g, '')}-${Math.random().toString(36).slice(2, 8)}`;
-}
+import { createLiveReasoningPipeline, createLiveRunId } from './openai/live-pipeline-factory.js';
 
 function safeErrorCode(error: unknown): string {
   if (error && typeof error === 'object' && 'code' in error && typeof (error as { code?: unknown }).code === 'string') {
@@ -29,15 +19,8 @@ async function saveEvidence(name: string, value: unknown): Promise<string> {
 }
 
 async function main(): Promise<void> {
-  const runId = rootRunId();
-  const ledger = new CostLedger(process.env.OPENAI_COST_LEDGER_PATH ?? 'server/runtime/openai-cost-ledger.jsonl');
-  const budget = new BudgetGuard(ledger, budgetConfigFromEnv());
-  const transport = new HttpResponsesTransport();
-  const pipeline = new LiveReasoningPipeline(
-    new PatchOrchestrator(transport, budget),
-    new ProgrammaticSimulationOrchestrator(transport, budget),
-    new MultiAgentAuditOrchestrator(transport, budget),
-  );
+  const runId = createLiveRunId();
+  const pipeline = createLiveReasoningPipeline();
   try {
     const result = await pipeline.run(runId);
     const path = await saveEvidence(`${runId}.json`, {

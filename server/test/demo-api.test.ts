@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import test, { after, before } from 'node:test';
 
 import { createDemoApiServer } from '../src/http/demo-api.js';
+import { compilePatch } from '../src/core/patch-compiler.js';
+import { runSimulation } from '../src/core/simulation-engine.js';
+import { northstarBaseline, revisedPatchV08, specialistReviewFixture, syntheticPathways } from '../src/fixtures/northstar.js';
 
 const server = createDemoApiServer();
 let baseUrl = '';
@@ -69,4 +72,63 @@ test('CORS rejects external origins and bad fixture identities', async () => {
   });
   assert.equal(unknown.status, 400);
   assert.deepEqual(await unknown.json(), { error: 'unknown_fixture' });
+});
+
+test('live reasoning route is disabled before body parsing or network access', async () => {
+  const response = await fetch(`${baseUrl}/api/live/reasoning`, {
+    method: 'POST', body: JSON.stringify({ fixtureId: 'FIXTURE-8D4A', confirmLive: true }),
+  });
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { error: 'live_disabled', finalCommitAllowed: false });
+});
+
+test('funded live route exposes sanitized proof summaries, never patch contents or final commit', async () => {
+  const compiled = compilePatch(northstarBaseline, revisedPatchV08);
+  const simulation = runSimulation(compiled, syntheticPathways);
+  const reviews = specialistReviewFixture(false);
+  const liveServer = createDemoApiServer(
+    { LIVE_OPENAI_ENABLED: 'true' },
+    () => ({
+      async run(rootRunId) {
+        return {
+          rootRunId,
+          synthetic: true,
+          patch: revisedPatchV08,
+          patchResponseId: 'resp_patch',
+          programmaticResponseId: 'resp_program',
+          auditResponseId: 'resp_audit',
+          simulation,
+          reviews,
+          exactRollbackVerified: true,
+          approval: {
+            approvalControlEnabled: false,
+            finalCommitAllowed: false,
+            blockers: ['DISSENT_OPEN:LEGACY-01', 'LEGACY_VISUAL_PROOF_MISSING'],
+          },
+          status: 'awaiting_legacy_visual_proof',
+          finalCommitAllowed: false,
+        };
+      },
+    }),
+  );
+  await new Promise<void>((resolve) => liveServer.listen(0, '127.0.0.1', resolve));
+  try {
+    const address = liveServer.address();
+    if (!address || typeof address === 'string') throw new Error('No live test address.');
+    const response = await fetch(`http://127.0.0.1:${address.port}/api/live/reasoning`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ fixtureId: 'FIXTURE-8D4A', confirmLive: true }),
+    });
+    const value = await response.json() as Record<string, any>;
+    assert.equal(response.status, 200);
+    assert.equal(value.mode, 'live_gpt_5_6');
+    assert.deepEqual([value.patchVersion, value.diffCount], ['v0.8', 12]);
+    assert.deepEqual([value.passedPathways, value.passedAssertions], [24, 96]);
+    assert.equal(value.reviewCount, 4);
+    assert.equal(value.finalCommitAllowed, false);
+    assert.equal('patch' in value, false);
+  } finally {
+    await new Promise<void>((resolve, reject) => liveServer.close((error) => error ? reject(error) : resolve()));
+  }
 });

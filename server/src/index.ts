@@ -11,6 +11,7 @@ export * from './openai/computer-use-staging.js';
 export * from './openai/cost-ledger.js';
 export * from './openai/model-router.js';
 export * from './openai/live-reasoning-pipeline.js';
+export * from './openai/live-pipeline-factory.js';
 export * from './openai/multi-agent-audit.js';
 export * from './openai/patch-orchestrator.js';
 export * from './openai/programmatic-simulation.js';
