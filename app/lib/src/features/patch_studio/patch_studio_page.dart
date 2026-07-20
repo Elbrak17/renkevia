@@ -209,10 +209,7 @@ class _PatchMetric extends StatelessWidget {
         ? RenkeviaColors.dangerWash
         : (warning ? RenkeviaColors.amberWash : RenkeviaColors.surface);
     final viewportWidth = MediaQuery.sizeOf(context).width;
-    final metricWidth = responsiveMetricWidth(
-      viewportWidth,
-      desktopWidth: 198,
-    );
+    final metricWidth = responsiveMetricWidth(viewportWidth, desktopWidth: 198);
     return Container(
       width: metricWidth,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),

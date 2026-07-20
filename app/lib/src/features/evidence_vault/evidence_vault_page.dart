@@ -289,10 +289,7 @@ class _VaultMetric extends StatelessWidget {
               ? RenkeviaColors.successWash
               : (warning ? RenkeviaColors.amberWash : RenkeviaColors.surface));
     final viewportWidth = MediaQuery.sizeOf(context).width;
-    final metricWidth = responsiveMetricWidth(
-      viewportWidth,
-      desktopWidth: 212,
-    );
+    final metricWidth = responsiveMetricWidth(viewportWidth, desktopWidth: 212);
     return Container(
       width: metricWidth,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),

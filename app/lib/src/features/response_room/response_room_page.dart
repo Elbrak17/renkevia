@@ -204,10 +204,7 @@ class _Metric extends StatelessWidget {
   Widget build(BuildContext context) {
     final foreground = danger ? RenkeviaColors.danger : RenkeviaColors.ink;
     final viewportWidth = MediaQuery.sizeOf(context).width;
-    final metricWidth = responsiveMetricWidth(
-      viewportWidth,
-      desktopWidth: 198,
-    );
+    final metricWidth = responsiveMetricWidth(viewportWidth, desktopWidth: 198);
     return Container(
       width: metricWidth,
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
