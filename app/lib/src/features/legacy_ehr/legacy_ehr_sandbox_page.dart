@@ -198,21 +198,25 @@ class _LegacyBadge extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.55)),
         borderRadius: BorderRadius.circular(3),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 5),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 8,
-              letterSpacing: 0.45,
-              fontWeight: FontWeight.w800,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: Icon(icon, size: 12, color: color),
             ),
-          ),
-        ],
+            const TextSpan(text: '  '),
+            TextSpan(text: label),
+          ],
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: color,
+          fontSize: 8,
+          letterSpacing: 0.45,
+          fontWeight: FontWeight.w800,
+        ),
       ),
     );
   }

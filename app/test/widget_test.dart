@@ -66,8 +66,11 @@ void main() {
       find.text('Protect every care pathway from one shortage.'),
       findsOneWidget,
     );
-    expect(find.text('SYNTHETIC • NO PATIENT DATA'), findsOneWidget);
-    expect(find.text('FIXTURE REPLAY'), findsOneWidget);
+    expect(
+      find.text('SYNTHETIC • NO PATIENT DATA', findRichText: true),
+      findsOneWidget,
+    );
+    expect(find.text('FIXTURE REPLAY', findRichText: true), findsOneWidget);
     expect(find.text('Approval locked'), findsNothing);
   });
 
@@ -115,7 +118,10 @@ void main() {
       await tester.tap(find.text('Change plan'));
       await tester.pumpAndSettle();
 
-      expect(find.text('1 EXCEPTION TO RESOLVE'), findsOneWidget);
+      expect(
+        find.text('1 EXCEPTION TO RESOLVE', findRichText: true),
+        findsOneWidget,
+      );
       expect(find.textContaining('PED-07 exception missing'), findsOneWidget);
       expect(
         find.text('! population exception is not represented'),
@@ -128,7 +134,10 @@ void main() {
       expect(find.text('Updating every target…'), findsOneWidget);
 
       await tester.pump(const Duration(milliseconds: 900));
-      expect(find.text('PLAN READY FOR TESTING'), findsOneWidget);
+      expect(
+        find.text('PLAN READY FOR TESTING', findRichText: true),
+        findsOneWidget,
+      );
       expect(find.textContaining('Encode pediatric exception'), findsOneWidget);
       expect(find.text('RETEST REQUIRED'), findsOneWidget);
       expect(
@@ -180,7 +189,10 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.text('BASELINE • 1 FAILURE'), findsOneWidget);
+      expect(
+        find.text('BASELINE • 1 FAILURE', findRichText: true),
+        findsOneWidget,
+      );
       expect(find.text('PATH-PED-07-04'), findsOneWidget);
       expect(find.text('Resolve the change plan first'), findsOneWidget);
 
@@ -207,7 +219,10 @@ void main() {
     await tester.tap(find.text('Safety checks'));
     await tester.pumpAndSettle();
 
-    expect(find.text('v0.8 • READY TO RETEST'), findsOneWidget);
+    expect(
+      find.text('v0.8 • READY TO RETEST', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('23 of 24'), findsOneWidget);
     expect(find.text('Test the revised plan'), findsOneWidget);
 
@@ -216,7 +231,10 @@ void main() {
     expect(find.text('Checking 24 pathways…'), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 1000));
-    expect(find.text('24 OF 24 PATHWAYS PASS'), findsOneWidget);
+    expect(
+      find.text('24 OF 24 PATHWAYS PASS', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('REGRESSION GATE PASSED'), findsOneWidget);
     expect(find.text('RESOLVED'), findsOneWidget);
     expect(
@@ -259,7 +277,10 @@ void main() {
       find.text('Turn every claim into an accountable approval record.'),
       findsOneWidget,
     );
-    expect(find.text('UPSTREAM GATE • LOCKED'), findsOneWidget);
+    expect(
+      find.text('UPSTREAM GATE • LOCKED', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('Complete safety checks first'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('evidence-vault-primary-button')));
@@ -278,7 +299,10 @@ void main() {
     await tester.pumpAndSettle();
     await sealEvidenceVault(tester);
 
-    expect(find.text('4 REVIEWS COMPLETE • 1 DISSENT'), findsOneWidget);
+    expect(
+      find.text('4 REVIEWS COMPLETE • 1 DISSENT', findRichText: true),
+      findsOneWidget,
+    );
     expect(find.text('DISSENT PRESERVED • LEGACY-01'), findsOneWidget);
     expect(find.text('100% traceable'), findsOneWidget);
     expect(find.byKey(const Key('legacy-staging-blocker')), findsOneWidget);
@@ -344,7 +368,10 @@ void main() {
       await sealEvidenceVault(tester);
       await stageLegacyAndReturnProof(tester);
 
-      expect(find.text('READY FOR HUMAN DECISION'), findsOneWidget);
+      expect(
+        find.text('READY FOR HUMAN DECISION', findRichText: true),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('legacy-staging-proof')), findsOneWidget);
       expect(find.byKey(const Key('legacy-staging-blocker')), findsNothing);
       expect(
