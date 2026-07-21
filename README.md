@@ -1,5 +1,9 @@
 # RENKEVIA
 
+[![Watch the RENKEVIA 2:54 product demo](https://img.youtube.com/vi/C9SE2omBJBA/maxresdefault.jpg)](https://youtu.be/C9SE2omBJBA)
+
+**[Watch the 2:54 product demo](https://youtu.be/C9SE2omBJBA)** · **[Launch RENKEVIA](https://elbrak17.github.io/renkevia/)**
+
 RENKEVIA is a hospital change compiler for medication shortages. It turns a messy institutional evidence set into one synchronized, provenance-linked patch, tests that patch against synthetic patient pathways, and holds the result for human approval.
 
 This repository is being built for the OpenAI Build Week hackathon. Phases 0–1 froze the product, safety, evaluation, and demonstration contracts. The Flutter Web demo implements the complete connected journey: the Response Room exposes a hidden pediatric dependency; the Patch Studio presents one typed Patch IR across six synchronized institutional artifacts; the Simulation Lab shows the sealed 24-pathway fixture; the Evidence Vault preserves review dissent, provenance, and rollback; and a separate fictional no-API EHR sandbox stages the visual change and stops before final commit.
